@@ -13,6 +13,7 @@ public class MainActivity extends AppCompatActivity {
 //develop branch
     // merge check
     //change suzuki
+    // change Ogawa
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
