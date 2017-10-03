@@ -2,6 +2,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="jp.ncf.app.shiorichan">
 
+    <uses-permission android:name="android.permission.INTERNET" /><!--googleへhtmlリクエストを送信するために必要なパーミッション-->
     <application
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
