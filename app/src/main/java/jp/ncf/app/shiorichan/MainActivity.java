@@ -26,6 +26,7 @@ import java.net.ProtocolException;
 import java.net.URL;
 import java.net.URLEncoder;
 
+// ogawa test comment
 //値渡し用、静的変数
 class Value{
     public static Double lat=0.0;//緯度
