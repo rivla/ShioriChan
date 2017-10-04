@@ -43,6 +43,7 @@ public class MainActivity extends AppCompatActivity {
         //ボタン、テキストボックス定義
         final EditText edit=(EditText)findViewById(R.id.editText);
         final TextView textView=(TextView)findViewById(R.id.textView);
+        final TextView textView2=(TextView)findViewById(R.id.textView2); // 公共クラウドシステム出力用
         final Button lnglatButton=(Button)findViewById(R.id.lnglatButton);
         final Button candButton=(Button)findViewById(R.id.candButton);
 
@@ -73,6 +74,14 @@ public class MainActivity extends AppCompatActivity {
                     if(Value.next_page_token==null)new HttpGetCand(textView).execute(new URL("https://maps.googleapis.com/maps/api/place/nearbysearch/json?location="+Double.toString(Value.lat)+","+Double.toString(Value.lng)+"&radius=500&language=ja&key=AIzaSyCke0pASXyPnnJR-GAAvN3Bz7GltgomfEk"));
                         //nextPageTokenに値がある→nextPageTokenのページを表示
                     else new HttpGetCand(textView).execute(new URL("https://maps.googleapis.com/maps/api/place/nearbysearch/json?location="+Double.toString(Value.lat)+","+Double.toString(Value.lng)+"&pagetoken="+Value.next_page_token+"&radius=500&language=ja&key=AIzaSyCke0pASXyPnnJR-GAAvN3Bz7GltgomfEk"));
+                } catch (MalformedURLException e) {
+                    e.printStackTrace();
+                }
+
+                // 公共クラウドシステム
+                // 候補地ボタンを押したときに，公共クラウドシステムの結果も同時に取得する
+                try {
+                    new HttpGetKoukyouCloudSystem(textView2).execute(new URL("https://www.chiikinogennki.soumu.go.jp/k-cloud-api/v001/kanko/%E7%BE%8E%E8%A1%93%E9%A4%A8/json?limit=10"));
                 } catch (MalformedURLException e) {
                     e.printStackTrace();
                 }
@@ -248,3 +257,90 @@ final class HttpGetCand extends AsyncTask<URL, Void, String> {
         }
     }
 }
+
+
+
+// 公共クラウドシステムAPI用、非同期処理クラス
+// HttpGetCandをコピーして改良しただけ
+final class HttpGetKoukyouCloudSystem extends AsyncTask<URL, Void, String> {
+
+    // textviewの宣言
+    private TextView textView;
+    public HttpGetKoukyouCloudSystem(TextView textView) {
+        super();
+        this.textView=textView;
+    }
+
+    @Override
+    protected String doInBackground(URL... urls) {
+        // 取得したテキストを格納する変数
+        final StringBuilder result = new StringBuilder();
+        // アクセス先URL
+        final URL url = urls[0];
+
+        HttpURLConnection con = null;
+        try {
+            // ローカル処理
+            // コネクション取得
+            con = (HttpURLConnection) url.openConnection();
+            con.connect();
+
+            // HTTPレスポンスコード
+            final int status = con.getResponseCode();
+            if (status == HttpURLConnection.HTTP_OK) {
+                // 通信に成功した
+                // テキストを取得する
+                final InputStream in = con.getInputStream();
+                final String encoding = con.getContentEncoding();
+                final InputStreamReader inReader = new InputStreamReader(in);
+                final BufferedReader bufReader = new BufferedReader(inReader);
+                String line = null;
+                // 1行ずつテキストを読み込む
+                while((line = bufReader.readLine()) != null) {
+                    result.append(line);
+                }
+                bufReader.close();
+                inReader.close();
+                in.close();
+            }
+
+        } catch (MalformedURLException e1) {
+            e1.printStackTrace();
+        } catch (ProtocolException e1) {
+            e1.printStackTrace();
+        } catch (IOException e1) {
+            e1.printStackTrace();
+        } finally {
+            if (con != null) {
+                // コネクションを切断
+                con.disconnect();
+            }
+        }
+
+        return result.toString();
+    }
+    /**
+     * バックグランド処理が完了し、UIスレッドに反映する
+     */
+    @Override
+    protected void onPostExecute(String result) {
+        JSONObject jsonObject=null;
+        try{
+            jsonObject=new JSONObject(result);
+            // 取得結果の総数を取得する
+            // 公共クラウドシステムの結果はtourspotsのリストになっている
+            int candLength=jsonObject.getJSONArray("tourspots").length();
+            String candString="=== 公共クラウドシステムの取得結果 ===\n";
+            // 表示用の文字列生成
+            for(int i=0;i<candLength;i++){
+                // 名前部分を参照する
+                candString=candString+jsonObject.getJSONArray("tourspots").getJSONObject(i).getJSONObject("name").getJSONObject("name1").getString("written")+"\n";
+            }
+            Log.d("test koukyou",result);
+            textView.setText(candString); // textviewに取得結果をセットする
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+    }
+}
+
