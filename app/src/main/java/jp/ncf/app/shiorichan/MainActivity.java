@@ -97,7 +97,7 @@ public class MainActivity extends AppCompatActivity {
 //                } catch (MalformedURLException e) {
 //                    e.printStackTrace();
 //                }
-
+                
                 // csv読み込み
                 List csvlist = csv.ReadCSV(getApplicationContext(), "Kanko.csv");
                 String size = String.valueOf(csvlist.size());
