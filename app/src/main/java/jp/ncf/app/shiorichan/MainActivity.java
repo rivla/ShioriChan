@@ -2,10 +2,7 @@ package jp.ncf.app.shiorichan;
 
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -26,6 +23,11 @@ import java.net.ProtocolException;
 import java.net.URL;
 import java.net.URLEncoder;
 
+// csv読み込み用
+
+import java.util.List;
+import java.util.StringTokenizer;
+
 // ogawa test comment
 //値渡し用、静的変数
 class Value{
@@ -35,10 +37,18 @@ class Value{
 }
 
 public class MainActivity extends AppCompatActivity {
+
+    // csv読み込み用クラスの宣言
+    private CSVReader csv;
+    // public Context applicationContext;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        // CSVReaderクラスのインスタンス生成
+        csv = new CSVReader();
 
         //ボタン、テキストボックス定義
         final EditText edit=(EditText)findViewById(R.id.editText);
@@ -51,12 +61,12 @@ public class MainActivity extends AppCompatActivity {
         lnglatButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Value.next_page_token=null;
+                Value.next_page_token = null;
                 try {
                     //日本語をURLに変換
-                    String urlEncodeResult= URLEncoder.encode(edit.getText().toString() ,"UTF-8");
+                    String urlEncodeResult = URLEncoder.encode(edit.getText().toString(), "UTF-8");
                     //httpを渡し、非同期処理開始
-                    new HttpGetLnglat(textView).execute(new URL("https://maps.googleapis.com/maps/api/geocode/json?address="+urlEncodeResult+"&key=AIzaSyCke0pASXyPnnJR-GAAvN3Bz7GltgomfEk&language=ja"));
+                    new HttpGetLnglat(textView).execute(new URL("https://maps.googleapis.com/maps/api/geocode/json?address=" + urlEncodeResult + "&key=AIzaSyCke0pASXyPnnJR-GAAvN3Bz7GltgomfEk&language=ja"));
                 } catch (MalformedURLException e) {
                     e.printStackTrace();
                 } catch (UnsupportedEncodingException e) {
@@ -69,22 +79,39 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 try {
-                    Log.d("test",String.valueOf(Value.lat));
+                    Log.d("test", String.valueOf(Value.lat));
                     //nextPageTokenが空→1ページ目を表示
-                    if(Value.next_page_token==null)new HttpGetCand(textView).execute(new URL("https://maps.googleapis.com/maps/api/place/nearbysearch/json?location="+Double.toString(Value.lat)+","+Double.toString(Value.lng)+"&radius=500&language=ja&key=AIzaSyCke0pASXyPnnJR-GAAvN3Bz7GltgomfEk"));
+                    if (Value.next_page_token == null)
+                        new HttpGetCand(textView).execute(new URL("https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=" + Double.toString(Value.lat) + "," + Double.toString(Value.lng) + "&radius=500&language=ja&key=AIzaSyCke0pASXyPnnJR-GAAvN3Bz7GltgomfEk"));
                         //nextPageTokenに値がある→nextPageTokenのページを表示
-                    else new HttpGetCand(textView).execute(new URL("https://maps.googleapis.com/maps/api/place/nearbysearch/json?location="+Double.toString(Value.lat)+","+Double.toString(Value.lng)+"&pagetoken="+Value.next_page_token+"&radius=500&language=ja&key=AIzaSyCke0pASXyPnnJR-GAAvN3Bz7GltgomfEk"));
+                    else
+                        new HttpGetCand(textView).execute(new URL("https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=" + Double.toString(Value.lat) + "," + Double.toString(Value.lng) + "&pagetoken=" + Value.next_page_token + "&radius=500&language=ja&key=AIzaSyCke0pASXyPnnJR-GAAvN3Bz7GltgomfEk"));
                 } catch (MalformedURLException e) {
                     e.printStackTrace();
                 }
 
                 // 公共クラウドシステム
                 // 候補地ボタンを押したときに，公共クラウドシステムの結果も同時に取得する
-                try {
-                    new HttpGetKoukyouCloudSystem(textView2).execute(new URL("https://www.chiikinogennki.soumu.go.jp/k-cloud-api/v001/kanko/%E7%BE%8E%E8%A1%93%E9%A4%A8/json?limit=10"));
-                } catch (MalformedURLException e) {
-                    e.printStackTrace();
+//                try {
+//                    new HttpGetKoukyouCloudSystem(textView2).execute(new URL("https://www.chiikinogennki.soumu.go.jp/k-cloud-api/v001/kanko/%E7%BE%8E%E8%A1%93%E9%A4%A8/json?limit=10"));
+//                } catch (MalformedURLException e) {
+//                    e.printStackTrace();
+//                }
+
+                // csv読み込み
+                List csvlist = csv.ReadCSV(getApplicationContext(), "Kanko.csv");
+                String size = String.valueOf(csvlist.size());
+                String text = "";
+                for(int i=0; i< csvlist.size(); i++ ) {
+                    List tk_list = (List) csvlist.get(i);
+                    for (int j=0; j<tk_list.size(); j++) {
+                        text += tk_list.get(j);
+//                        textView2.setText(text);
+                    }
+                    text += "\n";
                 }
+                // textView2.setText((CharSequence) csvlist2.get(0));
+                textView2.setText(text);
             }
         });
 
@@ -334,7 +361,7 @@ final class HttpGetKoukyouCloudSystem extends AsyncTask<URL, Void, String> {
             // 表示用の文字列生成
             for(int i=0;i<candLength;i++){
                 // 名前部分を参照する
-                candString=candString+jsonObject.getJSONArray("tourspots").getJSONObject(i).getJSONObject("name").getJSONObject("name1").getString("written")+"\n";
+                candString=candString + jsonObject.getJSONArray("tourspots").getJSONObject(i).getJSONObject("name").getJSONObject("name1").getString("written")+"\n";
             }
             Log.d("test koukyou",result);
             textView.setText(candString); // textviewに取得結果をセットする
@@ -343,4 +370,41 @@ final class HttpGetKoukyouCloudSystem extends AsyncTask<URL, Void, String> {
         }
     }
 }
+
+
+//final class CSVParser {
+//
+//    // textviewの宣言
+//    public TextView textView;
+//    public CSVParser(TextView textView) {
+//        super();
+//        this.textView=textView;
+//    }
+//
+//    public static void parse(Context context) {
+//        // AssetManagerの呼び出し
+//        AssetManager assetManager = context.getResources().getAssets();
+//        try {
+//            // CSVファイルの読み込み
+//            InputStream is = assetManager.open("Kanko.csv");
+//            InputStreamReader inputStreamReader = new InputStreamReader(is);
+//            BufferedReader bufferReader = new BufferedReader(inputStreamReader);
+//            String line = "";
+//            while ((line = bufferReader.readLine()) != null) {
+//                // 各行が","で区切られていて4つの項目があるとする
+//                StringTokenizer st = new StringTokenizer(line, ",");
+//                String first = st.nextToken();
+//                String second = st.nextToken();
+//                String third = st.nextToken();
+//                String fourth = st.nextToken();
+//
+//                // 何らかの処理
+//                textview.setText(first)
+//            }
+//            bufferReader.close();
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        }
+//    }
+//}
 
