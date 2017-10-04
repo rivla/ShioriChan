@@ -19,6 +19,7 @@
             android:layout_height="wrap_content"
             android:inputType="textPersonName"
             android:ems="10"
+            android:text="観光地を入力して下さい"
             android:layout_below="@+id/button"
             android:layout_alignLeft="@+id/button"
             android:layout_alignStart="@+id/button"
