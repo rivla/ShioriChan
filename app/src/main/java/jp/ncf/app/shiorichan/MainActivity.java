@@ -28,6 +28,7 @@ import java.net.ProtocolException;
 import java.net.URL;
 import java.net.URLEncoder;
 import java.util.ArrayList;
+import java.util.List;
 
 // ogawa test comment
 //値渡し用、静的変数
@@ -41,6 +42,10 @@ class Value{
 
 
 public class MainActivity extends AppCompatActivity {
+
+    // csv読み込み用クラスの宣言
+    private CSVReader csv;
+
     private static MainActivity instance=null;
     public static MainActivity getInstance(){
         return instance;//context取得用メソッド　このクラス外でも、MainActivity.getInstance()でcontextを取得できる
@@ -50,6 +55,10 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         instance=this;
         setContentView(R.layout.activity_main);
+
+        // CSVReaderクラスのインスタンス生成
+        csv = new CSVReader();
+
         //ボタン、テキストボックス定義
         final EditText edit=(EditText)findViewById(R.id.editText);
         final TextView textView=(TextView)findViewById(R.id.textView);
@@ -81,24 +90,46 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 try {
-                    Log.d("test",String.valueOf(Value.lat));
+                    Log.d("test", String.valueOf(Value.lat));
                     //nextPageTokenが空→1ページ目を表示
-                    if(Value.next_page_token==null)new HttpGetCand(listView).execute(new URL("https://maps.googleapis.com/maps/api/place/nearbysearch/json?location="+Double.toString(Value.lat)+","+Double.toString(Value.lng)+"&radius=500&language=ja&key=AIzaSyCke0pASXyPnnJR-GAAvN3Bz7GltgomfEk"));
+                    if (Value.next_page_token == null)
+                        new HttpGetCand(listView).execute(new URL("https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=" + Double.toString(Value.lat) + "," + Double.toString(Value.lng) + "&radius=500&language=ja&key=AIzaSyCke0pASXyPnnJR-GAAvN3Bz7GltgomfEk"));
                         //nextPageTokenに値がある→nextPageTokenのページを表示
-                    else new HttpGetCand(listView).execute(new URL("https://maps.googleapis.com/maps/api/place/nearbysearch/json?location="+Double.toString(Value.lat)+","+Double.toString(Value.lng)+"&pagetoken="+Value.next_page_token+"&radius=500&language=ja&key=AIzaSyCke0pASXyPnnJR-GAAvN3Bz7GltgomfEk"));
+                    else
+                        new HttpGetCand(listView).execute(new URL("https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=" + Double.toString(Value.lat) + "," + Double.toString(Value.lng) + "&pagetoken=" + Value.next_page_token + "&radius=500&language=ja&key=AIzaSyCke0pASXyPnnJR-GAAvN3Bz7GltgomfEk"));
                 } catch (MalformedURLException e) {
                     e.printStackTrace();
                 }
 
-                // 公共クラウドシステム
+                // 公共クラウドシステム（API用） //
                 // 候補地ボタンを押したときに，公共クラウドシステムの結果も同時に取得する
                 try {
-                    new HttpGetKoukyouCloudSystem(textView2).execute(new URL("https://www.chiikinogennki.soumu.go.jp/k-cloud-api/v001/kanko/%E7%BE%8E%E8%A1%93%E9%A4%A8/json?limit=10"));
+                    new HttpGetKoukyouCloudSystem(textView2).execute(new URL("https://www.chiikinogennki.soumu.go.jp/k-cloud-api/v001/kanko/%E7%BE%8E%E8%A1%93%E9%A4%A8/json?limit=3"));
                 } catch (MalformedURLException e) {
                     e.printStackTrace();
                 }
-            }
-        });
+
+                // 公共クラウドシステム（csb読み込み用） //
+                // csvファイルを読み込んでリスト形式で受け取る
+                List csvlist = csv.ReadCSV(getApplicationContext(), "Kanko.csv");
+
+                String size = String.valueOf(csvlist.size()); // サイズの取得
+                String text = "";
+
+                // 取得したデータのループ
+                for (int i = 0; i < csvlist.size()-495; i++) {
+                    // ある一行のデータをリストでループ
+                    List tk_list = (List) csvlist.get(i);
+                    for (int j = 0; j < tk_list.size(); j++) {
+                        text += tk_list.get(j);
+                    }
+                    text += "\n";
+                }
+                // textView2.setText((CharSequence) csvlist2.get(0));
+                textView2.setText(text);
+
+        }
+    });
 
         // リストビュークリックリスナ
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -108,13 +139,13 @@ public class MainActivity extends AppCompatActivity {
                 ListView listView = (ListView) parent;
                 // クリックされたアイテムを取得します
                 String item = (String) listView.getItemAtPosition(position);
-                if(item!=""){
+                if (item != "") {
                     //日本語をURLに変換
-                    String urlEncodeResult= null;
+                    String urlEncodeResult = null;
                     try {
-                        urlEncodeResult = URLEncoder.encode(item ,"UTF-8");
+                        urlEncodeResult = URLEncoder.encode(item, "UTF-8");
                         //クリックされたリストをPlaces detail APIに送信
-                        new HttpGetDetail(textView).execute(new URL("https://maps.googleapis.com/maps/api/place/details/json?placeid="+urlEncodeResult+"&key=AIzaSyCke0pASXyPnnJR-GAAvN3Bz7GltgomfEk&language=ja"));
+                        new HttpGetDetail(textView).execute(new URL("https://maps.googleapis.com/maps/api/place/details/json?placeid=" + urlEncodeResult + "&key=AIzaSyCke0pASXyPnnJR-GAAvN3Bz7GltgomfEk&language=ja"));
                     } catch (UnsupportedEncodingException e) {
                         e.printStackTrace();
                     } catch (MalformedURLException e) {
