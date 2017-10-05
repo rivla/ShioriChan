@@ -4,7 +4,11 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.Spinner;
+import android.widget.Toast;
 
 // ogawa test comment
 //値渡し用、静的変数
@@ -16,11 +20,8 @@ class Value{
 
 
 
-
 public class MainActivity extends AppCompatActivity {
-
-    // csv読み込み用クラスの宣言
-    private CSVReader csv;
+    String genreStrings[] ={"史跡","花火大会"};//ジャンルを格納するリスト//本当はcsvとかから引っ張ってきたほうがいいような
 
     private static MainActivity instance=null;
     public static MainActivity getInstance(){
@@ -33,6 +34,10 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.input_form);
 
         Button sendButton = (Button) findViewById(R.id.debugButton);
+        Spinner genreSpinner=(Spinner)findViewById(R.id.genreSpinner);
+
+
+        //デバッグモードへ入るボタン
         sendButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -40,5 +45,28 @@ public class MainActivity extends AppCompatActivity {
                 startActivity(intent);
             }
         });
+
+        // ジャンルスピナー用ArrayAdapter
+        ArrayAdapter<String> adapter= new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, genreStrings);
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+       genreSpinner.setAdapter(adapter);
+
+        // ジャンル選択用スピナーのリスナーを登録
+        genreSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            //　アイテムが選択された時
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                Spinner spinner = (Spinner) parent;
+                String item = (String) spinner.getSelectedItem();
+                //トーストで表示
+                Toast.makeText(MainActivity.getInstance(),item+"が押されました",Toast.LENGTH_LONG).show();
+
+            }
+
+            //　アイテムが選択されなかった
+            public void onNothingSelected(AdapterView<?> parent) {
+                //
+            }
+        });
+
     }
 }

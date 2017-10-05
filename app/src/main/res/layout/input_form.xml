@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/input_form"
     android:layout_width="match_parent"
@@ -17,4 +18,47 @@
         android:layout_alignParentBottom="true"
         android:layout_alignParentRight="true"
         android:id="@+id/debugButton" />
+
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true">
+
+        <ImageView
+            android:layout_width="200dp"
+            android:layout_height="200dp"
+            android:layout_gravity="center_horizontal"
+            app:srcCompat="@mipmap/guide_shiori"
+            android:id="@+id/imageView" />
+
+        <TextView
+            android:text="しおりちゃんに"
+            android:textSize="50dp"
+            android:layout_gravity="center_horizontal"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/title1" />
+        <TextView
+            android:text="おまかせ！"
+            android:textSize="50dp"
+            android:layout_gravity="center_horizontal"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/title2" />
+
+        <TextView
+            android:text="興味のあるジャンルを選択してください"
+            android:textSize="15dp"
+            android:gravity="center_horizontal"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/instruction" />
+
+        <Spinner
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/genreSpinner" />
+    </LinearLayout>
+
 </RelativeLayout>
