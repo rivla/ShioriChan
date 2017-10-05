@@ -79,6 +79,7 @@ public class DebugActivity extends Activity
         });
 
 
+
         //緯度経度取得ボタンリスナ、ボタンが押されるとこのリスナが呼ばれる
         lnglatButton.setOnClickListener(new View.OnClickListener() {
             @Override
