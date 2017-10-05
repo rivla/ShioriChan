@@ -103,11 +103,11 @@ public class MainActivity extends AppCompatActivity {
 
                 // 公共クラウドシステム（API用） //
                 // 候補地ボタンを押したときに，公共クラウドシステムの結果も同時に取得する
-                try {
-                    new HttpGetKoukyouCloudSystem(textView2).execute(new URL("https://www.chiikinogennki.soumu.go.jp/k-cloud-api/v001/kanko/%E7%BE%8E%E8%A1%93%E9%A4%A8/json?limit=3"));
-                } catch (MalformedURLException e) {
-                    e.printStackTrace();
-                }
+//                try {
+//                    new HttpGetKoukyouCloudSystem(textView2).execute(new URL("https://www.chiikinogennki.soumu.go.jp/k-cloud-api/v001/kanko/%E7%BE%8E%E8%A1%93%E9%A4%A8/json?limit=3"));
+//                } catch (MalformedURLException e) {
+//                    e.printStackTrace();
+//                }
 
                 // 公共クラウドシステム（csb読み込み用） //
                 // csvファイルを読み込んでリスト形式で受け取る
@@ -116,8 +116,15 @@ public class MainActivity extends AppCompatActivity {
                 String size = String.valueOf(csvlist.size()); // サイズの取得
                 String text = "";
 
+                // 各観光地の情報を管理するリストを定義する
+                List spot_list = new ArrayList();
+
                 // 取得したデータのループ
                 for (int i = 0; i < csvlist.size()-495; i++) {
+
+                    // １観光地分の内容を管理するリストを新たに定義する
+                    List content_list = new ArrayList();
+
                     // ある一行のデータをリストでループ
                     List tk_list = (List) csvlist.get(i);
                     for (int j = 0; j < tk_list.size(); j++) {
