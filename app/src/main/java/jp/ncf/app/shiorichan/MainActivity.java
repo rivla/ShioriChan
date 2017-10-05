@@ -1,14 +1,19 @@
 package jp.ncf.app.shiorichan;
 
+import android.app.TimePickerDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.Spinner;
+import android.widget.TimePicker;
 import android.widget.Toast;
+
+import java.util.Calendar;
 
 // ogawa test comment
 //値渡し用、静的変数
@@ -33,9 +38,15 @@ public class MainActivity extends AppCompatActivity {
         instance = this;
         setContentView(R.layout.input_form);
 
-        Button sendButton = (Button) findViewById(R.id.debugButton);
-        Spinner genreSpinner=(Spinner)findViewById(R.id.genreSpinner);
+        final int[] departureTime = {10,0};//(時間,分)の順に格納
+        final int[] arriveTime = {20,0};//(時間,分)の順に格納
 
+        Button sendButton = (Button) findViewById(R.id.debugButton);
+        final Button departureTimeButton=(Button)findViewById(R.id.departureTimeButton);
+        departureTimeButton.setText(String.format("%02d:%02d",departureTime[0],departureTime[1]));
+        final Button arriveTimeButton=(Button)findViewById(R.id.arriveTimeButton);
+        arriveTimeButton.setText(String.format("%02d:%02d",arriveTime[0],arriveTime[1]));
+        Spinner genreSpinner=(Spinner)findViewById(R.id.genreSpinner);
 
         //デバッグモードへ入るボタン
         sendButton.setOnClickListener(new View.OnClickListener() {
@@ -43,6 +54,41 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View v) {
                 Intent intent = new Intent(getApplication(), DebugActivity.class);
                 startActivity(intent);
+            }
+        });
+
+        //出発時刻選択ボタン
+        departureTimeButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                //時間を入力させるUIの起動
+                TimePickerDialog dialog = new TimePickerDialog(MainActivity.getInstance(),new TimePickerDialog.OnTimeSetListener(){
+                    @Override
+                    public void onTimeSet(TimePicker view, int hourOfDay,int minute) {
+                        departureTime[0] =hourOfDay;//取得した時刻を変数に代入
+                        departureTime[1] =minute;
+                        departureTimeButton.setText(String.format("%02d:%02d",departureTime[0],departureTime[1]));//時刻をボタンの文字にセット
+                        
+                    }
+                },departureTime[0],departureTime[1],true);//初期値を入れる箇所
+                dialog.show();
+            }
+        });
+
+        //到着時刻選択ボタン
+        arriveTimeButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                TimePickerDialog dialog = new TimePickerDialog(MainActivity.getInstance(),new TimePickerDialog.OnTimeSetListener(){
+                    @Override
+                    public void onTimeSet(TimePicker view, int hourOfDay,int minute) {
+                        Log.d("test",String.format("%02d:%02d", hourOfDay,minute));
+                        arriveTime[0] =hourOfDay;
+                        arriveTime[1] =minute;
+                        arriveTimeButton.setText(String.format("%02d:%02d",arriveTime[0],arriveTime[1]));
+                    }
+                },arriveTime[0],arriveTime[1],true);
+                dialog.show();
             }
         });
 
@@ -61,12 +107,9 @@ public class MainActivity extends AppCompatActivity {
                 Toast.makeText(MainActivity.getInstance(),item+"が押されました",Toast.LENGTH_LONG).show();
 
             }
-
             //　アイテムが選択されなかった
             public void onNothingSelected(AdapterView<?> parent) {
-                //
             }
         });
-
     }
 }
