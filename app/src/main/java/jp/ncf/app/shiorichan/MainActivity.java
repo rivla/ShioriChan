@@ -113,14 +113,38 @@ public class MainActivity extends AppCompatActivity {
 
                 // json形式の公共クラウドシステムを読み込む
                 JSONObject spots_json = json.ReadJson(getApplicationContext(), "kanko_all2.json");
-                String result_str = "";
+
                 try {
-                    result_str = spots_json.getJSONArray("spots").getJSONObject(0).getString("name");
-                    Log.d("check", result_str);
+                    // resultの総数を取得
+                    int spotsLength = spots_json.getJSONArray("spots").length();
+                    Log.d("spotsLength", String.valueOf(spotsLength));
+
+                    // ジャンルを指定
+                    String genre = "産業観光施設";
+
+                    // 出力用のテキスト
+                    String text = "";
+
+                    int count = 0;
+
+                    for (int i=0; i<spotsLength; i++) {
+                        String genre_str = "";
+                        String name_str = "";
+                        genre_str = spots_json.getJSONArray("spots").getJSONObject(i).getString("genreS");
+                        name_str = spots_json.getJSONArray("spots").getJSONObject(i).getString("name");
+//                        Log.d("genre_str", genre_str);
+                        if (genre_str.equals(genre)) {
+                            text += name_str + "\n";
+                            count ++;
+                        }
+                    }
+                    Log.d("text", text);
+                    textView2.setText(text);
+                    Log.d("count", String.valueOf(count));
+
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
-                textView2.setText(result_str);
 
 
 
