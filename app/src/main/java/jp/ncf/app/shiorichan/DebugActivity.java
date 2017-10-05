@@ -51,6 +51,9 @@ public class DebugActivity extends Activity
     // csv読み込み用クラスの宣言
     private CSVReader csv;
 
+    // jsonファイル読み込み用クラスの宣言
+    private JsonReader json;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
@@ -59,8 +62,8 @@ public class DebugActivity extends Activity
         // CSVReaderクラスのインスタンス生成
         csv = new CSVReader();
 
-
-
+        // JsonReaderクラスのインスタンス生成
+        json = new JsonReader();
 
         //ボタン、テキストボックス定義
         final EditText edit=(EditText)findViewById(R.id.editText);
@@ -115,30 +118,66 @@ public class DebugActivity extends Activity
 
                 // 公共クラウドシステム（API用） //
                 // 候補地ボタンを押したときに，公共クラウドシステムの結果も同時に取得する
+//                try {
+//                    new HttpGetKoukyouCloudSystem(textView2).execute(new URL("https://www.chiikinogennki.soumu.go.jp/k-cloud-api/v001/kanko/%E7%BE%8E%E8%A1%93%E9%A4%A8/json?limit=3"));
+//                } catch (MalformedURLException e) {
+//                    e.printStackTrace();
+//                }
+
+
+                // 公共クラウドシステム（jsonファイル読み込み用） //
+                // jsonファイルを読み込む
+                JSONObject spots_json = json.ReadJson(getApplicationContext(), "kanko_all.json");
                 try {
-                    new HttpGetKoukyouCloudSystem(textView2).execute(new URL("https://www.chiikinogennki.soumu.go.jp/k-cloud-api/v001/kanko/%E7%BE%8E%E8%A1%93%E9%A4%A8/json?limit=3"));
-                } catch (MalformedURLException e) {
+                    // 観光地の総数を取得
+                    int spotsLength = spots_json.getJSONArray("spots").length();
+                    Log.d("spotsLength", String.valueOf(spotsLength));
+
+                    // ジャンルを指定
+                    String genre = "水族館";
+
+                    String text = ""; // 出力用のテキスト
+                    int count = 0; // ヒットした観光地のカウンタ
+
+                    // 指定のジャンルにマッチする観光地の名前を抽出する
+                    for (int i=0; i<spotsLength; i++) {
+                        String genre_str = "";
+                        String name_str = "";
+                        genre_str = spots_json.getJSONArray("spots").getJSONObject(i).getString("genreS");
+                        name_str = spots_json.getJSONArray("spots").getJSONObject(i).getString("name");
+                        // 指定のジャンルと一致した場合
+                        if (genre_str.equals(genre)) {
+                            text += name_str + "\n";
+                            count ++;
+                        }
+                    }
+                    textView2.setText(text);
+                    Log.d("text", text);
+                    Log.d("count", String.valueOf(count));
+
+                } catch (JSONException e) {
                     e.printStackTrace();
                 }
 
-                // 公共クラウドシステム（csb読み込み用） //
+
+                // 公共クラウドシステム（csv読み込み用） //
                 // csvファイルを読み込んでリスト形式で受け取る
-                List csvlist = csv.ReadCSV(getApplicationContext(), "Kanko.csv");
-
-                String size = String.valueOf(csvlist.size()); // サイズの取得
-                String text = "";
-
-                // 取得したデータのループ
-                for (int i = 0; i < csvlist.size()-495; i++) {
-                    // ある一行のデータをリストでループ
-                    List tk_list = (List) csvlist.get(i);
-                    for (int j = 0; j < tk_list.size(); j++) {
-                        text += tk_list.get(j);
-                    }
-                    text += "\n";
-                }
-                // textView2.setText((CharSequence) csvlist2.get(0));
-                textView2.setText(text);
+//                List csvlist = csv.ReadCSV(getApplicationContext(), "Kanko.csv");
+//
+//                String size = String.valueOf(csvlist.size()); // サイズの取得
+//                String text = "";
+//
+//                // 取得したデータのループ
+//                for (int i = 0; i < csvlist.size()-495; i++) {
+//                    // ある一行のデータをリストでループ
+//                    List tk_list = (List) csvlist.get(i);
+//                    for (int j = 0; j < tk_list.size(); j++) {
+//                        text += tk_list.get(j);
+//                    }
+//                    text += "\n";
+//                }
+//                // textView2.setText((CharSequence) csvlist2.get(0));
+//                textView2.setText(text);
 
             }
         });
