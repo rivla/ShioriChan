@@ -22,7 +22,7 @@ public class JsonReader {
     {
         InputStream inputStream = null;
         BufferedReader bufferedReader = null;
-
+        
         JSONObject json = null;
         try {
             // 事前に用意しておいた、jsonファイルを読み込みます

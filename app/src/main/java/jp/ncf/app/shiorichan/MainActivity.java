@@ -45,6 +45,7 @@ public class MainActivity extends AppCompatActivity {
 
     // csv読み込み用クラスの宣言
     private CSVReader csv;
+    private JsonReader json;
 
     private static MainActivity instance=null;
     public static MainActivity getInstance(){
@@ -58,6 +59,7 @@ public class MainActivity extends AppCompatActivity {
 
         // CSVReaderクラスのインスタンス生成
         csv = new CSVReader();
+        json = new JsonReader();
 
         //ボタン、テキストボックス定義
         final EditText edit=(EditText)findViewById(R.id.editText);
@@ -109,6 +111,19 @@ public class MainActivity extends AppCompatActivity {
 //                    e.printStackTrace();
 //                }
 
+                // json形式の公共クラウドシステムを読み込む
+                JSONObject spots_json = json.ReadJson(getApplicationContext(), "kanko_all2.json");
+                String result_str = "";
+                try {
+                    result_str = spots_json.getJSONArray("spots").getJSONObject(0).getString("name");
+                    Log.d("check", result_str);
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+                textView2.setText(result_str);
+
+
+
                 // 公共クラウドシステム（csb読み込み用） //
                 // csvファイルを読み込んでリスト形式で受け取る
                 List csvlist = csv.ReadCSV(getApplicationContext(), "Kanko.csv");
@@ -133,7 +148,9 @@ public class MainActivity extends AppCompatActivity {
                     text += "\n";
                 }
                 // textView2.setText((CharSequence) csvlist2.get(0));
-                textView2.setText(text);
+//                textView2.setText(text);
+
+
 
         }
     });
