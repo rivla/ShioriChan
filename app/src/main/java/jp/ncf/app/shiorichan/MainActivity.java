@@ -90,6 +90,7 @@ public class MainActivity extends AppCompatActivity implements
                     .addApi(LocationServices.API)
                     .addApi(AppIndex.API).build();
         }
+
         final int[] departureTime = {10,0};//(時間,分)の順に格納
         final int[] arriveTime = {20,0};//(時間,分)の順に格納
         json=new JsonReader();
