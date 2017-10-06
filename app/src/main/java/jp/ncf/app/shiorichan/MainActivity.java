@@ -216,6 +216,11 @@ public class MainActivity extends AppCompatActivity implements
                         JSONObject placesResult2=null;
                         JSONObject placesResult3=null;
                         try {
+                            if(location==null){//実機のgoogleplacesversionの問題で緯度経度が取れない場合は、岐阜の座標を代入する
+                                location=new Location("a");//文字列はprovider（適当に入れました)
+                                location.setLatitude(35.4650334);
+                                location.setLongitude(136.73929506);
+                            }
                             placesResult1=httpGet.HttpPlaces(new URL("https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=" + location.getLatitude() + "," + location.getLongitude() + "&radius=500&language=ja&key=AIzaSyCke0pASXyPnnJR-GAAvN3Bz7GltgomfEk"));
                             int candLength1=placesResult1.getJSONArray("results").length();
                             //表示用の文字列生成
@@ -319,10 +324,10 @@ public class MainActivity extends AppCompatActivity implements
     public void onConnected(@Nullable Bundle bundle) {
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             //パーミッションチェック
+            Log.d("test","perm out");
             return;
         }
-        location = LocationServices.FusedLocationApi.getLastLocation(
-                mGoogleApiClient);//端末より、最後にGPSで取得された座標を取得
+        location = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);//端末より、最後にGPSで取得された座標を取得
     }
     //gps取得用クラスの子メソッド、消せない
     @Override
