@@ -171,6 +171,43 @@ public class MainActivity extends AppCompatActivity implements
             @Override
             public void onClick(View v) {
                 Log.d("test","startButton pusshed");
+
+                // 公共クラウドシステム（jsonファイル読み込み用） //
+                // jsonファイルを読み込む
+                JSONObject spots_json = json.ReadJson(getApplicationContext(), "kanko_all.json");
+                try {
+                    // 観光地の総数を取得
+                    int spotsLength = spots_json.getJSONArray("spots").length();
+                    Log.d("spotsLength", String.valueOf(spotsLength));
+
+
+                    String text = ""; // 出力用のテキスト
+                    int count = 0; // ヒットした観光地のカウンタ
+
+                    // 指定のジャンルにマッチする観光地の名前を抽出する
+                    for (int i=0; i<spotsLength; i++) {
+                        String genre_str = "";
+                        String name_str = "";
+                        genre_str = spots_json.getJSONArray("spots").getJSONObject(i).getString("genreM");
+                        name_str = spots_json.getJSONArray("spots").getJSONObject(i).getString("name");
+                        // 指定のジャンルと一致した場合
+                        if (genre_str.equals(Value.genre)) {
+                        Value.spotList.add(new SpotStructure(null,name_str,0,0,0));
+                        }
+                    }
+                    Log.d("text", text);
+                    Log.d("count", String.valueOf(count));
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+                for(int i=0;i<Value.spotList.size();i++){
+                    SpotStructure tempspot=(SpotStructure)Value.spotList.get(i);
+//                    Log.d("test",tempspot.name);
+                }
+                Log.d("test",String.valueOf(Value.spotList.size()));
+
+
+                //googlePlacesAPIのスレッド開始
                 new Thread(new Runnable() {
                     @Override
                     public void run() {
@@ -224,7 +261,6 @@ public class MainActivity extends AppCompatActivity implements
                                 SpotStructure tempspot=(SpotStructure)Value.spotList.get(i);
                                 Log.d("test",tempspot.name);
                             }
-                            Log.d("test",String.valueOf(Value.spotList.size()));
                             /*
                             for(int i=0;i<20;i++) {
                                 Log.d("test", "i is:"+String.valueOf(i));
@@ -252,36 +288,6 @@ public class MainActivity extends AppCompatActivity implements
              //   SpotStructure A=(SpotStructure)Value.spotList.get(0);
             //    Log.d("test",A.name);
 /*
-                // 公共クラウドシステム（jsonファイル読み込み用） //
-            // jsonファイルを読み込む
-            JSONObject spots_json = json.ReadJson(getApplicationContext(), "kanko_all.json");
-            try {
-                // 観光地の総数を取得
-                int spotsLength = spots_json.getJSONArray("spots").length();
-                Log.d("spotsLength", String.valueOf(spotsLength));
-
-
-                String text = ""; // 出力用のテキスト
-                int count = 0; // ヒットした観光地のカウンタ
-
-                // 指定のジャンルにマッチする観光地の名前を抽出する
-                for (int i=0; i<spotsLength; i++) {
-                    String genre_str = "";
-                    String name_str = "";
-                    genre_str = spots_json.getJSONArray("spots").getJSONObject(i).getString("genreM");
-                    name_str = spots_json.getJSONArray("spots").getJSONObject(i).getString("name");
-                    // 指定のジャンルと一致した場合
-                    if (genre_str.equals(Value.genre)) {
-//                        Value.spotList.add(new SpotStructure(name_str,0,0,0));
-//                        text += name_str + "\n";
-//                        count ++;
-                    }
-                }
-                Log.d("text", text);
-                Log.d("count", String.valueOf(count));
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
 */
             }
         });
