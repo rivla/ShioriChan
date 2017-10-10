@@ -296,6 +296,7 @@ final class HttpGetLnglat extends AsyncTask<URL, Void, String> {
 //指定座標周辺のロケーション取得用、非同期処理クラス
 final class HttpGetCand extends AsyncTask<URL, Void, String> {
 
+
     private ListView listView;
     public HttpGetCand(ListView listView) {
         super();

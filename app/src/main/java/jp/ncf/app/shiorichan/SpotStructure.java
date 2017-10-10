@@ -9,14 +9,21 @@ import com.google.android.gms.maps.model.StreetViewPanoramaOrientation;
 public class SpotStructure {
     String placeID;
     String name;
+    String prefecture;
     double rate;
     double lat;
     double lng;
-    public SpotStructure(String placeID,String name,double rate,double lat,double lng){
+    double distance;
+    double eval;
+
+    public SpotStructure(String placeID,String name,String prefecture,double rate,double lat,double lng,double distance,double eval){
+        this.prefecture=prefecture;
         this.placeID=placeID;
         this.name=name;
         this.rate=rate;
         this.lat=lat;
         this.lng=lng;
+        this.distance=distance;
+        this.eval=eval;
     }
 }

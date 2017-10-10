@@ -6,10 +6,8 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.net.Uri;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
-import android.os.HandlerThread;
 import android.os.Looper;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -33,18 +31,16 @@ import com.google.android.gms.location.LocationServices;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
+import java.io.UnsupportedEncodingException;
 import java.net.MalformedURLException;
-import java.net.ProtocolException;
 import java.net.URL;
+import java.net.URLEncoder;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
+import java.util.ListIterator;
 import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.TimeUnit;
 
 // ogawa test comment
 //値渡し用、静的変数
@@ -54,6 +50,8 @@ class Value {
     public static String next_page_token = null;
     public static String genre=null;
     public static List spotList=new ArrayList<SpotStructure>();
+    public static final double alpha=5;
+    public static final double beta=5;
 }
 
 
@@ -180,7 +178,7 @@ public class MainActivity extends AppCompatActivity implements
         startButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Log.d("test","startButton pusshed");
+                Log.d("test", "startButton pusshed");
 
                 // 公共クラウドシステム（jsonファイル読み込み用） //
                 // jsonファイルを読み込む
@@ -195,14 +193,16 @@ public class MainActivity extends AppCompatActivity implements
                     int count = 0; // ヒットした観光地のカウンタ
 
                     // 指定のジャンルにマッチする観光地の名前を抽出する
-                    for (int i=0; i<spotsLength; i++) {
+                    for (int i = 0; i < spotsLength; i++) {
                         String genre_str = "";
                         String name_str = "";
+                        String pref_str="";
                         genre_str = spots_json.getJSONArray("spots").getJSONObject(i).getString("genreM");
                         name_str = spots_json.getJSONArray("spots").getJSONObject(i).getString("name");
+                        pref_str=spots_json.getJSONArray("spots").getJSONObject(i).getString("prefectures");
                         // 指定のジャンルと一致した場合
-                        if (genre_str.equals(Value.genre)) {
-                        Value.spotList.add(new SpotStructure(null,name_str,0,0,0));
+                        if (genre_str.equals(Value.genre) && (pref_str.equals("岐阜県")||pref_str.equals("富山県")||pref_str.equals("石川県")||pref_str.equals("福井県")||pref_str.equals("長野県")||pref_str.equals("愛知県")||pref_str.equals("三重県")||pref_str.equals("滋賀県"))) {
+                            Value.spotList.add(new SpotStructure(null, name_str,pref_str, 0, 0, 0,0,0));
                         }
                     }
                     Log.d("text", text);
@@ -210,13 +210,103 @@ public class MainActivity extends AppCompatActivity implements
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
-                for(int i=0;i<Value.spotList.size();i++){
-                    SpotStructure tempspot=(SpotStructure)Value.spotList.get(i);
+                for (int i = 0; i < Value.spotList.size(); i++) {
+                    SpotStructure tempspot = (SpotStructure) Value.spotList.get(i);
 //                    Log.d("test",tempspot.name);
                 }
-                Log.d("test",String.valueOf(Value.spotList.size()));
+                Log.d("test", String.valueOf(Value.spotList.size()));
 
 
+                //スレッド処理開始
+                new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        ListIterator<SpotStructure> i = Value.spotList.listIterator();//ループをまわしながらarraylistの中身を削除する場合はこれを使う必要がある
+                        while(i.hasNext()){//存在するリストでループを回す
+                            SpotStructure tempSpotStructure=i.next();//次のリストを参照
+                            JSONObject geoCordingResult = null;
+                            try {
+                                //placeIDの取得
+                                String urlEncodeResult = URLEncoder.encode(tempSpotStructure.name, "UTF-8");
+                                geoCordingResult = httpGet.HttpPlaces(new URL("https://maps.googleapis.com/maps/api/geocode/json?address=" + urlEncodeResult + "&key=AIzaSyCke0pASXyPnnJR-GAAvN3Bz7GltgomfEk&language=ja"));
+                                if(geoCordingResult.getJSONArray("results").isNull(0)){//placeIDがない場合リストから削除
+                                    i.remove();
+                                }else {
+//                                    Log.d("test", tempSpotStructure.name);
+  //                                  Log.d("test", tempSpotStructure.prefecture);
+//                                    Log.d("test", geoCordingResult.getJSONArray("results").getJSONObject(0).getString("place_id"));
+                                    String tempPlaceID = geoCordingResult.getJSONArray("results").getJSONObject(0).getString("place_id");
+                                    i.set(new SpotStructure(tempPlaceID, tempSpotStructure.name, tempSpotStructure.prefecture, 0, 0, 0,0,0));//取得したIDをリストにセット
+                                        //place詳細検索実行
+                                        JSONObject detailSearchResult;
+                                        urlEncodeResult = URLEncoder.encode(tempPlaceID, "UTF-8");
+                                        detailSearchResult = httpGet.HttpPlaces(new URL("https://maps.googleapis.com/maps/api/place/details/json?placeid=" + urlEncodeResult + "&key=AIzaSyCke0pASXyPnnJR-GAAvN3Bz7GltgomfEk&language=ja"));
+                                        double tempRate = 0;
+                                        if (!detailSearchResult.getJSONObject("result").isNull("rating")) {//レートの値がない場合は0をセット
+                                            tempRate = detailSearchResult.getJSONObject("result").getDouble("rating");//詳細検索結果、レート値
+                                        }
+                                        double tempLat = detailSearchResult.getJSONObject("result").getJSONObject("geometry").getJSONObject("location").getDouble("lat");//詳細検索された場所の緯度
+                                        double tempLng = detailSearchResult.getJSONObject("result").getJSONObject("geometry").getJSONObject("location").getDouble("lng");//詳細検索された場所の経度
+                                    //緯度経度、レートをリストにセット
+                                        i.set(new SpotStructure(tempPlaceID, tempSpotStructure.name, tempSpotStructure.prefecture, tempRate, tempLat, tempLng,0,0));
+                                }
+                            } catch (UnsupportedEncodingException e) {
+                                e.printStackTrace();
+                            } catch (JSONException e) {
+                                e.printStackTrace();
+                            } catch (MalformedURLException e) {
+                                e.printStackTrace();
+                            }
+                        }
+
+                        for(int j = 0; j < Value.spotList.size(); j++) {//二点間の距離を算出し代入
+                            SpotStructure tempspot = (SpotStructure) Value.spotList.get(j);
+                            float[] distance=new float[3];//二点間の距離算出結果を格納する変数
+                            Location.distanceBetween(location.getLatitude(),location.getLongitude(),tempspot.lat,tempspot.lng,distance);//入力された場所と候補地との距離算出
+                            tempspot.distance=distance[0];
+                            tempspot.eval= Value.alpha*tempspot.distance+(10000000-Value.beta*tempspot.rate);
+                        }
+
+                        for(int j = 0; j < Value.spotList.size(); j++) {
+
+                            SpotStructure tempspot = (SpotStructure) Value.spotList.get(j);
+                            Log.d("test","distance:"+String.valueOf(tempspot.distance));
+                            Log.d("test",tempspot.name+tempspot.placeID+String.valueOf(tempspot.rate)+String.valueOf(tempspot.lat)+String.valueOf(tempspot.lng));
+                            Log.d("test","eval:"+String.valueOf(tempspot.eval));
+                        }
+                        /*
+                        double maxEval=0;
+                        for(int j = 0; j < Value.spotList.size(); j++) {
+                            SpotStructure tempspot = (SpotStructure) Value.spotList.get(j);
+                            if(maxEval<tempspot.eval){
+                                maxEval=tempspot.eval;
+                            }
+                        }
+                        Log.d("test","max eval is"+String.valueOf(maxEval));
+                        */
+                        //Comparatorを用い距離順にソートする
+                        Collections.sort(Value.spotList,new SpotStructureComparator());
+                        for(int j = 0; j < Value.spotList.size(); j++) {
+
+                            SpotStructure tempspot = (SpotStructure) Value.spotList.get(j);
+                            Log.d("test","distance:"+String.valueOf(tempspot.distance));
+                        }
+
+                        handler.post(new Runnable() {
+                            @Override
+                            public void run() {
+                                Intent intent = new Intent(getApplication(), DebugActivity.class);
+                                startActivity(intent);
+                                Log.d("test", "in runnable run");
+                            }
+                        });
+                    }
+                }).start();
+            }
+        });
+    }
+
+/*
                 //googlePlacesAPIのスレッド開始
                 new Thread(new Runnable() {
                     @Override
@@ -276,12 +366,10 @@ public class MainActivity extends AppCompatActivity implements
                                 SpotStructure tempspot=(SpotStructure)Value.spotList.get(i);
                                 Log.d("test",tempspot.name);
                             }
-                            /*
-                            for(int i=0;i<20;i++) {
-                                Log.d("test", "i is:"+String.valueOf(i));
-                                Log.d("test", placesResult1.getJSONArray("results").getJSONObject(i).getString("name"));
-                            }
-                            */
+//                            for(int i=0;i<20;i++) {
+//                                Log.d("test", "i is:"+String.valueOf(i));
+//                                Log.d("test", placesResult1.getJSONArray("results").getJSONObject(i).getString("name"));
+//                            }
                         } catch (MalformedURLException e1) {
                             e1.printStackTrace();
                         } catch (JSONException e) {
@@ -300,14 +388,10 @@ public class MainActivity extends AppCompatActivity implements
                         });
                     }
                 }).start();
+                }
+    */
              //   SpotStructure A=(SpotStructure)Value.spotList.get(0);
-            //    Log.d("test",A.name);
-/*
-*/
-            }
-        });
-
-    }
+            //    Log.d("test",A.name)
 
     protected void onStart() {
         //GoogleAPIに接続開始
