@@ -11,13 +11,26 @@
     android:paddingTop="@dimen/activity_vertical_margin"
     tools:context="jp.ncf.app.shiorichan.MainActivity">
 
-    <Button
-        android:text="デバッグモード"
+    <LinearLayout
+        android:orientation="horizontal"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
         android:layout_alignParentRight="true"
+        android:layout_centerInParent="true">
+
+    <Button
+        android:text="デバッグモード"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:id="@+id/debugButton" />
+
+    <Button
+        android:text="しおり表示"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/shioriButton" />
+    </LinearLayout>
 
     <LinearLayout
         android:orientation="vertical"

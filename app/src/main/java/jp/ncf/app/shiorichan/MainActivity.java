@@ -97,6 +97,7 @@ public class MainActivity extends AppCompatActivity implements
         httpGet=new HttpGetter();
 
 
+        Button shioriButton = (Button) findViewById(R.id.shioriButton);
         Button sendButton = (Button) findViewById(R.id.debugButton);
         final Button departureTimeButton=(Button)findViewById(R.id.departureTimeButton);
         departureTimeButton.setText(String.format("%02d:%02d",departureTime[0],departureTime[1]));
@@ -111,6 +112,14 @@ public class MainActivity extends AppCompatActivity implements
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(getApplication(), DebugActivity.class);
+                startActivity(intent);
+            }
+        });
+        //しおり表示モードへ入るボタン
+        shioriButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(getApplication(), ShioriView.class);
                 startActivity(intent);
             }
         });
