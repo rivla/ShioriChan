@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@mipmap/check_blue"
+    android:weightSum="1">
+
+    <!--
+    しおりちゃんで生成した表紙の画面レイアウト
+
+    真ん中の画像をしおりちゃんにするか、観光地の１つ目にするか悩む
+    -->
+
+    <!-- 上でbackgroundでセットした真ん中らへんに記述用のFrameを作成 -->
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:padding="60dp">
+
+        <!-- 縦方向のレイアウト -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical">
+
+            <!-- 背景画像を設定するためのレイアウト 枠の部分-->
+            <FrameLayout
+                android:layout_width="match_parent"
+                android:layout_height="150dp"
+                android:layout_gravity="center_horizontal|center"
+                android:background="@mipmap/waku"
+                android:layout_margin="20dp">
+
+                <!-- 枠の中に記述する文字列 -->
+                <TextView
+                    android:id="@+id/textView18"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_horizontal|center"
+                    android:gravity="center_horizontal|center"
+                    android:text="〇〇のしおり xx/yy"
+                    android:textSize="50dp" />
+
+            </FrameLayout>
+
+            <!-- 画面中央に表示する画像 とりあえずしおりちゃんをおいておく-->
+            <ImageView
+                android:id="@+id/imageView5"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:srcCompat="@mipmap/guide_shiori" />
+
+            <!-- 背景画像を設定するためのレイアウト 枠の部分-->
+            <FrameLayout
+                android:layout_width="match_parent"
+                android:layout_height="80dp"
+                android:layout_gravity="center_horizontal"
+                android:layout_margin="20dp"
+                android:background="@mipmap/waku">
+
+                <!-- 枠の中に記述する文字列 -->
+                <TextView
+                    android:id="@+id/textView19"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical|center_horizontal"
+                    android:padding="10dp"
+                    android:text="名前 : しおりちゃん"
+                    android:textSize="40dp" />
+            </FrameLayout>
+        </LinearLayout>
+
+    </FrameLayout>
+
+</LinearLayout>
