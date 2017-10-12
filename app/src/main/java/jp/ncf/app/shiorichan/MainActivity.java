@@ -200,6 +200,9 @@ public class MainActivity extends AppCompatActivity implements
                         genre_str = spots_json.getJSONArray("spots").getJSONObject(i).getString("genreM");
                         name_str = spots_json.getJSONArray("spots").getJSONObject(i).getString("name");
                         pref_str=spots_json.getJSONArray("spots").getJSONObject(i).getString("prefectures");
+                        pref_str=spots_json.getJSONArray("spots").getJSONObject(i).getString("rating");
+                        pref_str=spots_json.getJSONArray("spots").getJSONObject(i).getString("lat");
+                        pref_str=spots_json.getJSONArray("spots").getJSONObject(i).getString("lng");
                         // 指定のジャンルと一致した場合
                         if (genre_str.equals(Value.genre) && (pref_str.equals("岐阜県")||pref_str.equals("富山県")||pref_str.equals("石川県")||pref_str.equals("福井県")||pref_str.equals("長野県")||pref_str.equals("愛知県")||pref_str.equals("三重県")||pref_str.equals("滋賀県"))) {
                             Value.spotList.add(new SpotStructure(null, name_str,pref_str, 0, 0, 0,0,0));
@@ -221,6 +224,9 @@ public class MainActivity extends AppCompatActivity implements
                 new Thread(new Runnable() {
                     @Override
                     public void run() {
+
+
+
                         ListIterator<SpotStructure> i = Value.spotList.listIterator();//ループをまわしながらarraylistの中身を削除する場合はこれを使う必要がある
                         while(i.hasNext()){//存在するリストでループを回す
                             SpotStructure tempSpotStructure=i.next();//次のリストを参照
@@ -294,7 +300,7 @@ public class MainActivity extends AppCompatActivity implements
                         for(int j = 0; j < Value.spotList.size(); j++) {
 
                             SpotStructure tempspot = (SpotStructure) Value.spotList.get(j);
-                            Log.d("test","rate:"+String.valueOf(tempspot.rate));
+                            Log.d("test","name:"+tempspot.name+"rate:"+String.valueOf(tempspot.rate));
                         }
 
                         handler.post(new Runnable() {
