@@ -9,8 +9,8 @@ import java.util.Comparator;
 public class SpotStructureComparator implements Comparator<SpotStructure> {
     //比較メソッド（データクラスを比較して-1, 0, 1を返すように記述する）
     public int compare(SpotStructure a ,SpotStructure b) {
-        double no1 = a.distance;
-        double no2 = b.distance;
+        double no1 = a.rate;
+        double no2 = b.rate;
 
         if (no1 > no2) {
             return 1;

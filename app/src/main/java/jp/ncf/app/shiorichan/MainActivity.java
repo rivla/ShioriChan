@@ -225,7 +225,12 @@ public class MainActivity extends AppCompatActivity implements
                         while(i.hasNext()){//存在するリストでループを回す
                             SpotStructure tempSpotStructure=i.next();//次のリストを参照
                             JSONObject geoCordingResult = null;
-                            try {
+                                if(location==null) {//実機のgoogleplacesversionの問題で緯度経度が取れない場合は、岐阜の座標を代入する
+                                    location = new Location("a");//文字列はprovider（適当に入れました)
+                                    location.setLatitude(35.4650334);
+                                    location.setLongitude(136.73929506);
+                                }
+                                try {
                                 //placeIDの取得
                                 String urlEncodeResult = URLEncoder.encode(tempSpotStructure.name, "UTF-8");
                                 geoCordingResult = httpGet.HttpPlaces(new URL("https://maps.googleapis.com/maps/api/geocode/json?address=" + urlEncodeResult + "&key=AIzaSyCke0pASXyPnnJR-GAAvN3Bz7GltgomfEk&language=ja"));
@@ -289,7 +294,7 @@ public class MainActivity extends AppCompatActivity implements
                         for(int j = 0; j < Value.spotList.size(); j++) {
 
                             SpotStructure tempspot = (SpotStructure) Value.spotList.get(j);
-                            Log.d("test","distance:"+String.valueOf(tempspot.distance));
+                            Log.d("test","rate:"+String.valueOf(tempspot.rate));
                         }
 
                         handler.post(new Runnable() {
