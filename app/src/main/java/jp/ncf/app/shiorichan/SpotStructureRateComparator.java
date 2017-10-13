@@ -6,13 +6,13 @@ import java.util.Comparator;
  * Created by ideally on 2017/10/10.
  */
 
-public class SpotStructureComparator implements Comparator<SpotStructure> {
+public class SpotStructureRateComparator implements Comparator<SpotStructure> {
     //比較メソッド（データクラスを比較して-1, 0, 1を返すように記述する）
     public int compare(SpotStructure a ,SpotStructure b) {
         double no1 = a.rate;
         double no2 = b.rate;
 
-        if (no1 > no2) {
+        if (no1 < no2) {
             return 1;
 
         } else if (no1 == no2) {
