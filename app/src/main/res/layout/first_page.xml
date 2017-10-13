@@ -48,11 +48,14 @@
             <!-- 画面中央に表示する画像 とりあえずしおりちゃんをおいておく-->
             <ImageView
                 android:id="@+id/imageView5"
-                android:layout_width="match_parent"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                app:srcCompat="@mipmap/guide_shiori" />
+                android:layout_gravity="center"
+                android:src="@mipmap/guide_shiori" />
+            <!-- android:src が正しい -->
 
             <!-- 背景画像を設定するためのレイアウト 枠の部分-->
+
             <FrameLayout
                 android:layout_width="match_parent"
                 android:layout_height="80dp"
@@ -69,7 +72,12 @@
                     android:padding="10dp"
                     android:text="名前 : しおりちゃん"
                     android:textSize="40dp" />
+
             </FrameLayout>
+
+            <Space
+                android:layout_width="match_parent"
+                android:layout_height="match_parent" />
         </LinearLayout>
 
     </FrameLayout>
