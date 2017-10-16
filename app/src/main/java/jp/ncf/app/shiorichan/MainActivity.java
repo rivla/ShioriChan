@@ -488,12 +488,14 @@ public class MainActivity extends AppCompatActivity implements
                             try {
                                 JSONObject tempDirectionSearchToHome = httpGet.HttpPlaces(new URL("https://maps.googleapis.com/maps/api/directions/json?origin=place_id:"+ Value.itineraryPlaceList.get(Value.itineraryPlaceList.size()-1).placeID+"&destination="+location.getLatitude()+","+location.getLongitude()+"&key=AIzaSyCke0pASXyPnnJR-GAAvN3Bz7GltgomfEk"));
                                 int tempSecondToDestinationToHome = tempDirectionSearchToHome.getJSONArray("routes").getJSONObject(0).getJSONArray("legs").getJSONObject(0).getJSONObject("duration").getInt("value");
-                                Calendar calenderToHome=Calendar.getInstance();
-                                calenderToHome.add(Calendar.SECOND,tempSecondToDestinationToHome);
-                                ifReturnArriveTime=calenderToHome.getTime();
+                                Calendar calendarToHome=Calendar.getInstance();
+                                calendarToHome.setTime(Value.itineraryPlaceList.get(Value.itineraryPlaceList.size()-1).departTime);
+                                calendarToHome.add(Calendar.SECOND,tempSecondToDestinationToHome);
+                                ifReturnArriveTime=addGenreWaitTime(calendarToHome.getTime(),Value.itineraryPlaceList.get(Value.itineraryPlaceList.size()-1).genre);
                                 ifReturnPolyline=tempDirectionSearchToHome.getJSONArray("routes").getJSONObject(0).getJSONArray("legs").getJSONObject(0).getJSONArray("steps").getJSONObject(0).getString("polyline");
                             } catch (JSONException e) {
                                 e.printStackTrace();
+
                             } catch (MalformedURLException e) {
                                 e.printStackTrace();
                             }
@@ -537,9 +539,10 @@ public class MainActivity extends AppCompatActivity implements
                                     try {
                                         JSONObject tempDirectionSearchToHome = httpGet.HttpPlaces(new URL("https://maps.googleapis.com/maps/api/directions/json?origin=place_id:"+ Value.itineraryPlaceList.get(focusPlaceNum).placeID+"&destination="+location.getLatitude()+","+location.getLongitude()+"&key=AIzaSyCke0pASXyPnnJR-GAAvN3Bz7GltgomfEk"));
                                         int tempSecondToDestinationToHome = tempDirectionSearchToHome.getJSONArray("routes").getJSONObject(0).getJSONArray("legs").getJSONObject(0).getJSONObject("duration").getInt("value");
-                                        Calendar calenderToHome=Calendar.getInstance();
-                                        calenderToHome.add(Calendar.SECOND,tempSecondToDestinationToHome);
-                                        ifReturnArriveTime=calenderToHome.getTime();
+                                        Calendar calendarToHome=Calendar.getInstance();
+                                        calendarToHome.setTime(Value.itineraryPlaceList.get(focusPlaceNum).departTime);
+                                        calendarToHome.add(Calendar.SECOND,tempSecondToDestinationToHome);
+                                        ifReturnArriveTime=addGenreWaitTime(calendarToHome.getTime(),Value.itineraryPlaceList.get(focusPlaceNum).genre);
                                         ifReturnPolyline=tempDirectionSearchToHome.getJSONArray("routes").getJSONObject(0).getJSONArray("legs").getJSONObject(0).getJSONArray("steps").getJSONObject(0).getString("polyline");
                                     } catch (JSONException e) {
                                         e.printStackTrace();

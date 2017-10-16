@@ -72,7 +72,6 @@ public class DebugActivity extends Activity
 
         //ボタン、テキストボックス定義
         final EditText edit=(EditText)findViewById(R.id.editText);
-//        final EditText edit1=(EditText)findViewById(R.id.editText1);
         final TextView textView=(TextView)findViewById(R.id.textView);
         final TextView textView2=(TextView)findViewById(R.id.textView2); // 公共クラウドシステム出力用
         final Button lnglatButton=(Button)findViewById(R.id.lnglatButton);
@@ -120,7 +119,6 @@ public class DebugActivity extends Activity
                     String size_height = "400";
                     String zoom = "13"; // 0-22まで指定可能
                     // 岐阜大学 -> やっぱりラーメン -> 岐阜大学病院
-                    // Value.itineraryPlaceList.get(3).getName()
                     String[] markers_lat = {"35.4665196", "35.456388", "35.4679847"};
                     String[] markers_lng = {"136.7381877", "136.7335473", "136.7312057"};
 
