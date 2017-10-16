@@ -194,6 +194,7 @@ public class MainActivity extends AppCompatActivity implements
                 // 初期化処理
                 Value.error_flag = false; // 入力エラーフラグの初期化
                 Value.genre = "";       // ジャンルの初期化
+                Value.itineraryPlaceList=new ArrayList<SpotStructure>();
 
                 // ====== 自由テキスト入力受け取り ======
                 // EditTextオブジェクトを取得
@@ -332,7 +333,7 @@ public class MainActivity extends AppCompatActivity implements
                                 }
                             }
                             Log.d("test", "Rate first cand ,top 5");
-                            for (int j = 0; j < 5; j++) {
+                            for (int j = 0; j < 3; j++) {
                                 Log.d("test", firstCandsList.get(j).name + "rate:" + String.valueOf(firstCandsList.get(j).rate) + "distance:" + String.valueOf(firstCandsList.get(j).distance));
                             }
                             Value.itineraryPlaceList.add(firstCandsList.get(minDistanceNumber));//一番初めに訪れる観光地
