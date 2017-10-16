@@ -8,6 +8,7 @@ import android.support.v4.view.ViewPager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 
 /**
  * Created by ideally on 2017/10/10.
@@ -16,6 +17,13 @@ import android.view.ViewGroup;
 
 // ここに、しおり用のビューを作成する
 public class ShioriView extends Activity {
+    final TextView place_name_1 = (TextView)findViewById(R.id.textView5);
+    final TextView place_name_2 = (TextView)findViewById(R.id.textView7);
+    final TextView place_name_3 = (TextView)findViewById(R.id.textView9);
+    final TextView place_name_4 = (TextView)findViewById(R.id.textView11);
+    final TextView place_name_5 = (TextView)findViewById(R.id.textView13);
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
@@ -34,7 +42,7 @@ public class ShioriView extends Activity {
         public Object instantiateItem(ViewGroup container, int position) {
 
             // レイアウトファイル名を配列で指定します
-            // pages : スライドで表示できるページ画面の配列
+            // pages : スライドで表示できるページ画面(.xml)の名前の配列
             int[] pages = {R.layout.first_page, R.layout.schedule_page, R.layout.place_infomation};
 
             LayoutInflater inflater = (LayoutInflater)getSystemService(Context.LAYOUT_INFLATER_SERVICE);

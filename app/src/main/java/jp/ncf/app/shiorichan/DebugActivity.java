@@ -72,7 +72,7 @@ public class DebugActivity extends Activity
 
         //ボタン、テキストボックス定義
         final EditText edit=(EditText)findViewById(R.id.editText);
-        final EditText edit1=(EditText)findViewById(R.id.editText1);
+//        final EditText edit1=(EditText)findViewById(R.id.editText1);
         final TextView textView=(TextView)findViewById(R.id.textView);
         final TextView textView2=(TextView)findViewById(R.id.textView2); // 公共クラウドシステム出力用
         final Button lnglatButton=(Button)findViewById(R.id.lnglatButton);
@@ -158,10 +158,10 @@ public class DebugActivity extends Activity
                     Log.d("test", String.valueOf(Value.lat));
                     //nextPageTokenが空→1ページ目を表示
                     if (Value.next_page_token == null)
-                        new HttpGetCand(listView).execute(new URL("https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=" + Double.toString(Value.lat) + "," + Double.toString(Value.lng) + "&radius="+edit1.getText()+"&language=ja&type=restaurant&key=AIzaSyCke0pASXyPnnJR-GAAvN3Bz7GltgomfEk"));
+                        new HttpGetCand(listView).execute(new URL("https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=" + Double.toString(Value.lat) + "," + Double.toString(Value.lng) + "&radius="+edit.getText()+"&language=ja&type=restaurant&key=AIzaSyCke0pASXyPnnJR-GAAvN3Bz7GltgomfEk"));
                         //nextPageTokenに値がある→nextPageTokenのページを表示
                     else
-                        new HttpGetCand(listView).execute(new URL("https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=" + Double.toString(Value.lat) + "," + Double.toString(Value.lng) + "&pagetoken=" + Value.next_page_token + "&radius="+edit1.getText()+"&language=ja&key=AIzaSyCke0pASXyPnnJR-GAAvN3Bz7GltgomfEk"));
+                        new HttpGetCand(listView).execute(new URL("https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=" + Double.toString(Value.lat) + "," + Double.toString(Value.lng) + "&pagetoken=" + Value.next_page_token + "&radius="+edit.getText()+"&language=ja&key=AIzaSyCke0pASXyPnnJR-GAAvN3Bz7GltgomfEk"));
                 } catch (MalformedURLException e) {
                     e.printStackTrace();
                 }

@@ -246,7 +246,7 @@ public class MainActivity extends AppCompatActivity implements
                             double lng_double = spots_json.getJSONArray("spots").getJSONObject(i).getDouble("lng");
                             float[] distance = new float[3];//二点間の距離算出結果を格納する変数
                             Location.distanceBetween(location.getLatitude(), location.getLongitude(), lat_double, lng_double, distance);//入力された場所と候補地との距離算出
-                            firstCandsList.add(new SpotStructure(placeID_str, name_str, genre_str, pref_str, rate_double, lat_double, lng_double, distance[0]));
+                            firstCandsList.add(new SpotStructure(placeID_str, name_str, genre_str, pref_str, rate_double, lat_double, lng_double, distance[0],"ホントは観光地の情報",null)); // 引数を仮沖で補完した ("ホントは観光地の情報", null ) by Fukui
                         }
                     }
                 }catch (JSONException e){
@@ -296,7 +296,7 @@ public class MainActivity extends AppCompatActivity implements
                             double lng_double = spots_json.getJSONArray("spots").getJSONObject(i).getDouble("lng");
                             float[] distance = new float[3];//二点間の距離算出結果を格納する変数
                             Location.distanceBetween(Value.itineraryPlaceList.get(0).lat, Value.itineraryPlaceList.get(0).lng,lat_double,lng_double, distance);//入力された場所と候補地との距離算出
-                            secondOrLaterCandsList.add(new SpotStructure(placeID_str, name_str, genre_str, pref_str, rate_double, lat_double, lng_double, distance[0]));
+                            secondOrLaterCandsList.add(new SpotStructure(placeID_str, name_str, genre_str, pref_str, rate_double, lat_double, lng_double, distance[0],"ホントは観光地の情報",null)); // 引数を仮沖で補完した ("ホントは観光地の情報", null ) by Fukui
                         }
                     }
                 }catch (JSONException e) {
