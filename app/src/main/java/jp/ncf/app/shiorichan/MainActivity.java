@@ -257,8 +257,7 @@ public class MainActivity extends AppCompatActivity implements
                 //Comparatorを用いレビューが高い順にソートする
                 Collections.sort(firstCandsList,new SpotStructureRateComparator());
                 SpotStructure tempspot = (SpotStructure) firstCandsList.get(0);
-                //レビュー5のレビューが複数あった場合の為、同点レビューの候補地の中から最も近いものを選ぶ
-                double maxRate=tempspot.rate;                //一番上にソートされた場所からレビュー値を抜き出す
+                //レビュー4.5以上の候補地から一番近い場所を選ぶ
                 int tempI=0;
                 int minDistanceNumber=0;
                 double minDistance=Double.MAX_VALUE;
@@ -279,8 +278,6 @@ public class MainActivity extends AppCompatActivity implements
                 }
                 Value.itineraryPlaceList.add(firstCandsList.get(minDistanceNumber));//一番初めに訪れる観光地
                 Log.d("test","first:"+Value.itineraryPlaceList.get(0).name+"dist:"+String.valueOf(Value.itineraryPlaceList.get(0).distance)+"id"+String.valueOf(Value.itineraryPlaceList.get(0).placeID));
-
-
 
 //******************二箇所目以降の候補地を確定させる*************************
                 ArrayList<SpotStructure> secondOrLaterCandsList=new ArrayList<SpotStructure>();//リスト初期化
@@ -306,14 +303,15 @@ public class MainActivity extends AppCompatActivity implements
                 //Comparatorを用い距離が短い順にソートする
                 Collections.sort(secondOrLaterCandsList,new SpotStructureDistanceComparator());
                 Log.d("test","distance second cand from first cand ,top 5");
-                for(int i=0;i<secondOrLaterCandsList.size();i++) {
+                int candSize=3;
+                for(int i=0;Value.itineraryPlaceList.size()<candSize;i++) {
   //                  SpotStructure tempSpot =secondOrLaterCandsList.get(i);
 //                    Log.d("test",tempSpot.name+"rate:"+String.valueOf(tempSpot.rate)+"distance:"+String.valueOf(tempSpot.distance));
                     if(secondOrLaterCandsList.get(i).distance>500){
                         Value.itineraryPlaceList.add(secondOrLaterCandsList.get(i));//二番目に訪れる観光地。//Value.spotList.get(0)には一番目の候補地が入る
                     }
                 }
-                for(int i=0;i<10;i++){
+                for(int i=0;i<Value.itineraryPlaceList.size();i++){
                     Log.d("test","num:"+String.valueOf(i)+"name:"+Value.itineraryPlaceList.get(i).name+"rate"+String.valueOf(Value.itineraryPlaceList.get(i).rate)+"id"+Value.itineraryPlaceList.get(i).placeID);
                 }
 //                Log.d("test","third:"+Value.itineraryPlaceList.get(2).name+"rate"+String.valueOf(Value.itineraryPlaceList.get(2).rate)+"id"+Value.itineraryPlaceList.get(2).placeID);
@@ -324,14 +322,47 @@ public class MainActivity extends AppCompatActivity implements
                 Log.d("test","third:"+Value.itineraryPlaceList.get(2).name+"rate"+String.valueOf(Value.itineraryPlaceList.get(2).rate)+"id"+Value.itineraryPlaceList.get(2).placeID);
 */
 //******************************昼食の場所が二つ目の観光地と仮定して、その場所付近の昼食場所をgoogle neabysearchで検索する**********************
-                //スレッド処理開始
+                //◆スレッド処理開始
                 new Thread(new Runnable() {
                     @Override
                     public void run() {
                         JSONObject nearbySearchResult=null;
+                        ArrayList<SpotStructure> lunchCandsList=new ArrayList<SpotStructure>();//ソート用リスト初期化
+
+                        try {//googleにリクエストを送信し、二番目の観光地付近にあるレストランを全てリストに入れる
+                            nearbySearchResult = httpGet.HttpPlaces(new URL("https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=" + Double.toString(Value.itineraryPlaceList.get(1).lat) + "," + Double.toString(Value.itineraryPlaceList.get(1).lng) + "&radius=2000&type=restaurant&language=ja&key=AIzaSyCke0pASXyPnnJR-GAAvN3Bz7GltgomfEk"));
+                            int candLength = nearbySearchResult.getJSONArray("results").length();
+
+                            for (int i = 0; i < candLength; i++) {
+                                String pref_str ="this data don't have pref";
+                                String genre_str = "restaurant";
+                                String name_str = nearbySearchResult.getJSONArray("results").getJSONObject(i).getString("name");
+                                String placeID_str =  nearbySearchResult.getJSONArray("results").getJSONObject(i).getString("place_id");
+                                String explainText="restaurant isn't have explain message";
+                                double rate_double = 0;
+                                double lat_double = nearbySearchResult.getJSONArray("results").getJSONObject(i).getJSONObject("geometry").getJSONObject("location").getDouble("lat");
+                                double lng_double = nearbySearchResult.getJSONArray("results").getJSONObject(i).getJSONObject("geometry").getJSONObject("location").getDouble("lng");
+                                float[] distance = new float[3];//二点間の距離算出結果を格納する変数
+                                Location.distanceBetween(Value.itineraryPlaceList.get(1).lat, Value.itineraryPlaceList.get(1).lng,lat_double, lng_double, distance);//入力された場所と候補地との距離算出
+                                lunchCandsList.add(new SpotStructure(placeID_str, name_str, genre_str, pref_str, rate_double, lat_double, lng_double, distance[0],explainText,null));
+                            }
+                        }catch (JSONException e){
+                            Log.e("test",e.toString());
+                        } catch (MalformedURLException e) {
+                            e.printStackTrace();
+                        }
+                        //レストランの入ったリストを距離順にソート
+                        Collections.sort(lunchCandsList,new SpotStructureDistanceComparator());
+                        //最も距離の近いレストランの場所をitineraryPlaceListに代入
+                        Value.itineraryPlaceList.add(lunchCandsList.get(0));
+
+
+
+                            /*
                         try {
                             nearbySearchResult = httpGet.HttpPlaces(new URL("https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=" + Double.toString(Value.itineraryPlaceList.get(1).lat) + "," + Double.toString(Value.itineraryPlaceList.get(1).lng) + "&radius=2000&type=restaurant&language=ja&key=AIzaSyCke0pASXyPnnJR-GAAvN3Bz7GltgomfEk"));
                             int candLength = nearbySearchResult.getJSONArray("results").length();
+
                             double minDistance=Double.MAX_VALUE;
                             int minDistanceNumber=0;
                             for(int i=0;i<candLength;i++){
@@ -339,7 +370,7 @@ public class MainActivity extends AppCompatActivity implements
                                 double templat=nearbySearchResult.getJSONArray("results").getJSONObject(i).getJSONObject("geometry").getJSONObject("location").getDouble("lat");
                                 float[] distance = new float[3];//二点間の距離算出結果を格納する変数
                                 Location.distanceBetween(templat,templng,Value.itineraryPlaceList.get(1).lat,Value.itineraryPlaceList.get(1).lng, distance);//入力された場所と候補地との距離算出
-                                Log.d("test","restran cand name:"+nearbySearchResult.getJSONArray("results").getJSONObject(i).getString("name")+"distance:"+String.valueOf(distance[0]));
+//                                Log.d("test","restran cand name:"+nearbySearchResult.getJSONArray("results").getJSONObject(i).getString("name")+"distance:"+String.valueOf(distance[0]));
                                 if(minDistance>distance[0]){
                                     minDistance=distance[0];
                                     minDistanceNumber=i;
@@ -351,6 +382,7 @@ public class MainActivity extends AppCompatActivity implements
                         } catch (JSONException e) {
                             e.printStackTrace();
                         }
+                        */
                         handler.post(new Runnable() {
                             @Override
                             public void run() {

@@ -72,7 +72,6 @@ public class DebugActivity extends Activity
 
         //ボタン、テキストボックス定義
         final EditText edit=(EditText)findViewById(R.id.editText);
-        final EditText edit1=(EditText)findViewById(R.id.editText1);
         final TextView textView=(TextView)findViewById(R.id.textView);
         final TextView textView2=(TextView)findViewById(R.id.textView2); // 公共クラウドシステム出力用
         final Button lnglatButton=(Button)findViewById(R.id.lnglatButton);
@@ -154,6 +153,7 @@ public class DebugActivity extends Activity
         candButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                /*
                 try {
                     Log.d("test", String.valueOf(Value.lat));
                     //nextPageTokenが空→1ページ目を表示
@@ -165,6 +165,7 @@ public class DebugActivity extends Activity
                 } catch (MalformedURLException e) {
                     e.printStackTrace();
                 }
+                */
 
                 // 公共クラウドシステム（API用） //
                 // 候補地ボタンを押したときに，公共クラウドシステムの結果も同時に取得する
