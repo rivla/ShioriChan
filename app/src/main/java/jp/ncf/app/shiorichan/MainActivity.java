@@ -191,6 +191,10 @@ public class MainActivity extends AppCompatActivity implements
             public void onClick(View v) {
                 Log.d("test", "startButton pusshed");
 
+                // 初期化処理
+                Value.error_flag = false; // 入力エラーフラグの初期化
+                Value.genre = "";       // ジャンルの初期化
+
                 // ====== 自由テキスト入力受け取り ======
                 // EditTextオブジェクトを取得
                 EditText editText = (EditText)findViewById(R.id.editText);
@@ -248,8 +252,6 @@ public class MainActivity extends AppCompatActivity implements
                         @Override
                         public void run() {
 
-                            Log.d("test", "check");
-
                             //******************//実機のgoogleplacesversionの問題で緯度経度が取れない場合は、岐阜の座標を代入する*****************************
         /*                if(location==null) {
                             location = new Location("a");//文字列はprovider（適当に入れました)
@@ -260,8 +262,6 @@ public class MainActivity extends AppCompatActivity implements
                             location = new Location("a");//とりあえずデバッグ用として、本来GPSの値が入るところに浜松の値を代入
                             location.setLatitude(34.788739);
                             location.setLongitude(137.6420052);
-
-                            Log.d("test", "check");
 
                             //********************現在地の緯度経度から今いる県を取得する*********************************
                             Geocoder mGeocoder;    //緯度・経度から地名への変換
@@ -443,9 +443,7 @@ public class MainActivity extends AppCompatActivity implements
                             });
                         }
                     }).start();
-                } // 入力エラーのelseのカッコ
-                Value.error_flag = false; // 入力エラーフラグの初期化
-                Value.genre = "";       // ジャンルの初期化
+                } // 入力エラーのif文のカッコ
 
 
 //******************************
