@@ -191,6 +191,10 @@ public class MainActivity extends AppCompatActivity implements
             public void onClick(View v) {
                 Log.d("test", "startButton pusshed");
 
+                // 初期化処理
+                Value.error_flag = false; // 入力エラーフラグの初期化
+                Value.genre = "";       // ジャンルの初期化
+
                 // ====== 自由テキスト入力受け取り ======
                 // EditTextオブジェクトを取得
                 EditText editText = (EditText)findViewById(R.id.editText);
@@ -439,9 +443,7 @@ public class MainActivity extends AppCompatActivity implements
                             });
                         }
                     }).start();
-                } // 入力エラーのelseのカッコ
-                Value.error_flag = false; // 入力エラーフラグの初期化
-                Value.genre = "";       // ジャンルの初期化
+                } // 入力エラーのif文のカッコ
 
 
 //******************************
