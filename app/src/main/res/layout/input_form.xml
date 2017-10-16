@@ -119,5 +119,20 @@
             android:id="@+id/startButton"/>
     </LinearLayout>
 
+    <LinearLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:orientation="vertical" >
+
+        <EditText
+            android:id="@+id/editText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="自然，城，歴史など，自由な言葉を入力してください"
+            />
+
+    </LinearLayout>
+
 
 </RelativeLayout>
