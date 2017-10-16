@@ -241,12 +241,13 @@ public class MainActivity extends AppCompatActivity implements
                         if ((CheckNeighborPrefecture(pref_str,neighborDicObject) && genre_str.equals(Value.genre))) {
                             String name_str = spots_json.getJSONArray("spots").getJSONObject(i).getString("name");
                             String placeID_str = spots_json.getJSONArray("spots").getJSONObject(i).getString("place_id");
+                            String explainText=spots_json.getJSONArray("spots").getJSONObject(i).getString("explain");
                             double rate_double = spots_json.getJSONArray("spots").getJSONObject(i).getDouble("rating");
                             double lat_double = spots_json.getJSONArray("spots").getJSONObject(i).getDouble("lat");
                             double lng_double = spots_json.getJSONArray("spots").getJSONObject(i).getDouble("lng");
                             float[] distance = new float[3];//二点間の距離算出結果を格納する変数
                             Location.distanceBetween(location.getLatitude(), location.getLongitude(), lat_double, lng_double, distance);//入力された場所と候補地との距離算出
-                            firstCandsList.add(new SpotStructure(placeID_str, name_str, genre_str, pref_str, rate_double, lat_double, lng_double, distance[0]));
+                            firstCandsList.add(new SpotStructure(placeID_str, name_str, genre_str, pref_str, rate_double, lat_double, lng_double, distance[0],explainText,null));
                         }
                     }
                 }catch (JSONException e){
@@ -294,9 +295,10 @@ public class MainActivity extends AppCompatActivity implements
                             double rate_double = spots_json.getJSONArray("spots").getJSONObject(i).getDouble("rating");
                             double lat_double = spots_json.getJSONArray("spots").getJSONObject(i).getDouble("lat");
                             double lng_double = spots_json.getJSONArray("spots").getJSONObject(i).getDouble("lng");
+                            String explainText=spots_json.getJSONArray("spots").getJSONObject(i).getString("explain");
                             float[] distance = new float[3];//二点間の距離算出結果を格納する変数
                             Location.distanceBetween(Value.itineraryPlaceList.get(0).lat, Value.itineraryPlaceList.get(0).lng,lat_double,lng_double, distance);//入力された場所と候補地との距離算出
-                            secondOrLaterCandsList.add(new SpotStructure(placeID_str, name_str, genre_str, pref_str, rate_double, lat_double, lng_double, distance[0]));
+                            secondOrLaterCandsList.add(new SpotStructure(placeID_str, name_str, genre_str, pref_str, rate_double, lat_double, lng_double, distance[0],explainText,null));
                         }
                     }
                 }catch (JSONException e) {
