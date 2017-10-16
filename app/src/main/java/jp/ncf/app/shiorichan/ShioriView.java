@@ -1,13 +1,13 @@
 package jp.ncf.app.shiorichan;
 
+import android.util.Log;
+
 import android.app.Activity;
 import android.os.Bundle;
-import android.content.Context;
-import android.support.v4.view.PagerAdapter;
-import android.support.v4.view.ViewPager;
-import android.view.LayoutInflater;
+
+import android.widget.ViewFlipper;
+import android.view.MotionEvent;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.TextView;
 
 /**
@@ -17,56 +17,100 @@ import android.widget.TextView;
 
 // ここに、しおり用のビューを作成する
 public class ShioriView extends Activity {
-    final TextView place_name_1 = (TextView)findViewById(R.id.textView5);
-    final TextView place_name_2 = (TextView)findViewById(R.id.textView7);
-    final TextView place_name_3 = (TextView)findViewById(R.id.textView9);
-    final TextView place_name_4 = (TextView)findViewById(R.id.textView11);
-    final TextView place_name_5 = (TextView)findViewById(R.id.textView13);
 
+    private ViewFlipper viewFlipper;
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-
+    public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.shiori_main);
 
-        // ViewPager用のペーシを作成
-        ViewPager mViewPager = (ViewPager)findViewById(R.id.viewpager);
-        PagerAdapter mPagerAdapter = new MyPagerAdapter();
-        mViewPager.setAdapter(mPagerAdapter);
+        viewFlipper = (ViewFlipper) findViewById(R.id.viewflipper);
 
+        viewFlipper.setAutoStart(true);     //自動でスライドショーを開始
+        viewFlipper.setFlipInterval(1000);  //更新間隔(ms単位)
+
+
+        // ViewFlipperでつかうlayoutの設定
+        // === xmlを呼び出して, テキストを上書きする === //
+        View v = this.getLayoutInflater().inflate(R.layout.first_page, null);
+        viewFlipper.addView(v);
+
+        //
+//        Value.itineraryPlaceList.get(suuzui).distance;
+//         Value.itineraryPlaceList.size() // 長さが必要な場合
+
+        Log.d("受け取ったデータの長さ",""+Value.itineraryPlaceList.size());
+
+        // === 2ページ目 Schedule === //
+        View v2 = getLayoutInflater().inflate(R.layout.schedule_page,null);
+        // 1つ目の行き先
+        TextView textView4 = (TextView)v2.findViewById(R.id.textView4);
+        textView4.setText("時:刻"); //
+        TextView textView5 = (TextView)v2.findViewById(R.id.textView5); // v2.findViewByIdで指定する
+        textView5.setText(Value.itineraryPlaceList.get(0).getName());
+        // 2つ目の行き先
+        TextView textView6 = (TextView)v2.findViewById(R.id.textView6);
+        textView4.setText("時刻"); //
+        TextView textView7 = (TextView)v2.findViewById(R.id.textView7);
+        textView5.setText(Value.itineraryPlaceList.get(1).getName());
+        // 3つ目の行き先
+//        TextView textView8 = (TextView)v2.findViewById(R.id.textView8);
+//        textView4.setText("z:zz"); //
+//        TextView textView9 = (TextView)v2.findViewById(R.id.textView9);
+//        textView5.setText("どてめし");
+        // 4つ目の行き先
+//        TextView textView10 = (TextView)v2.findViewById(R.id.textView10);
+//        textView4.setText("a:aa"); //
+//        TextView textView11 = (TextView)v2.findViewById(R.id.textView11);
+//        textView5.setText("どてめし");
+        // 5つ目の行き先
+//        TextView textView12 = (TextView)v2.findViewById(R.id.textView12);
+//        textView4.setText("b:bb"); //
+//        TextView textView13 = (TextView)v2.findViewById(R.id.textView13);
+//        textView5.setText("どてめし");
+        // viewFlipperに追加
+        viewFlipper.addView(v2);
+        // === 2ページ目終了 === //
+
+        // === 3ページ目 === //
+        View v3 = this.getLayoutInflater().inflate(R.layout.place_infomation, null);
+        // 観光地の画像
+//        ImageView imageView3 = (ImageView)v3.findViewById(R.id.imageView3);
+//        textView4.setImage("指定先"); //
+        // 観光地の名称
+//        TextView textView15 = (TextView)v3.findViewById(R.id.textView15);
+//        textView5.setText("どてめし");
+        // 観光地の説明文
+//        TextView textView16 = (TextView)v3.findViewById(R.id.textView16);
+//        textView5.setText("どてめし");
+
+        viewFlipper.addView(v3);
     }
 
-    private class MyPagerAdapter extends PagerAdapter {
-        @Override
-        public Object instantiateItem(ViewGroup container, int position) {
+    // フリックイベントで
+//    public boolean onFling(MotionEvent e1 // TouchDown時のイベント
+//            ,MotionEvent e2   // TouchDown後、指の移動毎に発生するイベント
+//            ,float velocityX  // X方向の移動距離
+//            ,float velocityY)  // Y方向の移動距離
+//    {
+//        // 絶対値の取得
+//        float dx = Math.abs(velocityX);
+//        float dy = Math.abs(velocityY);
+//        // 指の移動方向(縦横)および距離の判定
+//        Log.d("移動距離", dx+"  "+dy);
+//        if (dx > dy && dx > 100) {
+//            // 指の移動方向(左右)の判定
+//            if (e1.getX() < e2.getX()) {
+//                viewFlipper.showPrevious();
+//            } else {
+//                viewFlipper.showNext();
+//            }
+//            return true;
+//        }
+//        return false;
+//    }
 
-            // レイアウトファイル名を配列で指定します
-            // pages : スライドで表示できるページ画面(.xml)の名前の配列
-            int[] pages = {R.layout.first_page, R.layout.schedule_page, R.layout.place_infomation};
 
-            LayoutInflater inflater = (LayoutInflater)getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-
-            View layout ;
-            layout = inflater.inflate(pages[position], null);
-            ((ViewPager) container).addView(layout);
-            return layout;
-        }
-
-        @Override
-        public void destroyItem(ViewGroup container, int position, Object object) {
-            ((ViewPager)container).removeView((View)object);
-        }
-
-        @Override
-        public int getCount() {
-            // ページ数を返します。
-            return 3;
-        }
-
-        @Override
-        public boolean isViewFromObject(View view, Object object) {
-            return view.equals(object);
-        }
-    }
 }
+

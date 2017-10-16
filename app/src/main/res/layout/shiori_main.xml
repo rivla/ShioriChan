@@ -3,11 +3,13 @@
     android:orientation="vertical" android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <!-- ViewPager用のスクリプト -->
-    <android.support.v4.view.ViewPager
-        xmlns:android="http://schemas.android.com/apk/res/android"
-        android:layout_width="fill_parent"
-        android:layout_height="fill_parent"
-        android:id="@+id/viewpager" />
+
+    <ViewFlipper
+        android:id="@+id/viewflipper"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+    <!--<include android:id="@+id/firstlayout" layout="@layout/first_page" />-->
+    <!--<include android:id="@+id/secondlayout" layout="@layout/schedule_page" />-->
+    <!--<include android:id="@+id/thirdlayout" layout="@layout/place_infomation" />-->
 
 </LinearLayout>
