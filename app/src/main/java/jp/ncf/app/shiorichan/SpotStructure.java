@@ -1,6 +1,6 @@
 package jp.ncf.app.shiorichan;
 
-import com.google.android.gms.maps.model.StreetViewPanoramaOrientation;
+import android.graphics.Bitmap;
 
 /**
  * Created by ideally on 2017/10/06.
@@ -16,9 +16,10 @@ class SpotStructure {
     double lng;
     double distance;
     double eval;
-    double explainText;
+    String explainText;
+    Bitmap image;
 
-    public SpotStructure(String placeID,String name,String genre,String prefecture,double rate,double lat,double lng,double distance,String.explainText){
+    public SpotStructure(String placeID,String name,String genre,String prefecture,double rate,double lat,double lng,double distance,String explainText,Bitmap image){
         this.prefecture=prefecture;
         this.placeID=placeID;
         this.name=name;
@@ -28,7 +29,7 @@ class SpotStructure {
         this.lng=lng;
         this.distance=distance;
         this.explainText=explainText;
-        this.
+        this.image=image;
     }
     public String getPrefecture(){
         return this.prefecture;
@@ -54,7 +55,10 @@ class SpotStructure {
     public double getDistance(){
         return this.distance;
     }
-    public double getExplainText(){
+    public String getExplainText(){
         return this.explainText;
+    }
+    public Bitmap getImage(){
+        return this.image;
     }
 }

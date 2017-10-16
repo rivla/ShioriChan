@@ -32,7 +32,9 @@ public class ShioriView extends Activity {
     private class MyPagerAdapter extends PagerAdapter {
         @Override
         public Object instantiateItem(ViewGroup container, int position) {
-            // レイアウトファイル名を配列で指定します。
+
+            // レイアウトファイル名を配列で指定します
+            // pages : スライドで表示できるページ画面の配列
             int[] pages = {R.layout.first_page, R.layout.schedule_page, R.layout.place_infomation};
 
             LayoutInflater inflater = (LayoutInflater)getSystemService(Context.LAYOUT_INFLATER_SERVICE);

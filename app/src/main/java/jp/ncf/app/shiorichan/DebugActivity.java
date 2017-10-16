@@ -3,7 +3,9 @@ package jp.ncf.app.shiorichan;
 import android.Manifest;
 import android.app.Activity;
 import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
 import android.location.Location;
+import android.media.Image;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -15,6 +17,7 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -36,6 +39,8 @@ import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.List;
 
+// Google Static Map用
+import android.graphics.BitmapFactory;
 
 /**
  * Created by ideally on 2017/10/05.
@@ -73,6 +78,8 @@ public class DebugActivity extends Activity
         final Button lnglatButton=(Button)findViewById(R.id.lnglatButton);
         final Button candButton=(Button)findViewById(R.id.candButton);
         final ListView listView=(ListView)findViewById(R.id.listView);//候補地表示用
+        final ImageView imageView11 =(ImageView) findViewById(R.id.imageView11);
+
         Button returnButton = (Button) findViewById(R.id.backButton);
 
         returnButton.setOnClickListener(new View.OnClickListener() {
@@ -94,11 +101,53 @@ public class DebugActivity extends Activity
                     String urlEncodeResult= URLEncoder.encode(edit.getText().toString() ,"UTF-8");
                     //httpを渡し、非同期処理開始
                     new HttpGetLnglat(textView).execute(new URL("https://maps.googleapis.com/maps/api/geocode/json?address="+urlEncodeResult+"&key=AIzaSyCke0pASXyPnnJR-GAAvN3Bz7GltgomfEk&language=ja"));
+
+                    // Google Static Mapを用いて画像を表示する
+
+                    // GoogleStaticMapに投げるURLのパラメータを習得 //
+                    Log.d("緯度 : ", ""+Value.lat);
+                    Log.d("緯度 : ",""+Value.lng);
+
+                    /* 動作テスト用 //
+                    String test_URL = "https://maps.googleapis.com/maps/api/staticmap?center=Brooklyn+Bridge,New+York,NY&zoom=13&size=600x300&maptype=roadmap&markers=color:blue%7Clabel:S%7C40.702147,-74.015794&markers=color:green%7Clabel:G%7C40.711614,-74.012318&markers=color:red%7Clabel:C%7C40.718217,-73.998284&key=AIzaSyCke0pASXyPnnJR-GAAvN3Bz7GltgomfEk";
+                    ImageGetTask task = new ImageGetTask(imageView11);
+                    task.execute(test_URL);
+                    */
+
+                    // === パラメータの設定 === //
+                    // この辺を参考 https://lab.syncer.jp/Web/API/Google_Maps/Static/#section-1
+                    String size_width = "600"; // 640x640まで
+                    String size_height = "400";
+                    String zoom = "13"; // 0-22まで指定可能
+                    // 岐阜大学 -> やっぱりラーメン -> 岐阜大学病院
+                    String[] markers_lat = {"35.4665196", "35.456388", "35.4679847"};
+                    String[] markers_lng = {"136.7381877", "136.7335473", "136.7312057"};
+
+                    // ポリライン(経路の線)は未だ出せていません...
+                    String map_URL = "https://maps.googleapis.com/maps/api/staticmap?&"+
+                            "center="+markers_lat[0]+","+markers_lng[0]+
+                            "&zoom="+zoom+
+                            "&size="+size_width+"x"+size_height+
+                            "&maptype=roadmap"+
+                            "&markers="+markers_lat[0]+","+markers_lng[0]+
+                            "&markers="+markers_lat[1]+","+markers_lng[1]+
+                            "&markers="+markers_lat[2]+","+markers_lng[2]+
+//                            "&path={weight:24|color:red|"+markers_lat[0]+","+markers_lng[0]+
+//                            "|"+markers_lat[1]+","+markers_lng[1]+
+//                            "|"+markers_lat[2]+","+markers_lng[2]+
+//                            "}"+ // 経路の情報
+                            "&key=AIzaSyCke0pASXyPnnJR-GAAvN3Bz7GltgomfEk";
+
+                    // Google StaticMap の image を取得
+                    ImageGetTask task = new ImageGetTask(imageView11);
+                    task.execute(map_URL);
+
                 } catch (MalformedURLException e) {
                     e.printStackTrace();
                 } catch (UnsupportedEncodingException e) {
                     e.printStackTrace();
                 }
+
             }
         });
         //候補地取得ボタンリスナ
@@ -213,95 +262,95 @@ public class DebugActivity extends Activity
 }
 
 
-//緯度経度取得用、非同期処理クラス
-final class HttpGetLnglat extends AsyncTask<URL, Void, String> {
-
-    private TextView textView;
-    public HttpGetLnglat(TextView textView) {
-        super();
-        this.textView=textView;
-    }
-
-    //executeが呼ばれると実行されるメソッド、データをウェブから取得する
-    @Override
-    protected String doInBackground(URL... urls) {
-        // 取得したテキストを格納する変数
-        final StringBuilder result = new StringBuilder();
-        // アクセス先URL
-        final URL url = urls[0];
-
-        HttpURLConnection con = null;
-        try {
-            // ローカル処理
-            // コネクション取得
-            con = (HttpURLConnection) url.openConnection();
-            con.connect();
-
-            // HTTPレスポンスコード
-            final int status = con.getResponseCode();
-            if (status == HttpURLConnection.HTTP_OK) {
-                // 通信に成功した
-                // テキストを取得する
-                final InputStream in = con.getInputStream();
-                final String encoding = con.getContentEncoding();
-                final InputStreamReader inReader = new InputStreamReader(in);
-                final BufferedReader bufReader = new BufferedReader(inReader);
-                String line = null;
-                // 1行ずつテキストを読み込む
-                while((line = bufReader.readLine()) != null) {
-                    result.append(line);
-                }
-                bufReader.close();
-                inReader.close();
-                in.close();
-            }
-
-        } catch (MalformedURLException e1) {
-            e1.printStackTrace();
-        } catch (ProtocolException e1) {
-            e1.printStackTrace();
-        } catch (IOException e1) {
-            e1.printStackTrace();
-        } finally {
-            if (con != null) {
-                // コネクションを切断
-                con.disconnect();
-            }
-        }
-        return result.toString();
-    }
-    //バックグラウンド処理が終了した後呼ばれる関数、ここで結果を扱う
-    @Override
-    protected void onPostExecute(String result) {
-        JSONObject jsonObject=null;
-        try{
-            //取得データをjson読み取り用変数へ代入
-            jsonObject=new JSONObject(result);
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-        try {
-            //緯度経度抜き取り
-            Value.lat=jsonObject.getJSONArray("results").getJSONObject(0).getJSONObject("geometry").getJSONObject("location").getDouble("lat");
-            Value.lng=jsonObject.getJSONArray("results").getJSONObject(0).getJSONObject("geometry").getJSONObject("location").getDouble("lng");
-            Log.d("test",result);
-            textView.setText("緯度:"+String.valueOf(Value.lat)+"経度:"+String.valueOf(Value.lng));
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-    }
-}
-
-
-
 //指定座標周辺のロケーション取得用、非同期処理クラス
 final class HttpGetCand extends AsyncTask<URL, Void, String> {
 
 
+
     private ListView listView;
+
+
     public HttpGetCand(ListView listView) {
         super();
         this.listView=listView;
+    }
+    //緯度経度取得用、非同期処理クラス
+    final class HttpGetLnglat extends AsyncTask<URL, Void, String> {
+
+        private TextView textView;
+        public HttpGetLnglat(TextView textView) {
+            super();
+            this.textView=textView;
+        }
+
+        //executeが呼ばれると実行されるメソッド、データをウェブから取得する
+        @Override
+        protected String doInBackground(URL... urls) {
+            // 取得したテキストを格納する変数
+            final StringBuilder result = new StringBuilder();
+            // アクセス先URL
+            final URL url = urls[0];
+
+            HttpURLConnection con = null;
+            try {
+                // ローカル処理
+                // コネクション取得
+                con = (HttpURLConnection) url.openConnection();
+                con.connect();
+
+                // HTTPレスポンスコード
+                final int status = con.getResponseCode();
+                if (status == HttpURLConnection.HTTP_OK) {
+                    // 通信に成功した
+                    // テキストを取得する
+                    final InputStream in = con.getInputStream();
+                    final String encoding = con.getContentEncoding();
+                    final InputStreamReader inReader = new InputStreamReader(in);
+                    final BufferedReader bufReader = new BufferedReader(inReader);
+                    String line = null;
+                    // 1行ずつテキストを読み込む
+                    while((line = bufReader.readLine()) != null) {
+                        result.append(line);
+                    }
+                    bufReader.close();
+                    inReader.close();
+                    in.close();
+                }
+
+            } catch (MalformedURLException e1) {
+                e1.printStackTrace();
+            } catch (ProtocolException e1) {
+                e1.printStackTrace();
+            } catch (IOException e1) {
+                e1.printStackTrace();
+            } finally {
+                if (con != null) {
+                    // コネクションを切断
+                    con.disconnect();
+                }
+            }
+            return result.toString();
+        }
+        //バックグラウンド処理が終了した後呼ばれる関数、ここで結果を扱う
+        @Override
+        protected void onPostExecute(String result) {
+            JSONObject jsonObject=null;
+            try{
+                //取得データをjson読み取り用変数へ代入
+                jsonObject=new JSONObject(result);
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+            try {
+                //緯度経度抜き取り
+                Value.lat=jsonObject.getJSONArray("results").getJSONObject(0).getJSONObject("geometry").getJSONObject("location").getDouble("lat");
+                Value.lng=jsonObject.getJSONArray("results").getJSONObject(0).getJSONObject("geometry").getJSONObject("location").getDouble("lng");
+                Log.d("test",result);
+                textView.setText("緯度:"+String.valueOf(Value.lat)+"経度:"+String.valueOf(Value.lng));
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
     }
 
     @Override
@@ -557,3 +606,176 @@ final class HttpGetDetail extends AsyncTask<URL, Void, String> {
     }
 }
 
+
+// ロケーション詳細取得用、非同期処理クラス
+final class HttpGetLnglat extends AsyncTask<URL, Void, String> {
+
+    // textviewの宣言
+    private TextView textView;
+
+    public HttpGetLnglat(TextView textView) {
+        super();
+        this.textView = textView;
+    }
+
+    @Override
+    protected String doInBackground(URL... urls) {
+        // 取得したテキストを格納する変数
+        final StringBuilder result = new StringBuilder();
+        // アクセス先URL
+        final URL url = urls[0];
+
+        HttpURLConnection con = null;
+        try {
+            // ローカル処理
+            // コネクション取得
+            con = (HttpURLConnection) url.openConnection();
+            con.connect();
+
+            // HTTPレスポンスコード
+            final int status = con.getResponseCode();
+            if (status == HttpURLConnection.HTTP_OK) {
+                // 通信に成功した
+                // テキストを取得する
+                final InputStream in = con.getInputStream();
+                final String encoding = con.getContentEncoding();
+                final InputStreamReader inReader = new InputStreamReader(in);
+                final BufferedReader bufReader = new BufferedReader(inReader);
+                String line = null;
+                // 1行ずつテキストを読み込む
+                while ((line = bufReader.readLine()) != null) {
+                    result.append(line);
+                }
+                bufReader.close();
+                inReader.close();
+                in.close();
+            }
+
+        } catch (MalformedURLException e1) {
+            e1.printStackTrace();
+        } catch (ProtocolException e1) {
+            e1.printStackTrace();
+        } catch (IOException e1) {
+            e1.printStackTrace();
+        } finally {
+            if (con != null) {
+                // コネクションを切断
+                con.disconnect();
+            }
+        }
+
+        return result.toString();
+    }
+
+    //バックグラウンド処理が終了した後呼ばれる関数、ここで結果を扱う
+    @Override
+    protected void onPostExecute(String result) {
+        Log.d("test",""+result);
+
+
+
+    }
+}
+
+
+// ロケーション詳細取得用、非同期処理クラス
+/*
+final class HttpGetImage extends AsyncTask<URL, Void, String> {
+
+    // textviewの宣言
+    private ImageView imageView;
+
+    public HttpGetImage(ImageView imageView) {
+        super();
+        this.imageView = imageView;
+    }
+
+    @Override
+    protected String doInBackground(URL... urls) {
+        // 取得したテキストを格納する変数
+        final StringBuilder result = new StringBuilder();
+        // アクセス先URL
+        final URL url = urls[0];
+
+        HttpURLConnection con = null;
+        try {
+            // ローカル処理
+            // コネクション取得
+            con = (HttpURLConnection) url.openConnection();
+            con.connect();
+
+            // HTTPレスポンスコード
+            final int status = con.getResponseCode();
+            if (status == HttpURLConnection.HTTP_OK) {
+                // 通信に成功した
+                // テキストを取得する
+                final InputStream in = con.getInputStream();
+                final String encoding = con.getContentEncoding();
+                final InputStreamReader inReader = new InputStreamReader(in);
+                final BufferedReader bufReader = new BufferedReader(inReader);
+                String line = null;
+                // 1行ずつテキストを読み込む
+                while ((line = bufReader.readLine()) != null) {
+                    result.append(line);
+                }
+                bufReader.close();
+                inReader.close();
+                in.close();
+            }
+
+        } catch (MalformedURLException e1) {
+            e1.printStackTrace();
+        } catch (ProtocolException e1) {
+            e1.printStackTrace();
+        } catch (IOException e1) {
+            e1.printStackTrace();
+        } finally {
+            if (con != null) {
+                // コネクションを切断
+                con.disconnect();
+            }
+        }
+
+        return result.toString();
+    }
+
+    //バックグラウンド処理が終了した後呼ばれる関数、ここで結果を扱う
+    @Override
+    protected void onPostExecute(String result) {
+        Log.d("test",""+result);
+
+
+
+    }
+}
+*/
+
+// 画像習得用の
+// Image取得用スレッドクラス
+class ImageGetTask extends AsyncTask<String,Void,Bitmap> {
+    private ImageView image;
+
+    public ImageGetTask(ImageView _image) {
+        image = _image;
+    }
+    @Override
+    protected Bitmap doInBackground(String... params) {
+        Bitmap image;
+        try {
+            URL imageUrl = new URL(params[0]);
+            InputStream imageIs;
+            imageIs = imageUrl.openStream();
+            image = BitmapFactory.decodeStream(imageIs);
+            return image;
+        } catch (MalformedURLException e) {
+            return null;
+        } catch (IOException e) {
+            return null;
+        }
+    }
+    @Override
+    protected void onPostExecute(Bitmap result) {
+        // 取得した画像をImageViewに設定します。
+        image.setImageBitmap(result);
+    }
+}
