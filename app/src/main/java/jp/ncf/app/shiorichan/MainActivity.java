@@ -41,7 +41,9 @@ import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Collections;
+import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 import java.util.Random;
@@ -96,21 +98,28 @@ public class MainActivity extends AppCompatActivity implements
                     .addApi(AppIndex.API).build();
         }
 
-        final int[] departureTime = {10,0};//(時間,分)の順に格納
-        final int[] arriveTime = {20,0};//(時間,分)の順に格納
+//        final int[] departureTime = {10,0};//(時間,分)の順に格納
+//        final int[] arriveTime = {20,0};//(時間,分)の順に格納
+        final Date departureTime=new Date();
+        departureTime.setHours(10);
+        departureTime.setMinutes(0);
+        departureTime.setSeconds(0);
+        final Date arriveTime=new Date();
+        arriveTime.setHours(20);
+        arriveTime.setMinutes(0);
+        arriveTime.setSeconds(0);
         json=new JsonReader();//Json読み込み用クラスのインスタンス
         httpGet=new HttpGetter();//Httpリクエスト送信用クラスのインスタンス
         progressDialog = new ProgressDialog(this);//読み込み中表示,// 初期設定
-        progressDialog.setTitle("タイトル");
-        progressDialog.setMessage("メッセージ");
+        progressDialog.setTitle("読み込み中…");
         progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
 
         Button shioriButton = (Button) findViewById(R.id.shioriButton);
         Button sendButton = (Button) findViewById(R.id.debugButton);
         final Button departureTimeButton=(Button)findViewById(R.id.departureTimeButton);
-        departureTimeButton.setText(String.format("%02d:%02d",departureTime[0],departureTime[1]));
+        departureTimeButton.setText(String.format("%02d:%02d",departureTime.getHours(),departureTime.getMinutes()));
         final Button arriveTimeButton=(Button)findViewById(R.id.arriveTimeButton);
-        arriveTimeButton.setText(String.format("%02d:%02d",arriveTime[0],arriveTime[1]));
+        arriveTimeButton.setText(String.format("%02d:%02d",arriveTime.getHours(),arriveTime.getMinutes()));
         Spinner genreSpinner=(Spinner)findViewById(R.id.genreSpinner);
         final Button startButton=(Button)findViewById(R.id.startButton);
 
@@ -131,7 +140,6 @@ public class MainActivity extends AppCompatActivity implements
                 startActivity(intent);
             }
         });
-
         //出発時刻選択ボタン
         departureTimeButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -140,12 +148,12 @@ public class MainActivity extends AppCompatActivity implements
                 TimePickerDialog dialog = new TimePickerDialog(MainActivity.getInstance(),new TimePickerDialog.OnTimeSetListener(){
                     @Override
                     public void onTimeSet(TimePicker view, int hourOfDay,int minute) {
-                        departureTime[0] =hourOfDay;//取得した時刻を変数に代入
-                        departureTime[1] =minute;
-                        departureTimeButton.setText(String.format("%02d:%02d",departureTime[0],departureTime[1]));//時刻をボタンの文字にセット
+                        departureTime.setHours(hourOfDay);
+                        departureTime.setMinutes(minute);
+                        departureTimeButton.setText(String.format("%02d:%02d",departureTime.getHours(),departureTime.getMinutes()));//時刻をボタンの文字にセット
 
                     }
-                },departureTime[0],departureTime[1],true);//初期値を入れる箇所
+                },departureTime.getHours(),departureTime.getMinutes(),true);//初期値を入れる箇所
                 dialog.show();
             }
         });
@@ -157,12 +165,12 @@ public class MainActivity extends AppCompatActivity implements
                 TimePickerDialog dialog = new TimePickerDialog(MainActivity.getInstance(),new TimePickerDialog.OnTimeSetListener(){
                     @Override
                     public void onTimeSet(TimePicker view, int hourOfDay,int minute) {
-                        Log.d("test",String.format("%02d:%02d", hourOfDay,minute));
-                        arriveTime[0] =hourOfDay;
-                        arriveTime[1] =minute;
-                        arriveTimeButton.setText(String.format("%02d:%02d",arriveTime[0],arriveTime[1]));
+                        arriveTime.setHours(hourOfDay);
+                        arriveTime.setMinutes(minute);
+                        arriveTimeButton.setText(String.format("%02d:%02d",arriveTime.getHours(),arriveTime.getMinutes()));//時刻をボタンの文字にセット
+
                     }
-                },arriveTime[0],arriveTime[1],true);
+                },arriveTime.getHours(),arriveTime.getMinutes(),true);//初期値を入れる箇所
                 dialog.show();
             }
         });
@@ -201,7 +209,7 @@ public class MainActivity extends AppCompatActivity implements
                 EditText editText = (EditText)findViewById(R.id.editText);
 
                 // 入力された文字を取得
-                String input_text = editText.getText().toString();
+                final String input_text = editText.getText().toString();
                 Value.input_text = input_text;
                 Log.d("inputtext", Value.input_text);
 
@@ -294,8 +302,8 @@ public class MainActivity extends AppCompatActivity implements
                             }
 
                             //****************************************開始地点を定義***************************************
-                            Value.itineraryPlaceList.add(new SpotStructure(null, "出発地", null, Value.nowPrefecture, 0, location.getLatitude(), location.getLongitude(), 0, null, null));
-
+                            Value.itineraryPlaceList.add(new SpotStructure(null, "出発地", null, Value.nowPrefecture, 0, location.getLatitude(), location.getLongitude(), 0, null, null,departureTime,null,null));
+                            Log.d("出発地の時刻",Value.itineraryPlaceList.get(0).departTime.toString());
 
                             //********************レビュー順にソートし、一つ目の候補地を確定する************************
                             ArrayList<SpotStructure> firstCandsList = new ArrayList<SpotStructure>();//ソート用リスト初期化
@@ -314,7 +322,7 @@ public class MainActivity extends AppCompatActivity implements
                                         double lng_double = spots_json.getJSONArray("spots").getJSONObject(i).getDouble("lng");
                                         float[] distance = new float[3];//二点間の距離算出結果を格納する変数
                                         Location.distanceBetween(location.getLatitude(), location.getLongitude(), lat_double, lng_double, distance);//入力された場所と候補地との距離算出
-                                        firstCandsList.add(new SpotStructure(placeID_str, name_str, genre_str, pref_str, rate_double, lat_double, lng_double, distance[0], explainText, null));
+                                        firstCandsList.add(new SpotStructure(placeID_str, name_str, genre_str, pref_str, rate_double, lat_double, lng_double, distance[0], explainText, null,null,null,null));
                                     }
                                 }
                             } catch (JSONException e) {
@@ -337,51 +345,36 @@ public class MainActivity extends AppCompatActivity implements
                                 Log.d("test", firstCandsList.get(j).name + "rate:" + String.valueOf(firstCandsList.get(j).rate) + "distance:" + String.valueOf(firstCandsList.get(j).distance));
                             }
                             Value.itineraryPlaceList.add(firstCandsList.get(minDistanceNumber));//一番初めに訪れる観光地
-                            Log.d("test", "first:" + Value.itineraryPlaceList.get(1).name + "dist:" + String.valueOf(Value.itineraryPlaceList.get(1).distance) + "id" + String.valueOf(Value.itineraryPlaceList.get(1).placeID));
 
-                            //******************二箇所目以降の候補地を確定させる*************************
-                            ArrayList<SpotStructure> secondOrLaterCandsList = new ArrayList<SpotStructure>();//リスト初期化
+                            //directionAPIに値をスローし、かかる時間を求める。
                             try {
-                                for (int i = 0; i < spotsLength; i++) {
-                                    String pref_str = spots_json.getJSONArray("spots").getJSONObject(i).getString("prefectures");
-                                    //隣接県に位置している観光地をリストに代入する
-                                    if (CheckNeighborPrefecture(pref_str, neighborDicObject)) {
-                                        String genre_str = spots_json.getJSONArray("spots").getJSONObject(i).getString("genreM");
-                                        String name_str = spots_json.getJSONArray("spots").getJSONObject(i).getString("name");
-                                        String placeID_str = spots_json.getJSONArray("spots").getJSONObject(i).getString("place_id");
-                                        double rate_double = spots_json.getJSONArray("spots").getJSONObject(i).getDouble("rating");
-                                        double lat_double = spots_json.getJSONArray("spots").getJSONObject(i).getDouble("lat");
-                                        double lng_double = spots_json.getJSONArray("spots").getJSONObject(i).getDouble("lng");
-                                        String explainText = spots_json.getJSONArray("spots").getJSONObject(i).getString("explain");
-                                        float[] distance = new float[3];//二点間の距離算出結果を格納する変数
-                                        Location.distanceBetween(Value.itineraryPlaceList.get(1).lat, Value.itineraryPlaceList.get(1).lng, lat_double, lng_double, distance);//入力された場所と候補地との距離算出
-                                        secondOrLaterCandsList.add(new SpotStructure(placeID_str, name_str, genre_str, pref_str, rate_double, lat_double, lng_double, distance[0], explainText, null));
-                                    }
-                                }
+                                JSONObject tempDirectionSearch = httpGet.HttpPlaces(new URL("https://maps.googleapis.com/maps/api/directions/json?origin="+location.getLatitude()+","+location.getLongitude()+"&destination=place_id:"+Value.itineraryPlaceList.get(1).placeID+"&key=AIzaSyCke0pASXyPnnJR-GAAvN3Bz7GltgomfEk"));
+                                Log.d("test",tempDirectionSearch.toString());
+                                int tempSecondToDestination=tempDirectionSearch.getJSONArray("routes").getJSONObject(0).getJSONArray("legs").getJSONObject(0).getJSONObject("duration").getInt("value");
+                                Calendar calendar=Calendar.getInstance();
+                                calendar.setTime(Value.itineraryPlaceList.get(0).departTime);
+                                calendar.add(Calendar.SECOND,tempSecondToDestination);
+                                Date tempDepartTime=addGenreWaitTime(calendar.getTime(),Value.itineraryPlaceList.get(1).genre);
+                                String tempPolyline=tempDirectionSearch.getJSONArray("routes").getJSONObject(0).getJSONArray("legs").getJSONObject(0).getJSONArray("steps").getJSONObject(0).getString("polyline");
+                                Value.itineraryPlaceList.set(1,new SpotStructure(Value.itineraryPlaceList.get(1).placeID,Value.itineraryPlaceList.get(1).name,Value.itineraryPlaceList.get(1).genre,Value.itineraryPlaceList.get(1).prefecture,Value.itineraryPlaceList.get(1).rate,Value.itineraryPlaceList.get(1).lat,Value.itineraryPlaceList.get(1).lng,Value.itineraryPlaceList.get(1).distance,Value.itineraryPlaceList.get(1).explainText,Value.itineraryPlaceList.get(1).image,tempDepartTime,Value.itineraryPlaceList.get(1).mapImage,tempPolyline));
+                            } catch (MalformedURLException e) {
+                                e.printStackTrace();
                             } catch (JSONException e) {
+                                e.printStackTrace();
                             }
-                            //Comparatorを用い距離が短い順にソートする
-                            Collections.sort(secondOrLaterCandsList, new SpotStructureDistanceComparator());
-                            Log.d("test", "distance second cand from first cand ,top 5");
-                            int candSize = 3;//仮、候補地の数は本来は可変だがとりあえず定数　
-                            for (int i = 0; Value.itineraryPlaceList.size() < candSize; i++) {
-                                if (secondOrLaterCandsList.get(i).distance > 500) {//二番目以降の候補地は、距離が短い順かつ500m以上距離がある場所
-                                    Value.itineraryPlaceList.add(secondOrLaterCandsList.get(i));
-                                }
-                            }
-                            for (int i = 0; i < Value.itineraryPlaceList.size(); i++) {
-                                Log.d("test", "num:" + String.valueOf(i) + "name:" + Value.itineraryPlaceList.get(i).name + "rate" + String.valueOf(Value.itineraryPlaceList.get(i).rate) + "id" + Value.itineraryPlaceList.get(i).placeID);
-                            }
-                            //******************************昼食の場所が二つ目の観光地と仮定して、その場所付近の昼食場所をgoogle neabysearchで検索する**********************
+                            Log.d("test", "first:" + Value.itineraryPlaceList.get(1).name + "dist:" + String.valueOf(Value.itineraryPlaceList.get(1).distance) + "id" + String.valueOf(Value.itineraryPlaceList.get(1).placeID)+"depTime"+Value.itineraryPlaceList.get(1).departTime.toString());
+
+//******************************昼食の場所が一つ目の観光地のあとと仮定して、その場所付近の昼食場所をgoogle neabysearchで検索する**********************
+// 昼食のタイミングが固定なのは非常にまずい。
                             JSONObject nearbySearchResult = null;
                             ArrayList<SpotStructure> lunchCandsList = new ArrayList<SpotStructure>();//ソート用リスト初期化
 
-                            try {//googleにリクエストを送信し、二番目の観光地付近にあるレストランを全てリストに入れる
-                                nearbySearchResult = httpGet.HttpPlaces(new URL("https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=" + Double.toString(Value.itineraryPlaceList.get(2).lat) + "," + Double.toString(Value.itineraryPlaceList.get(2).lng) + "&radius=2000&type=restaurant&language=ja&key=AIzaSyCke0pASXyPnnJR-GAAvN3Bz7GltgomfEk"));
+                            try {//googleにリクエストを送信し、1番目の観光地付近にあるレストランを全てリストに入れる
+                                nearbySearchResult = httpGet.HttpPlaces(new URL("https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=" + Double.toString(Value.itineraryPlaceList.get(1).lat) + "," + Double.toString(Value.itineraryPlaceList.get(1).lng) + "&radius=2000&type=restaurant&language=ja&key=AIzaSyCke0pASXyPnnJR-GAAvN3Bz7GltgomfEk"));
                                 int candLength = nearbySearchResult.getJSONArray("results").length();
                                 for (int i = 0; i < candLength; i++) {
                                     String pref_str = "restaurant don't have pref,if you needs, do DetailSearch";
-                                    String genre_str = "restaurant";
+                                    String genre_str = "レストラン";
                                     String name_str = nearbySearchResult.getJSONArray("results").getJSONObject(i).getString("name");
                                     String placeID_str = nearbySearchResult.getJSONArray("results").getJSONObject(i).getString("place_id");
                                     String explainText = "restaurant isn't have explain message";
@@ -389,8 +382,8 @@ public class MainActivity extends AppCompatActivity implements
                                     double lat_double = nearbySearchResult.getJSONArray("results").getJSONObject(i).getJSONObject("geometry").getJSONObject("location").getDouble("lat");
                                     double lng_double = nearbySearchResult.getJSONArray("results").getJSONObject(i).getJSONObject("geometry").getJSONObject("location").getDouble("lng");
                                     float[] distance = new float[3];//二点間の距離算出結果を格納する変数
-                                    Location.distanceBetween(Value.itineraryPlaceList.get(2).lat, Value.itineraryPlaceList.get(2).lng, lat_double, lng_double, distance);//入力された場所と候補地との距離算出
-                                    lunchCandsList.add(new SpotStructure(placeID_str, name_str, genre_str, pref_str, rate_double, lat_double, lng_double, distance[0], explainText, null));
+                                    Location.distanceBetween(Value.itineraryPlaceList.get(1).lat, Value.itineraryPlaceList.get(1).lng, lat_double, lng_double, distance);//入力された場所と候補地との距離算出
+                                    lunchCandsList.add(new SpotStructure(placeID_str, name_str, genre_str, pref_str, rate_double, lat_double, lng_double, distance[0], explainText, null,null,null,null));
                                 }
                             } catch (JSONException e) {
                                 Log.e("test", e.toString());
@@ -401,6 +394,141 @@ public class MainActivity extends AppCompatActivity implements
                             Collections.sort(lunchCandsList, new SpotStructureDistanceComparator());
                             //最も距離の近いレストランの場所をitineraryPlaceListに代入
                             Value.itineraryPlaceList.add(lunchCandsList.get(0));
+
+                            try {
+                                JSONObject tempDirectionSearch = httpGet.HttpPlaces(new URL("https://maps.googleapis.com/maps/api/directions/json?origin=place_id:"+Value.itineraryPlaceList.get(1).placeID+"&destination=place_id:"+Value.itineraryPlaceList.get(2).placeID+"&key=AIzaSyCke0pASXyPnnJR-GAAvN3Bz7GltgomfEk"));
+                                Log.d("test",tempDirectionSearch.toString());
+                                int tempSecondToDestination=tempDirectionSearch.getJSONArray("routes").getJSONObject(0).getJSONArray("legs").getJSONObject(0).getJSONObject("duration").getInt("value");
+                                Calendar calendar=Calendar.getInstance();
+                                calendar.setTime(Value.itineraryPlaceList.get(1).departTime);
+                                calendar.add(Calendar.SECOND,tempSecondToDestination);
+                                Date tempDepartTime=addGenreWaitTime(calendar.getTime(),Value.itineraryPlaceList.get(2).genre);
+                                String tempPolyline=tempDirectionSearch.getJSONArray("routes").getJSONObject(0).getJSONArray("legs").getJSONObject(0).getJSONArray("steps").getJSONObject(0).getString("polyline");
+                                Value.itineraryPlaceList.set(2,new SpotStructure(
+                                        Value.itineraryPlaceList.get(2).placeID,
+                                        Value.itineraryPlaceList.get(2).name,
+                                        Value.itineraryPlaceList.get(2).genre,
+                                        Value.itineraryPlaceList.get(2).prefecture,
+                                        Value.itineraryPlaceList.get(2).rate,
+                                        Value.itineraryPlaceList.get(2).lat,
+                                        Value.itineraryPlaceList.get(2).lng,
+                                        Value.itineraryPlaceList.get(2).distance,
+                                        Value.itineraryPlaceList.get(2).explainText,
+                                        Value.itineraryPlaceList.get(2).image,
+                                        tempDepartTime,
+                                        Value.itineraryPlaceList.get(2).mapImage,
+                                        tempPolyline));
+                            } catch (MalformedURLException e) {
+                                e.printStackTrace();
+                            } catch (JSONException e) {
+                                e.printStackTrace();
+                            }
+                            Log.d("test", "lunch:" + Value.itineraryPlaceList.get(2).name + "dist:" + String.valueOf(Value.itineraryPlaceList.get(2).distance) + "id" + String.valueOf(Value.itineraryPlaceList.get(2).placeID)+"depTime"+Value.itineraryPlaceList.get(2).departTime.toString());
+
+
+                            //******************二箇所目以降の候補地を確定させる*************************
+                            ArrayList<SpotStructure> secondOrLaterCandsList = new ArrayList<SpotStructure>();//リスト初期化
+                            try {
+                                boolean southFromFirstPlace=false;
+                                boolean eastFromFirstPlace=false;
+                                if(Value.itineraryPlaceList.get(0).lat<Value.itineraryPlaceList.get(1).lat){
+                                    southFromFirstPlace=false;
+                                }else{
+                                    southFromFirstPlace=true;
+                                }
+                                if(Value.itineraryPlaceList.get(0).lng<Value.itineraryPlaceList.get(1).lng){
+                                    eastFromFirstPlace=true;
+                                }else{
+                                    eastFromFirstPlace=false;
+                                }
+                                for (int i = 0; i < spotsLength; i++) {
+                                    String pref_str = spots_json.getJSONArray("spots").getJSONObject(i).getString("prefectures");
+                                    double lat_double = spots_json.getJSONArray("spots").getJSONObject(i).getDouble("lat");
+                                    double lng_double = spots_json.getJSONArray("spots").getJSONObject(i).getDouble("lng");
+                                    float[] distance = new float[3];//二点間の距離算出結果を格納する変数
+                                    Location.distanceBetween(Value.itineraryPlaceList.get(1).lat, Value.itineraryPlaceList.get(1).lng, lat_double, lng_double, distance);//入力された場所と候補地との距離算出
+                                    boolean tempThresholdFlg=false;
+                                    if (CheckNeighborPrefecture(pref_str, neighborDicObject) && distance[0]>500) {
+                                        if(southFromFirstPlace==true && eastFromFirstPlace==true){
+                                            if(lat_double<Value.itineraryPlaceList.get(0).lat && lng_double>Value.itineraryPlaceList.get(0).lng){
+                                                tempThresholdFlg=true;
+                                            }
+                                        } else if (southFromFirstPlace == true && eastFromFirstPlace == false) {
+                                            if(lat_double<Value.itineraryPlaceList.get(0).lat && lng_double<Value.itineraryPlaceList.get(0).lng){
+                                                tempThresholdFlg=true;
+                                            }
+                                        }else if(southFromFirstPlace==false&& eastFromFirstPlace==true){
+                                            if(lat_double>Value.itineraryPlaceList.get(0).lat && lng_double<Value.itineraryPlaceList.get(0).lng){
+                                                tempThresholdFlg=true;
+                                            }
+                                        }else{
+                                            if(lat_double>Value.itineraryPlaceList.get(0).lat && lng_double>Value.itineraryPlaceList.get(0).lng){
+                                                tempThresholdFlg=true;
+                                            }
+                                        }
+                                    }
+                                    if(tempThresholdFlg) {
+                                        String genre_str = spots_json.getJSONArray("spots").getJSONObject(i).getString("genreM");
+                                        String name_str = spots_json.getJSONArray("spots").getJSONObject(i).getString("name");
+                                        String placeID_str = spots_json.getJSONArray("spots").getJSONObject(i).getString("place_id");
+                                        double rate_double = spots_json.getJSONArray("spots").getJSONObject(i).getDouble("rating");
+                                        String explainText = spots_json.getJSONArray("spots").getJSONObject(i).getString("explain");
+                                        secondOrLaterCandsList.add(new SpotStructure(placeID_str, name_str, genre_str, pref_str, rate_double, lat_double, lng_double, distance[0], explainText, null, null, null, null));
+                                    }
+                                }
+                            } catch (JSONException e) {
+                            }
+                            //Comparatorを用い距離が短い順にソートする
+                            Collections.sort(secondOrLaterCandsList, new SpotStructureDistanceComparator());
+                            Log.d("test", "distance second cand from first cand ,top 5");
+                            
+                            while(arriveTime.compareTo(Value.itineraryPlaceList.get(Value.itineraryPlaceList.size()-1).departTime)==1){
+                                Value.itineraryPlaceList.add(secondOrLaterCandsList.get(0));
+                                secondOrLaterCandsList.remove(0);
+                                try {
+                                    int focusPlaceNum=Value.itineraryPlaceList.size()-1;
+                                    int beforePlaceNum=Value.itineraryPlaceList.size()-2;
+                                    JSONObject tempDirectionSearch = httpGet.HttpPlaces(new URL("https://maps.googleapis.com/maps/api/directions/json?origin=place_id:"+Value.itineraryPlaceList.get(beforePlaceNum).placeID+"&destination=place_id:"+Value.itineraryPlaceList.get(focusPlaceNum).placeID+"&key=AIzaSyCke0pASXyPnnJR-GAAvN3Bz7GltgomfEk"));
+                                    int tempSecondToDestination=tempDirectionSearch.getJSONArray("routes").getJSONObject(0).getJSONArray("legs").getJSONObject(0).getJSONObject("duration").getInt("value");
+                                    Calendar calendar=Calendar.getInstance();
+                                    Log.d("calender1",calendar.toString());
+                                    calendar.setTime(Value.itineraryPlaceList.get(beforePlaceNum).departTime);
+                                    Log.d("calender2",calendar.toString());
+                                    calendar.add(Calendar.SECOND,tempSecondToDestination);
+                                    Log.d("calender3",calendar.toString());
+                                    Date tempDepartTime=addGenreWaitTime(calendar.getTime(),Value.itineraryPlaceList.get(focusPlaceNum).genre);
+                                    Log.d("genre",Value.itineraryPlaceList.get(focusPlaceNum).genre);
+                                    Log.d("tempDepartTime",tempDepartTime.toString());
+                                    String tempPolyline=tempDirectionSearch.getJSONArray("routes").getJSONObject(0).getJSONArray("legs").getJSONObject(0).getJSONArray("steps").getJSONObject(0).getString("polyline");
+                                    Value.itineraryPlaceList.set(focusPlaceNum,new SpotStructure(
+                                            Value.itineraryPlaceList.get(focusPlaceNum).placeID,
+                                            Value.itineraryPlaceList.get(focusPlaceNum).name,
+                                            Value.itineraryPlaceList.get(focusPlaceNum).genre,
+                                            Value.itineraryPlaceList.get(focusPlaceNum).prefecture,
+                                            Value.itineraryPlaceList.get(focusPlaceNum).rate,
+                                            Value.itineraryPlaceList.get(focusPlaceNum).lat,
+                                            Value.itineraryPlaceList.get(focusPlaceNum).lng,
+                                            Value.itineraryPlaceList.get(focusPlaceNum).distance,
+                                            Value.itineraryPlaceList.get(focusPlaceNum).explainText,
+                                            Value.itineraryPlaceList.get(focusPlaceNum).image,
+                                            tempDepartTime,
+                                            Value.itineraryPlaceList.get(focusPlaceNum).mapImage,
+                                            tempPolyline));
+                                    Log.d("test", String.valueOf(focusPlaceNum)+":" + Value.itineraryPlaceList.get(focusPlaceNum).name);
+                                            Log.d("dist:" , String.valueOf(Value.itineraryPlaceList.get(focusPlaceNum).distance));
+                                            Log.d("id" , String.valueOf(Value.itineraryPlaceList.get(focusPlaceNum).placeID));
+                                            Log.d("depTime",Value.itineraryPlaceList.get(focusPlaceNum).departTime.toString());
+                                } catch (MalformedURLException e) {
+                                    e.printStackTrace();
+                                } catch (JSONException e) {
+                                    e.printStackTrace();
+                                }
+                                
+                            }
+
+                            for (int i = 0; i < Value.itineraryPlaceList.size(); i++) {
+                                Log.d("test", "num:" + String.valueOf(i) + "name:" + Value.itineraryPlaceList.get(i).name + "rate" + String.valueOf(Value.itineraryPlaceList.get(i).rate) + "depTime"+Value.itineraryPlaceList.get(i).departTime.toString());
+                            }
 
                             //**********************************しおりに載せる観光地は全て決定されたため、各観光地に対してDetail検索を行い写真とレストランのレートを取得する
                             for (int i = 0; i < Value.itineraryPlaceList.size(); i++) {
@@ -424,7 +552,7 @@ public class MainActivity extends AppCompatActivity implements
                                     } else {
                                         img_bitmap = httpBitmapGet.HttpPlaces(new URL("https://maps.googleapis.com/maps/api/place/photo?maxwidth=400&photoreference=" + detailSearchResult.getJSONObject("result").getJSONArray("photos").getJSONObject(0).getString("photo_reference") + "&key=AIzaSyCke0pASXyPnnJR-GAAvN3Bz7GltgomfEk"));
                                     }
-                                    Value.itineraryPlaceList.set(i, new SpotStructure(placeID_str, name_str, genre_str, pref_str, rate_double, lat_double, lng_double, 0, explainText, img_bitmap));
+                                    Value.itineraryPlaceList.set(i, new SpotStructure(placeID_str, name_str, genre_str, pref_str, rate_double, lat_double, lng_double, 0, explainText, img_bitmap,null,null,null));
                                 } catch (MalformedURLException e) {
                                     e.printStackTrace();
                                 } catch (JSONException e) {
@@ -695,6 +823,81 @@ public class MainActivity extends AppCompatActivity implements
         }
 //        Log.d("test","false"+checkedPlace);
         return false;
+    }
+    public Date addGenreWaitTime(Date date,String genre){
+        Calendar calendar=Calendar.getInstance();
+        calendar.setTime(date);
+        if(genre.equals("レストラン")){
+            calendar.add(Calendar.HOUR,1);
+            return calendar.getTime();
+        }
+        if(genre.equals("自然景観")) {
+            calendar.add(Calendar.HOUR,1);
+            return calendar.getTime();
+        }else if(genre.equals("施設景観")) {
+            calendar.add(Calendar.HOUR, 2);
+            return calendar.getTime();
+        }else if(genre.equals("公園・庭園")) {
+            calendar.add(Calendar.HOUR, 2);
+            return calendar.getTime();
+        }else if(genre.equals("動・植物")) {
+            calendar.add(Calendar.HOUR, 2);
+            return calendar.getTime();
+        }else if(genre.equals("文化史跡")) {
+            calendar.add(Calendar.HOUR, 2);
+            return calendar.getTime();
+        }else if(genre.equals("文化施設")) {
+            calendar.add(Calendar.HOUR, 2);
+            return calendar.getTime();
+        }else if(genre.equals("神社仏閣")) {
+            calendar.add(Calendar.HOUR, 2);
+            return calendar.getTime();
+        }else if(genre.equals("地域風俗・風習")) {
+            calendar.add(Calendar.HOUR, 2);
+            return calendar.getTime();
+        }else if(genre.equals("祭事")) {
+            calendar.add(Calendar.HOUR, 2);
+            return calendar.getTime();
+        }else if(genre.equals("イベント")) {
+            calendar.add(Calendar.HOUR, 2);
+            return calendar.getTime();
+        }else if(genre.equals("イベント鑑賞")) {
+            calendar.add(Calendar.HOUR, 2);
+            return calendar.getTime();
+        }else if(genre.equals("文化施設")) {
+            calendar.add(Calendar.HOUR, 2);
+            return calendar.getTime();
+        }else if(genre.equals("スポーツ・レジャー")) {
+            calendar.add(Calendar.HOUR, 2);
+            return calendar.getTime();
+        }else if(genre.equals("温泉")) {
+            calendar.add(Calendar.HOUR, 2);
+            return calendar.getTime();
+        }else if(genre.equals("名産品")) {
+            calendar.add(Calendar.HOUR, 2);
+            return calendar.getTime();
+        }else if(genre.equals("郷土料理店")) {
+            calendar.add(Calendar.HOUR, 2);
+            return calendar.getTime();
+        }else if(genre.equals("車")) {
+            calendar.add(Calendar.HOUR, 2);
+            return calendar.getTime();
+        }else if(genre.equals("その他乗り物")) {
+            calendar.add(Calendar.HOUR, 2);
+            return calendar.getTime();
+        }else if(genre.equals("旅館")) {
+            calendar.add(Calendar.HOUR, 2);
+            return calendar.getTime();
+        }else if(genre.equals("ホテル")) {
+            calendar.add(Calendar.HOUR, 2);
+            return calendar.getTime();
+        }else if(genre.equals("民宿・ペンション")) {
+            calendar.add(Calendar.HOUR, 2);
+            return calendar.getTime();
+        }
+        Log.e("test","category to spending time error!");
+        return null;
+
     }
 }
 
