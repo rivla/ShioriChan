@@ -72,6 +72,7 @@ public class DebugActivity extends Activity
 
         //ボタン、テキストボックス定義
         final EditText edit=(EditText)findViewById(R.id.editText);
+        final EditText edit1=(EditText)findViewById(R.id.editText1);
         final TextView textView=(TextView)findViewById(R.id.textView);
         final TextView textView2=(TextView)findViewById(R.id.textView2); // 公共クラウドシステム出力用
         final Button lnglatButton=(Button)findViewById(R.id.lnglatButton);
