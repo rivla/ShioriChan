@@ -481,8 +481,24 @@ public class MainActivity extends AppCompatActivity implements
                             //Comparatorを用い距離が短い順にソートする
                             Collections.sort(secondOrLaterCandsList, new SpotStructureDistanceComparator());
                             Log.d("test", "distance second cand from first cand ,top 5");
-                            
-                            while(arriveTime.compareTo(Value.itineraryPlaceList.get(Value.itineraryPlaceList.size()-1).departTime)==1){
+
+
+                            Date ifReturnArriveTime = null;
+                            String ifReturnPolyline=null;
+                            try {
+                                JSONObject tempDirectionSearchToHome = httpGet.HttpPlaces(new URL("https://maps.googleapis.com/maps/api/directions/json?origin=place_id:"+ Value.itineraryPlaceList.get(Value.itineraryPlaceList.size()-1).placeID+"&destination="+location.getLatitude()+","+location.getLongitude()+"&key=AIzaSyCke0pASXyPnnJR-GAAvN3Bz7GltgomfEk"));
+                                int tempSecondToDestinationToHome = tempDirectionSearchToHome.getJSONArray("routes").getJSONObject(0).getJSONArray("legs").getJSONObject(0).getJSONObject("duration").getInt("value");
+                                Calendar calenderToHome=Calendar.getInstance();
+                                calenderToHome.add(Calendar.SECOND,tempSecondToDestinationToHome);
+                                ifReturnArriveTime=calenderToHome.getTime();
+                                ifReturnPolyline=tempDirectionSearchToHome.getJSONArray("routes").getJSONObject(0).getJSONArray("legs").getJSONObject(0).getJSONArray("steps").getJSONObject(0).getString("polyline");
+                            } catch (JSONException e) {
+                                e.printStackTrace();
+                            } catch (MalformedURLException e) {
+                                e.printStackTrace();
+                            }
+
+                            while(arriveTime.compareTo(ifReturnArriveTime)==1){
                                 Value.itineraryPlaceList.add(secondOrLaterCandsList.get(0));
                                 secondOrLaterCandsList.remove(0);
                                 try {
@@ -518,13 +534,25 @@ public class MainActivity extends AppCompatActivity implements
                                             Log.d("dist:" , String.valueOf(Value.itineraryPlaceList.get(focusPlaceNum).distance));
                                             Log.d("id" , String.valueOf(Value.itineraryPlaceList.get(focusPlaceNum).placeID));
                                             Log.d("depTime",Value.itineraryPlaceList.get(focusPlaceNum).departTime.toString());
+                                    try {
+                                        JSONObject tempDirectionSearchToHome = httpGet.HttpPlaces(new URL("https://maps.googleapis.com/maps/api/directions/json?origin=place_id:"+ Value.itineraryPlaceList.get(focusPlaceNum).placeID+"&destination="+location.getLatitude()+","+location.getLongitude()+"&key=AIzaSyCke0pASXyPnnJR-GAAvN3Bz7GltgomfEk"));
+                                        int tempSecondToDestinationToHome = tempDirectionSearchToHome.getJSONArray("routes").getJSONObject(0).getJSONArray("legs").getJSONObject(0).getJSONObject("duration").getInt("value");
+                                        Calendar calenderToHome=Calendar.getInstance();
+                                        calenderToHome.add(Calendar.SECOND,tempSecondToDestinationToHome);
+                                        ifReturnArriveTime=calenderToHome.getTime();
+                                        ifReturnPolyline=tempDirectionSearchToHome.getJSONArray("routes").getJSONObject(0).getJSONArray("legs").getJSONObject(0).getJSONArray("steps").getJSONObject(0).getString("polyline");
+                                    } catch (JSONException e) {
+                                        e.printStackTrace();
+                                    } catch (MalformedURLException e) {
+                                        e.printStackTrace();
+                                    }
                                 } catch (MalformedURLException e) {
                                     e.printStackTrace();
                                 } catch (JSONException e) {
                                     e.printStackTrace();
                                 }
-                                
                             }
+                            Value.itineraryPlaceList.add(new SpotStructure(null,"到着地",null,Value.nowPrefecture,0,location.getLatitude(),location.getLongitude(),0,null,null,ifReturnArriveTime,null,ifReturnPolyline));
 
                             for (int i = 0; i < Value.itineraryPlaceList.size(); i++) {
                                 Log.d("test", "num:" + String.valueOf(i) + "name:" + Value.itineraryPlaceList.get(i).name + "rate" + String.valueOf(Value.itineraryPlaceList.get(i).rate) + "depTime"+Value.itineraryPlaceList.get(i).departTime.toString());
