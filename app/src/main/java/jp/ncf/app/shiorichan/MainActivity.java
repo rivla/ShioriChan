@@ -22,6 +22,7 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.TimePicker;
 
@@ -43,6 +44,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
+import java.util.Random;
 
 // ogawa test comment
 //値渡し用、静的変数
@@ -50,9 +52,11 @@ class Value {
     public static double lat = 0.0;//デバッグアクティビティでのみ使っている変数なので、そちらがいらなくなったら消す
     public static double lng = 0.0;//デバッグアクティビティでのみ使っている変数なので、そちらがいらなくなったら消す
     public static String next_page_token = null;//デバッグアクティビティでのみ使っている変数なので、そちらがいらなくなったら消す
-    public static String genre=null;
+    public static String genre = "";
     public static ArrayList<SpotStructure> itineraryPlaceList=new ArrayList<SpotStructure>();
     public static String nowPrefecture=null;
+    public static String input_text = null; // 自由テキスト入力文字列
+    public static boolean error_flag = false; // 入力エラーのフラグ
 }
 
 
@@ -186,208 +190,259 @@ public class MainActivity extends AppCompatActivity implements
             @Override
             public void onClick(View v) {
                 Log.d("test", "startButton pusshed");
-                progressDialog.show();
-                //◆スレッド処理開始
-                new Thread(new Runnable() {
-                    @Override
-                    public void run() {
 
+                // ====== 自由テキスト入力受け取り ======
+                // EditTextオブジェクトを取得
+                EditText editText = (EditText)findViewById(R.id.editText);
 
+                // 入力された文字を取得
+                String input_text = editText.getText().toString();
+                Value.input_text = input_text;
+                Log.d("inputtext", Value.input_text);
 
+                // 入力テキストが未入力であった場合
+                if (Value.input_text.length() == 0) {
+                    Log.d("input error message", "何も入力されていません");
+                    editText.setError("何も入力されていません");
+                    Value.error_flag = true;
+                }
 
-    //******************//実機のgoogleplacesversionの問題で緯度経度が取れない場合は、岐阜の座標を代入する*****************************
-    /*                if(location==null) {
-                        location = new Location("a");//文字列はprovider（適当に入れました)
-                        location.setLatitude(35.4650334);
-                        location.setLongitude(136.73929506);
-                    }
-     */
-                    location = new Location("a");//とりあえずデバッグ用として、本来GPSの値が入るところに浜松の値を代入
-                    location.setLatitude(34.788739);
-                    location.setLongitude(137.6420052);
-
-    //********************現在地の緯度経度から今いる県を取得する*********************************
-                    Geocoder mGeocoder;	//緯度・経度から地名への変換
-                    mGeocoder = new Geocoder(getApplicationContext(), Locale.JAPAN);
-                    //GeoCoder を用いて県名を取得
-                    StringBuffer buff = new StringBuffer();
+                // 入力テキストが存在する場合，ジャンルとのマッチングを行う
+                else {
+                    // ====== 自由テキストをジャンルに変換 ======
+                    // 辞書とジャンル名の対応jsonを読み込む
+                    JSONObject pair_json = json.ReadJson(getApplicationContext(), "pair.json");
+                    // 自由テキストが辞書に登録されている場合の処理
                     try {
-                        List<Address> addrs = mGeocoder.getFromLocation(location.getLatitude(), location.getLongitude(), 1);
-                        for(Address addr : addrs){
-                            buff.append(addr.getAdminArea());
+                        // 自由テキストに対応するジャンル名のリストを取得する
+                        JSONArray genre_list = pair_json.getJSONArray(Value.input_text);
+
+                        // ジャンルが１つであれば決定
+                        if (genre_list.length() == 1) {
+                            Value.genre = (String) genre_list.get(0);
                         }
-                    } catch(IOException e){
-                        Log.e("HelloLocationActivity", e.toString());
-                    }
-                    //取得した県名
-                    Value.nowPrefecture = buff.toString();
-
-
-
-
-    //**************公共クラウドシステムの入ったjsonファイルを取得する******************
-                    ////// 公共クラウドシステム（jsonファイル読み込み用） ///////
-                    // jsonファイルを読み込む
-                    JSONObject spots_json = json.ReadJson(getApplicationContext(), "kanko_all_add_limit.json");
-                    int spotsLength=0;
-                    try {
-                        // 観光地の総数を取得
-                        spotsLength = spots_json.getJSONArray("spots").length();
-                        Log.d("spotsLength", String.valueOf(spotsLength));
-                    }catch (JSONException e) {
-                    }
-
-    //****************************************開始地点を定義***************************************
-                    Value.itineraryPlaceList.add(new SpotStructure(null,"出発地",null,Value.nowPrefecture,0,location.getLatitude(),location.getLongitude(),0,null,null));
-
-
-    //********************レビュー順にソートし、一つ目の候補地を確定する************************
-                    ArrayList<SpotStructure> firstCandsList=new ArrayList<SpotStructure>();//ソート用リスト初期化
-                    JSONObject neighborDicObject =json.ReadJson(getApplicationContext(), "neighbor_pref.json");//隣接県情報の入ったjson読み出し
-                    try {
-                        for (int i = 0; i < spotsLength; i++) {
-                            String pref_str = spots_json.getJSONArray("spots").getJSONObject(i).getString("prefectures");
-                            String genre_str = spots_json.getJSONArray("spots").getJSONObject(i).getString("genreM");
-                            //隣接県であり、指定ジャンルと一致した場合リストに格納する
-                            if ((CheckNeighborPrefecture(pref_str,neighborDicObject) && genre_str.equals(Value.genre))) {
-                                String name_str = spots_json.getJSONArray("spots").getJSONObject(i).getString("name");
-                                String placeID_str = spots_json.getJSONArray("spots").getJSONObject(i).getString("place_id");
-                                String explainText=spots_json.getJSONArray("spots").getJSONObject(i).getString("explain");
-                                double rate_double = spots_json.getJSONArray("spots").getJSONObject(i).getDouble("rating");
-                                double lat_double = spots_json.getJSONArray("spots").getJSONObject(i).getDouble("lat");
-                                double lng_double = spots_json.getJSONArray("spots").getJSONObject(i).getDouble("lng");
-                                float[] distance = new float[3];//二点間の距離算出結果を格納する変数
-                                Location.distanceBetween(location.getLatitude(), location.getLongitude(), lat_double, lng_double, distance);//入力された場所と候補地との距離算出
-                                firstCandsList.add(new SpotStructure(placeID_str, name_str, genre_str, pref_str, rate_double, lat_double, lng_double, distance[0],explainText,null));
-                            }
+                        // ジャンルが複数ある場合はランダムで1つ選択する
+                        else {
+                            // 乱数を発生する
+                            Random rand = new Random();
+                            int rand_n = rand.nextInt(genre_list.length());
+                            Value.genre = (String) genre_list.get(rand_n);
                         }
-                    }catch (JSONException e){
-                        Log.e("test",e.toString());
+                        // 出力確認
+                        Log.d("genre result", Value.genre);
+                    } catch (JSONException e) {
+                        // 入力テキストが辞書に登録されていなかった場合
+                        e.printStackTrace();
+                        Log.d("input error message", Value.input_text + " は辞書に登録されていません");
+                        editText.setError(Value.input_text + " は辞書に登録されていません");
+                        Value.error_flag = true;
                     }
-                    Log.d("test","first candidate number is"+firstCandsList.size());
-                    //Comparatorを用いレビューが高い順にソートする
-                    Collections.sort(firstCandsList,new SpotStructureRateComparator());
-                    //レビュー4.5以上の候補地から一番近い場所を選ぶ
-                    int minDistanceNumber=0;
-                    double minDistance=Double.MAX_VALUE;
-                    for(int i = 0; firstCandsList.get(i).rate>4.5; i++){
-                        if(firstCandsList.get(i).distance<minDistance){
-                            minDistance=firstCandsList.get(i).distance;
-                            minDistanceNumber=i;
-                        }
-                    }
-                    Log.d("test","Rate first cand ,top 5");
-                    for(int j=0; j<5;j++){
-                        Log.d("test",firstCandsList.get(j).name+"rate:"+String.valueOf(firstCandsList.get(j).rate)+"distance:"+String.valueOf(firstCandsList.get(j).distance));
-                    }
-                    Value.itineraryPlaceList.add(firstCandsList.get(minDistanceNumber));//一番初めに訪れる観光地
-                    Log.d("test","first:"+Value.itineraryPlaceList.get(1).name+"dist:"+String.valueOf(Value.itineraryPlaceList.get(1).distance)+"id"+String.valueOf(Value.itineraryPlaceList.get(1).placeID));
+                }
 
-    //******************二箇所目以降の候補地を確定させる*************************
-                    ArrayList<SpotStructure> secondOrLaterCandsList=new ArrayList<SpotStructure>();//リスト初期化
-                    try {
-                        for (int i = 0; i < spotsLength; i++) {
-                            String pref_str = spots_json.getJSONArray("spots").getJSONObject(i).getString("prefectures");
-                            //隣接県に位置している観光地をリストに代入する
-                            if (CheckNeighborPrefecture(pref_str,neighborDicObject)) {
-                                String genre_str = spots_json.getJSONArray("spots").getJSONObject(i).getString("genreM");
-                                String name_str = spots_json.getJSONArray("spots").getJSONObject(i).getString("name");
-                                String placeID_str = spots_json.getJSONArray("spots").getJSONObject(i).getString("place_id");
-                                double rate_double = spots_json.getJSONArray("spots").getJSONObject(i).getDouble("rating");
-                                double lat_double = spots_json.getJSONArray("spots").getJSONObject(i).getDouble("lat");
-                                double lng_double = spots_json.getJSONArray("spots").getJSONObject(i).getDouble("lng");
-                                String explainText=spots_json.getJSONArray("spots").getJSONObject(i).getString("explain");
-                                float[] distance = new float[3];//二点間の距離算出結果を格納する変数
-                                Location.distanceBetween(Value.itineraryPlaceList.get(1).lat, Value.itineraryPlaceList.get(1).lng,lat_double,lng_double, distance);//入力された場所と候補地との距離算出
-                                secondOrLaterCandsList.add(new SpotStructure(placeID_str, name_str, genre_str, pref_str, rate_double, lat_double, lng_double, distance[0],explainText,null));
-                            }
-                        }
-                    }catch (JSONException e) {
-                    }
-                    //Comparatorを用い距離が短い順にソートする
-                    Collections.sort(secondOrLaterCandsList,new SpotStructureDistanceComparator());
-                    Log.d("test","distance second cand from first cand ,top 5");
-                    int candSize=3;//仮、候補地の数は本来は可変だがとりあえず定数　
-                    for(int i=0;Value.itineraryPlaceList.size()<candSize;i++) {
-                        if(secondOrLaterCandsList.get(i).distance>500){//二番目以降の候補地は、距離が短い順かつ500m以上距離がある場所
-                            Value.itineraryPlaceList.add(secondOrLaterCandsList.get(i));
-                        }
-                    }
-                    for(int i=0;i<Value.itineraryPlaceList.size();i++){
-                        Log.d("test","num:"+String.valueOf(i)+"name:"+Value.itineraryPlaceList.get(i).name+"rate"+String.valueOf(Value.itineraryPlaceList.get(i).rate)+"id"+Value.itineraryPlaceList.get(i).placeID);
-                    }
-//******************************昼食の場所が二つ目の観光地と仮定して、その場所付近の昼食場所をgoogle neabysearchで検索する**********************
-                        JSONObject nearbySearchResult=null;
-                        ArrayList<SpotStructure> lunchCandsList=new ArrayList<SpotStructure>();//ソート用リスト初期化
+                // 入力エラーが発生していなければ処理を実行する
+                if (Value.error_flag == false) {
 
-                        try {//googleにリクエストを送信し、二番目の観光地付近にあるレストランを全てリストに入れる
-                            nearbySearchResult = httpGet.HttpPlaces(new URL("https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=" + Double.toString(Value.itineraryPlaceList.get(2).lat) + "," + Double.toString(Value.itineraryPlaceList.get(2).lng) + "&radius=2000&type=restaurant&language=ja&key=AIzaSyCke0pASXyPnnJR-GAAvN3Bz7GltgomfEk"));
-                            int candLength = nearbySearchResult.getJSONArray("results").length();
-                            for (int i = 0; i < candLength; i++) {
-                                String pref_str ="restaurant don't have pref,if you needs, do DetailSearch";
-                                String genre_str = "restaurant";
-                                String name_str = nearbySearchResult.getJSONArray("results").getJSONObject(i).getString("name");
-                                String placeID_str =  nearbySearchResult.getJSONArray("results").getJSONObject(i).getString("place_id");
-                                String explainText="restaurant isn't have explain message";
-                                double rate_double = 0;
-                                double lat_double = nearbySearchResult.getJSONArray("results").getJSONObject(i).getJSONObject("geometry").getJSONObject("location").getDouble("lat");
-                                double lng_double = nearbySearchResult.getJSONArray("results").getJSONObject(i).getJSONObject("geometry").getJSONObject("location").getDouble("lng");
-                                float[] distance = new float[3];//二点間の距離算出結果を格納する変数
-                                Location.distanceBetween(Value.itineraryPlaceList.get(2).lat, Value.itineraryPlaceList.get(2).lng,lat_double, lng_double, distance);//入力された場所と候補地との距離算出
-                                lunchCandsList.add(new SpotStructure(placeID_str, name_str, genre_str, pref_str, rate_double, lat_double, lng_double, distance[0],explainText,null));
-                            }
-                        }catch (JSONException e){
-                            Log.e("test",e.toString());
-                        } catch (MalformedURLException e) {
-                            e.printStackTrace();
-                        }
-                        //レストランの入ったリストを距離順にソート
-                        Collections.sort(lunchCandsList,new SpotStructureDistanceComparator());
-                        //最も距離の近いレストランの場所をitineraryPlaceListに代入
-                        Value.itineraryPlaceList.add(lunchCandsList.get(0));
+                    progressDialog.show();
+                    //◆スレッド処理開始
+                    new Thread(new Runnable() {
+                        @Override
+                        public void run() {
 
-//**********************************しおりに載せる観光地は全て決定されたため、各観光地に対してDetail検索を行い写真とレストランのレートを取得する
-                        for(int i=0;i<Value.itineraryPlaceList.size();i++){
-                            Log.d("executing detail search",Value.itineraryPlaceList.get(i).name);
+                            //******************//実機のgoogleplacesversionの問題で緯度経度が取れない場合は、岐阜の座標を代入する*****************************
+        /*                if(location==null) {
+                            location = new Location("a");//文字列はprovider（適当に入れました)
+                            location.setLatitude(35.4650334);
+                            location.setLongitude(136.73929506);
+                        }
+         */
+                            location = new Location("a");//とりあえずデバッグ用として、本来GPSの値が入るところに浜松の値を代入
+                            location.setLatitude(34.788739);
+                            location.setLongitude(137.6420052);
+
+                            //********************現在地の緯度経度から今いる県を取得する*********************************
+                            Geocoder mGeocoder;    //緯度・経度から地名への変換
+                            mGeocoder = new Geocoder(getApplicationContext(), Locale.JAPAN);
+                            //GeoCoder を用いて県名を取得
+                            StringBuffer buff = new StringBuffer();
                             try {
-                                JSONObject detailSearchResult = httpGet.HttpPlaces(new URL("https://maps.googleapis.com/maps/api/place/details/json?placeid=" + Value.itineraryPlaceList.get(i).placeID + "&key=AIzaSyCke0pASXyPnnJR-GAAvN3Bz7GltgomfEk&language=ja"));
-                                String pref_str = Value.itineraryPlaceList.get(i).prefecture;
-                                String genre_str = Value.itineraryPlaceList.get(i).genre;
-                                String name_str = Value.itineraryPlaceList.get(i).name;
-                                String placeID_str = Value.itineraryPlaceList.get(i).placeID;
-                                double rate_double=0;
-                                if(!detailSearchResult.getJSONObject("result").isNull("rating")){
-                                    rate_double =  detailSearchResult.getJSONObject("result").getDouble("rating");
+                                List<Address> addrs = mGeocoder.getFromLocation(location.getLatitude(), location.getLongitude(), 1);
+                                for (Address addr : addrs) {
+                                    buff.append(addr.getAdminArea());
                                 }
-                                double lat_double = Value.itineraryPlaceList.get(i).lat;
-                                double lng_double = Value.itineraryPlaceList.get(i).lat;
-                                String explainText=Value.itineraryPlaceList.get(i).explainText;
-                                Bitmap img_bitmap=null;
-                                if(detailSearchResult.getJSONObject("result").getJSONArray("photos").getJSONObject(0).isNull("photo_reference")){
-                                    Log.d("test",String.valueOf(i)+" is not have photo");
-                                }else {
-                                    img_bitmap = httpBitmapGet.HttpPlaces(new URL("https://maps.googleapis.com/maps/api/place/photo?maxwidth=400&photoreference=" + detailSearchResult.getJSONObject("result").getJSONArray("photos").getJSONObject(0).getString("photo_reference") + "&key=AIzaSyCke0pASXyPnnJR-GAAvN3Bz7GltgomfEk"));
+                            } catch (IOException e) {
+                                Log.e("HelloLocationActivity", e.toString());
+                            }
+                            //取得した県名
+                            Value.nowPrefecture = buff.toString();
+
+
+                            //**************公共クラウドシステムの入ったjsonファイルを取得する******************
+                            ////// 公共クラウドシステム（jsonファイル読み込み用） ///////
+                            // jsonファイルを読み込む
+                            JSONObject spots_json = json.ReadJson(getApplicationContext(), "kanko_all_add_limit.json");
+                            int spotsLength = 0;
+                            try {
+                                // 観光地の総数を取得
+                                spotsLength = spots_json.getJSONArray("spots").length();
+                                Log.d("spotsLength", String.valueOf(spotsLength));
+                            } catch (JSONException e) {
+                            }
+
+                            //****************************************開始地点を定義***************************************
+                            Value.itineraryPlaceList.add(new SpotStructure(null, "出発地", null, Value.nowPrefecture, 0, location.getLatitude(), location.getLongitude(), 0, null, null));
+
+
+                            //********************レビュー順にソートし、一つ目の候補地を確定する************************
+                            ArrayList<SpotStructure> firstCandsList = new ArrayList<SpotStructure>();//ソート用リスト初期化
+                            JSONObject neighborDicObject = json.ReadJson(getApplicationContext(), "neighbor_pref.json");//隣接県情報の入ったjson読み出し
+                            try {
+                                for (int i = 0; i < spotsLength; i++) {
+                                    String pref_str = spots_json.getJSONArray("spots").getJSONObject(i).getString("prefectures");
+                                    String genre_str = spots_json.getJSONArray("spots").getJSONObject(i).getString("genreM");
+                                    //隣接県であり、指定ジャンルと一致した場合リストに格納する
+                                    if ((CheckNeighborPrefecture(pref_str, neighborDicObject) && genre_str.equals(Value.genre))) {
+                                        String name_str = spots_json.getJSONArray("spots").getJSONObject(i).getString("name");
+                                        String placeID_str = spots_json.getJSONArray("spots").getJSONObject(i).getString("place_id");
+                                        String explainText = spots_json.getJSONArray("spots").getJSONObject(i).getString("explain");
+                                        double rate_double = spots_json.getJSONArray("spots").getJSONObject(i).getDouble("rating");
+                                        double lat_double = spots_json.getJSONArray("spots").getJSONObject(i).getDouble("lat");
+                                        double lng_double = spots_json.getJSONArray("spots").getJSONObject(i).getDouble("lng");
+                                        float[] distance = new float[3];//二点間の距離算出結果を格納する変数
+                                        Location.distanceBetween(location.getLatitude(), location.getLongitude(), lat_double, lng_double, distance);//入力された場所と候補地との距離算出
+                                        firstCandsList.add(new SpotStructure(placeID_str, name_str, genre_str, pref_str, rate_double, lat_double, lng_double, distance[0], explainText, null));
+                                    }
                                 }
-                                Value.itineraryPlaceList.set(i,new SpotStructure(placeID_str, name_str, genre_str, pref_str, rate_double, lat_double, lng_double, 0,explainText,img_bitmap));
+                            } catch (JSONException e) {
+                                Log.e("test", e.toString());
+                            }
+                            Log.d("test", "first candidate number is" + firstCandsList.size());
+                            //Comparatorを用いレビューが高い順にソートする
+                            Collections.sort(firstCandsList, new SpotStructureRateComparator());
+                            //レビュー4.5以上の候補地から一番近い場所を選ぶ
+                            int minDistanceNumber = 0;
+                            double minDistance = Double.MAX_VALUE;
+                            for (int i = 0; firstCandsList.get(i).rate > 4.5; i++) {
+                                if (firstCandsList.get(i).distance < minDistance) {
+                                    minDistance = firstCandsList.get(i).distance;
+                                    minDistanceNumber = i;
+                                }
+                            }
+                            Log.d("test", "Rate first cand ,top 5");
+                            for (int j = 0; j < 5; j++) {
+                                Log.d("test", firstCandsList.get(j).name + "rate:" + String.valueOf(firstCandsList.get(j).rate) + "distance:" + String.valueOf(firstCandsList.get(j).distance));
+                            }
+                            Value.itineraryPlaceList.add(firstCandsList.get(minDistanceNumber));//一番初めに訪れる観光地
+                            Log.d("test", "first:" + Value.itineraryPlaceList.get(1).name + "dist:" + String.valueOf(Value.itineraryPlaceList.get(1).distance) + "id" + String.valueOf(Value.itineraryPlaceList.get(1).placeID));
+
+                            //******************二箇所目以降の候補地を確定させる*************************
+                            ArrayList<SpotStructure> secondOrLaterCandsList = new ArrayList<SpotStructure>();//リスト初期化
+                            try {
+                                for (int i = 0; i < spotsLength; i++) {
+                                    String pref_str = spots_json.getJSONArray("spots").getJSONObject(i).getString("prefectures");
+                                    //隣接県に位置している観光地をリストに代入する
+                                    if (CheckNeighborPrefecture(pref_str, neighborDicObject)) {
+                                        String genre_str = spots_json.getJSONArray("spots").getJSONObject(i).getString("genreM");
+                                        String name_str = spots_json.getJSONArray("spots").getJSONObject(i).getString("name");
+                                        String placeID_str = spots_json.getJSONArray("spots").getJSONObject(i).getString("place_id");
+                                        double rate_double = spots_json.getJSONArray("spots").getJSONObject(i).getDouble("rating");
+                                        double lat_double = spots_json.getJSONArray("spots").getJSONObject(i).getDouble("lat");
+                                        double lng_double = spots_json.getJSONArray("spots").getJSONObject(i).getDouble("lng");
+                                        String explainText = spots_json.getJSONArray("spots").getJSONObject(i).getString("explain");
+                                        float[] distance = new float[3];//二点間の距離算出結果を格納する変数
+                                        Location.distanceBetween(Value.itineraryPlaceList.get(1).lat, Value.itineraryPlaceList.get(1).lng, lat_double, lng_double, distance);//入力された場所と候補地との距離算出
+                                        secondOrLaterCandsList.add(new SpotStructure(placeID_str, name_str, genre_str, pref_str, rate_double, lat_double, lng_double, distance[0], explainText, null));
+                                    }
+                                }
+                            } catch (JSONException e) {
+                            }
+                            //Comparatorを用い距離が短い順にソートする
+                            Collections.sort(secondOrLaterCandsList, new SpotStructureDistanceComparator());
+                            Log.d("test", "distance second cand from first cand ,top 5");
+                            int candSize = 3;//仮、候補地の数は本来は可変だがとりあえず定数　
+                            for (int i = 0; Value.itineraryPlaceList.size() < candSize; i++) {
+                                if (secondOrLaterCandsList.get(i).distance > 500) {//二番目以降の候補地は、距離が短い順かつ500m以上距離がある場所
+                                    Value.itineraryPlaceList.add(secondOrLaterCandsList.get(i));
+                                }
+                            }
+                            for (int i = 0; i < Value.itineraryPlaceList.size(); i++) {
+                                Log.d("test", "num:" + String.valueOf(i) + "name:" + Value.itineraryPlaceList.get(i).name + "rate" + String.valueOf(Value.itineraryPlaceList.get(i).rate) + "id" + Value.itineraryPlaceList.get(i).placeID);
+                            }
+                            //******************************昼食の場所が二つ目の観光地と仮定して、その場所付近の昼食場所をgoogle neabysearchで検索する**********************
+                            JSONObject nearbySearchResult = null;
+                            ArrayList<SpotStructure> lunchCandsList = new ArrayList<SpotStructure>();//ソート用リスト初期化
+
+                            try {//googleにリクエストを送信し、二番目の観光地付近にあるレストランを全てリストに入れる
+                                nearbySearchResult = httpGet.HttpPlaces(new URL("https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=" + Double.toString(Value.itineraryPlaceList.get(2).lat) + "," + Double.toString(Value.itineraryPlaceList.get(2).lng) + "&radius=2000&type=restaurant&language=ja&key=AIzaSyCke0pASXyPnnJR-GAAvN3Bz7GltgomfEk"));
+                                int candLength = nearbySearchResult.getJSONArray("results").length();
+                                for (int i = 0; i < candLength; i++) {
+                                    String pref_str = "restaurant don't have pref,if you needs, do DetailSearch";
+                                    String genre_str = "restaurant";
+                                    String name_str = nearbySearchResult.getJSONArray("results").getJSONObject(i).getString("name");
+                                    String placeID_str = nearbySearchResult.getJSONArray("results").getJSONObject(i).getString("place_id");
+                                    String explainText = "restaurant isn't have explain message";
+                                    double rate_double = 0;
+                                    double lat_double = nearbySearchResult.getJSONArray("results").getJSONObject(i).getJSONObject("geometry").getJSONObject("location").getDouble("lat");
+                                    double lng_double = nearbySearchResult.getJSONArray("results").getJSONObject(i).getJSONObject("geometry").getJSONObject("location").getDouble("lng");
+                                    float[] distance = new float[3];//二点間の距離算出結果を格納する変数
+                                    Location.distanceBetween(Value.itineraryPlaceList.get(2).lat, Value.itineraryPlaceList.get(2).lng, lat_double, lng_double, distance);//入力された場所と候補地との距離算出
+                                    lunchCandsList.add(new SpotStructure(placeID_str, name_str, genre_str, pref_str, rate_double, lat_double, lng_double, distance[0], explainText, null));
+                                }
+                            } catch (JSONException e) {
+                                Log.e("test", e.toString());
                             } catch (MalformedURLException e) {
                                 e.printStackTrace();
-                            } catch (JSONException e) {
-                                e.printStackTrace();
                             }
-                        }
+                            //レストランの入ったリストを距離順にソート
+                            Collections.sort(lunchCandsList, new SpotStructureDistanceComparator());
+                            //最も距離の近いレストランの場所をitineraryPlaceListに代入
+                            Value.itineraryPlaceList.add(lunchCandsList.get(0));
 
-                        progressDialog.dismiss();//読み込み中表示、終了
-                        handler.post(new Runnable() {
-                            @Override
-                            public void run() {
-                                //ShioriViewにインテントを移す
-                                Intent intent = new Intent(getApplication(), ShioriView.class);
-                                startActivity(intent);
-                                Log.d("test", "in runnable run");
+                            //**********************************しおりに載せる観光地は全て決定されたため、各観光地に対してDetail検索を行い写真とレストランのレートを取得する
+                            for (int i = 0; i < Value.itineraryPlaceList.size(); i++) {
+                                Log.d("executing detail search", Value.itineraryPlaceList.get(i).name);
+                                try {
+                                    JSONObject detailSearchResult = httpGet.HttpPlaces(new URL("https://maps.googleapis.com/maps/api/place/details/json?placeid=" + Value.itineraryPlaceList.get(i).placeID + "&key=AIzaSyCke0pASXyPnnJR-GAAvN3Bz7GltgomfEk&language=ja"));
+                                    String pref_str = Value.itineraryPlaceList.get(i).prefecture;
+                                    String genre_str = Value.itineraryPlaceList.get(i).genre;
+                                    String name_str = Value.itineraryPlaceList.get(i).name;
+                                    String placeID_str = Value.itineraryPlaceList.get(i).placeID;
+                                    double rate_double = 0;
+                                    if (!detailSearchResult.getJSONObject("result").isNull("rating")) {
+                                        rate_double = detailSearchResult.getJSONObject("result").getDouble("rating");
+                                    }
+                                    double lat_double = Value.itineraryPlaceList.get(i).lat;
+                                    double lng_double = Value.itineraryPlaceList.get(i).lat;
+                                    String explainText = Value.itineraryPlaceList.get(i).explainText;
+                                    Bitmap img_bitmap = null;
+                                    if (detailSearchResult.getJSONObject("result").getJSONArray("photos").getJSONObject(0).isNull("photo_reference")) {
+                                        Log.d("test", String.valueOf(i) + " is not have photo");
+                                    } else {
+                                        img_bitmap = httpBitmapGet.HttpPlaces(new URL("https://maps.googleapis.com/maps/api/place/photo?maxwidth=400&photoreference=" + detailSearchResult.getJSONObject("result").getJSONArray("photos").getJSONObject(0).getString("photo_reference") + "&key=AIzaSyCke0pASXyPnnJR-GAAvN3Bz7GltgomfEk"));
+                                    }
+                                    Value.itineraryPlaceList.set(i, new SpotStructure(placeID_str, name_str, genre_str, pref_str, rate_double, lat_double, lng_double, 0, explainText, img_bitmap));
+                                } catch (MalformedURLException e) {
+                                    e.printStackTrace();
+                                } catch (JSONException e) {
+                                    e.printStackTrace();
+                                }
                             }
-                        });
-                    }
-                }).start();
+
+                            progressDialog.dismiss();//読み込み中表示、終了
+                            handler.post(new Runnable() {
+                                @Override
+                                public void run() {
+                                    //ShioriViewにインテントを移す
+                                    Intent intent = new Intent(getApplication(), ShioriView.class);
+                                    startActivity(intent);
+                                    Log.d("test", "in runnable run");
+                                }
+                            });
+                        }
+                    }).start();
+                } // 入力エラーのelseのカッコ
+                Value.error_flag = false; // 入力エラーフラグの初期化
+                Value.genre = "";       // ジャンルの初期化
+
 
 //******************************
 /*
