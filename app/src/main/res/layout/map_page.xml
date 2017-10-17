@@ -6,11 +6,11 @@
     android:background="@mipmap/schedule"
     android:padding="20dp">
 
+    <!-- しおりの中の観光地周辺のmapを表示するページ -->
     <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_margin="60dp">
-        <!-- 枠の中のレイアウト -->
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -24,6 +24,7 @@
                 android:text="観光場所周辺の地図"
                 android:textSize="40dp"/>
 
+            <!-- とりあえず, ドロイドくんを表示しておく -->
             <ImageView
                 android:id="@+id/imageView2"
                 android:layout_width="match_parent"
