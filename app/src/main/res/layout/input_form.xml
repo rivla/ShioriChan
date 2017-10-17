@@ -27,15 +27,15 @@
             android:layout_height="wrap_content"
             android:id="@+id/debugGifuButton" />
         <Button
+            android:text="現在地：名古屋"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/debugNagoyaButton" />
+        <Button
             android:text="現在地：東京"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:id="@+id/debugTokyoButton" />
-        <Button
-            android:text="現在地：香川"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:id="@+id/debugKagawaButton" />
         <Button
             android:text="デバッグモード"
             android:layout_width="wrap_content"

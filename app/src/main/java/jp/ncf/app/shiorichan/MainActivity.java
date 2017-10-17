@@ -3,6 +3,7 @@ package jp.ncf.app.shiorichan;
 import android.Manifest;
 import android.app.ProgressDialog;
 import android.app.TimePickerDialog;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
@@ -18,13 +19,16 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.View;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.TimePicker;
+import android.widget.Toast;
 
 import com.google.android.gms.appindexing.Action;
 import com.google.android.gms.appindexing.AppIndex;
@@ -76,7 +80,7 @@ public class MainActivity extends AppCompatActivity implements
     private HttpBitmapGetter httpBitmapGet;
     final Handler handler = new Handler(Looper.getMainLooper());
     ProgressDialog progressDialog;//読み込み中表示クラス
-
+    private InputMethodManager inputMethodManager;//エンターを押したらキーボードが閉じるように、キーボード取得オブジェクト
 
     private static MainActivity instance = null;
 
@@ -117,6 +121,19 @@ public class MainActivity extends AppCompatActivity implements
         progressDialog.setTitle("読み込み中…");
         progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
 
+        //******************//実機のgoogleplacesversionの問題で緯度経度が取れない場合は、岐阜の座標を代入する*****************************
+        /*                if(location==null) {
+                            location = new Location("a");//文字列はprovider（適当に入れました)
+                            location.setLatitude(35.4650334);
+                            location.setLongitude(136.73929506);
+                        }
+         */
+        location = new Location("a");//とりあえずデバッグ用として、本来GPSの値が入るところに浜松の値を代入
+        location.setLatitude(34.788739);
+        location.setLongitude(137.6420052);
+
+
+
         Button shioriButton = (Button) findViewById(R.id.shioriButton);
         Button sendButton = (Button) findViewById(R.id.debugButton);
         final Button departureTimeButton=(Button)findViewById(R.id.departureTimeButton);
@@ -125,8 +142,49 @@ public class MainActivity extends AppCompatActivity implements
         arriveTimeButton.setText(String.format("%02d:%02d",arriveTime.getHours(),arriveTime.getMinutes()));
         Spinner genreSpinner=(Spinner)findViewById(R.id.genreSpinner);
         final Button startButton=(Button)findViewById(R.id.startButton);
+        final Button tokyoButton=(Button)findViewById(R.id.debugTokyoButton);
+        final Button nagoyaButton=(Button)findViewById(R.id.debugNagoyaButton);
+        final Button gifuButton=(Button)findViewById(R.id.debugGifuButton);
+        final EditText editText = (EditText)findViewById(R.id.editText);        // EditTextオブジェクトを取得
+        //キーボード表示を制御するためのオブジェクト
+        inputMethodManager =  (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
+
+        //EditTextにリスナーをセット
+        editText.setOnKeyListener(new View.OnKeyListener() {
+            @Override            //コールバックとしてonKey()メソッドを定義
+            public boolean onKey(View v, int keyCode, KeyEvent event) {
+                //イベントを取得するタイミングには、ボタンが押されてなおかつエンターキーだったときを指定
+                if((event.getAction() == KeyEvent.ACTION_DOWN) && (keyCode == KeyEvent.KEYCODE_ENTER)){
+                    //キーボードを閉じる
+                    inputMethodManager.hideSoftInputFromWindow(editText.getWindowToken(), InputMethodManager.RESULT_UNCHANGED_SHOWN);
+                    return true;
+                }
+                return false;
+            }
+        });
 
 
+        tokyoButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                location.setLatitude(35.681167);
+                location.setLongitude(139.767052);
+            }
+        });
+        nagoyaButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                location.setLatitude(35.170915);
+                location.setLongitude(136.881537);
+            }
+        });
+        gifuButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                location.setLatitude(35.464412);
+                location.setLongitude(136.737259);
+            }
+        });
         //デバッグモードへ入るボタン
         sendButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -221,8 +279,6 @@ public class MainActivity extends AppCompatActivity implements
                     Value.itineraryPlaceList=new ArrayList<SpotStructure>();
 
                     // ====== 自由テキスト入力受け取り ======
-                    // EditTextオブジェクトを取得
-                    EditText editText = (EditText)findViewById(R.id.editText);
 
                     // 入力された文字を取得
                     final String input_text = editText.getText().toString();
@@ -232,7 +288,12 @@ public class MainActivity extends AppCompatActivity implements
                     // 入力テキストが未入力であった場合
                     if (Value.input_text.length() == 0) {
                         Log.d("input error message", "何も入力されていません");
-                        editText.setError("何も入力されていません");
+                        handler.post(new Runnable() {
+                            @Override
+                            public void run() {
+                                editText.setError("何も入力されていません");
+                            }
+                        });
                         Value.error_flag = true;
                     }
 
@@ -261,7 +322,12 @@ public class MainActivity extends AppCompatActivity implements
                             // 入力テキストが辞書に登録されていなかった場合
                             e.printStackTrace();
                             Log.d("input error message", Value.input_text + " は辞書に登録されていません");
-                            editText.setError(Value.input_text + " は辞書に登録されていません");
+                            handler.post(new Runnable() {
+                                @Override
+                                public void run() {
+                                    editText.setError(Value.input_text + " は辞書に登録されていません");
+                                }
+                            });
                             Value.error_flag = true;
                         }
                     }
@@ -269,16 +335,6 @@ public class MainActivity extends AppCompatActivity implements
                     // 入力エラーが発生していなければ処理を実行する
                     if (Value.error_flag == false) {
 
-//******************//実機のgoogleplacesversionの問題で緯度経度が取れない場合は、岐阜の座標を代入する*****************************
-        /*                if(location==null) {
-                            location = new Location("a");//文字列はprovider（適当に入れました)
-                            location.setLatitude(35.4650334);
-                            location.setLongitude(136.73929506);
-                        }
-         */
-                            location = new Location("a");//とりあえずデバッグ用として、本来GPSの値が入るところに浜松の値を代入
-                            location.setLatitude(34.788739);
-                            location.setLongitude(137.6420052);
 
 //********************現在地の緯度経度から今いる県を取得する*********************************
                             Geocoder mGeocoder;    //緯度・経度から地名への変換
@@ -320,6 +376,7 @@ public class MainActivity extends AppCompatActivity implements
                                         double lat_double = Value.spots_json.getJSONArray("spots").getJSONObject(i).getDouble("lat");
                                         double lng_double = Value.spots_json.getJSONArray("spots").getJSONObject(i).getDouble("lng");
 
+                                        rate_double=rate_double/2.0;
                                         // ====== ジャンルとのマッチング ======
                                         double match_genre_double = 0.0;
                                         if (genre_str.equals(Value.genre)) {
@@ -334,7 +391,9 @@ public class MainActivity extends AppCompatActivity implements
 
                                         // ====== 自由テキストと説明文のマッチング ======
                                         double match_explain_double = (double) isCount(explainText, Value.input_text);
-
+                                        if(match_explain_double>0){
+                                            match_explain_double=1.0;
+                                        }
                                         // ratingの値を更新する
                                         rate_double += match_genre_double + match_name_double + match_explain_double;
 
@@ -415,8 +474,16 @@ public class MainActivity extends AppCompatActivity implements
                             ArrayList<SpotStructure> lunchCandsList = new ArrayList<SpotStructure>();//ソート用リスト初期化
 
                             try {//googleにリクエストを送信し、1番目の観光地付近にあるレストランを全てリストに入れる
-                                nearbySearchResult = httpGet.HttpPlaces(new URL("https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=" + Double.toString(Value.itineraryPlaceList.get(1).lat) + "," + Double.toString(Value.itineraryPlaceList.get(1).lng) + "&radius=2000&type=restaurant&language=ja&key=AIzaSyCke0pASXyPnnJR-GAAvN3Bz7GltgomfEk"));
+                                nearbySearchResult = httpGet.HttpPlaces(new URL("https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=" + Double.toString(Value.itineraryPlaceList.get(1).lat) + "," + Double.toString(Value.itineraryPlaceList.get(1).lng) + "&radius=5000&type=restaurant&language=ja&key=AIzaSyCke0pASXyPnnJR-GAAvN3Bz7GltgomfEk"));
                                 int candLength = nearbySearchResult.getJSONArray("results").length();
+                                if(candLength==0){
+                                    handler.post(new Runnable() {
+                                        @Override
+                                        public void run() {
+                                            Toast.makeText(MainActivity.getInstance(),"候補地付近にレストランがありません。",Toast.LENGTH_LONG).show();
+                                        }
+                                    });
+                                }
                                 for (int i = 0; i < candLength; i++) {
                                     String pref_str = "restaurant don't have pref,if you needs, do DetailSearch";
                                     String genre_str = "レストラン";
@@ -500,25 +567,26 @@ public class MainActivity extends AppCompatActivity implements
                                     double lat_double = Value.spots_json.getJSONArray("spots").getJSONObject(i).getDouble("lat");
                                     double lng_double = Value.spots_json.getJSONArray("spots").getJSONObject(i).getDouble("lng");
                                     float[] distance = new float[3];//二点間の距離算出結果を格納する変数
-                                    Location.distanceBetween(Value.itineraryPlaceList.get(1).lat, Value.itineraryPlaceList.get(1).lng, lat_double, lng_double, distance);//入力された場所と候補地との距離算出
+                                    Location.distanceBetween(Value.itineraryPlaceList.get(Value.itineraryPlaceList.size()-1).lat, Value.itineraryPlaceList.get(Value.itineraryPlaceList.size()-1).lng, lat_double, lng_double, distance);//入力された場所と候補地との距離算出
                                     boolean tempThresholdFlg=false;
                                     //隣接県かつ近すぎない候補地をリストに代入
+                                    //怪しい、地図のアップデートが必要
                                     if (CheckNeighborPrefecture(pref_str, Value.neighborDicObject) && distance[0]>500) {
                                         if(southFromFirstPlace==true && eastFromFirstPlace==true){
                                             //出発地の方向にある観光地はリストに入れない
-                                            if(lat_double<Value.itineraryPlaceList.get(0).lat && lng_double>Value.itineraryPlaceList.get(0).lng){
+                                            if(lat_double<Value.itineraryPlaceList.get(Value.itineraryPlaceList.size()-1).lat && lng_double>Value.itineraryPlaceList.get(Value.itineraryPlaceList.size()-1).lng){
                                                 tempThresholdFlg=true;
                                             }
                                         } else if (southFromFirstPlace == true && eastFromFirstPlace == false) {
-                                            if(lat_double<Value.itineraryPlaceList.get(0).lat && lng_double<Value.itineraryPlaceList.get(0).lng){
+                                            if(lat_double<Value.itineraryPlaceList.get(Value.itineraryPlaceList.size()-1).lat && lng_double<Value.itineraryPlaceList.get(Value.itineraryPlaceList.size()-1).lng){
                                                 tempThresholdFlg=true;
                                             }
                                         }else if(southFromFirstPlace==false&& eastFromFirstPlace==true){
-                                            if(lat_double>Value.itineraryPlaceList.get(0).lat && lng_double<Value.itineraryPlaceList.get(0).lng){
+                                            if(lat_double>Value.itineraryPlaceList.get(Value.itineraryPlaceList.size()-1).lat && lng_double<Value.itineraryPlaceList.get(Value.itineraryPlaceList.size()-1).lng){
                                                 tempThresholdFlg=true;
                                             }
                                         }else{
-                                            if(lat_double>Value.itineraryPlaceList.get(0).lat && lng_double>Value.itineraryPlaceList.get(0).lng){
+                                            if(lat_double>Value.itineraryPlaceList.get(Value.itineraryPlaceList.size()-1).lat && lng_double>Value.itineraryPlaceList.get(Value.itineraryPlaceList.size()-1).lng){
                                                 tempThresholdFlg=true;
                                             }
                                         }
@@ -675,13 +743,13 @@ Log.d("test6",Value.itineraryPlaceList.get(2).departTime.toString());
                                                 rate_double = detailSearchResult.getJSONObject("result").getDouble("rating");
                                             }
                                             if (!detailSearchResult.getJSONObject("result").isNull("formatted_address")) {
-                                                tempExplainMessage=tempExplainMessage+"住所："+detailSearchResult.getJSONObject("result").getString("formatted_address");
+                                                tempExplainMessage=tempExplainMessage+"住所："+detailSearchResult.getJSONObject("result").getString("formatted_address")+"\n";
                                             }
                                             if (!detailSearchResult.getJSONObject("result").isNull("formatted_phone_number")) {
-                                                tempExplainMessage=tempExplainMessage+"電話番号："+detailSearchResult.getJSONObject("result").getString("formatted_phone_number");
+                                                tempExplainMessage=tempExplainMessage+"電話番号："+detailSearchResult.getJSONObject("result").getString("formatted_phone_number")+"\n";
                                             }
                                             if (!detailSearchResult.getJSONObject("result").isNull("website")) {
-                                                tempExplainMessage=tempExplainMessage+"url："+detailSearchResult.getJSONObject("result").getString("website");
+                                                tempExplainMessage=tempExplainMessage+"url："+detailSearchResult.getJSONObject("result").getString("website")+"\n";
                                             }
                                         }
 
@@ -1156,116 +1224,6 @@ Log.d("test6",Value.itineraryPlaceList.get(2).departTime.toString());
         return (target.length() - target.replaceAll(word, "").length()) / word.length();
     }
 }
-
-/*
-//指定座標周辺のロケーション取得用、非同期処理クラス
-final class HttpGetPlaces extends AsyncTask<URL, Void, String> {
-
-    private CountDownLatch _latch;
-
-    public HttpGetPlaces(CountDownLatch latch) {
-        super();
-        this._latch=latch;
-    }
-
-    @Override
-    protected String doInBackground(URL... urls) {
-        try {
-            _latch.await(5, TimeUnit.SECONDS);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-        // 取得したテキストを格納する変数
-        final StringBuilder result = new StringBuilder();
-        // アクセス先URL
-        final URL url = urls[0];
-
-        HttpURLConnection con = null;
-        try {
-            // ローカル処理
-            // コネクション取得
-            con = (HttpURLConnection) url.openConnection();
-            con.connect();
-
-            // HTTPレスポンスコード
-            final int status = con.getResponseCode();
-            if (status == HttpURLConnection.HTTP_OK) {
-                // 通信に成功した
-                // テキストを取得する
-                final InputStream in = con.getInputStream();
-                final String encoding = con.getContentEncoding();
-                final InputStreamReader inReader = new InputStreamReader(in);
-                final BufferedReader bufReader = new BufferedReader(inReader);
-                String line = null;
-                // 1行ずつテキストを読み込む
-                while((line = bufReader.readLine()) != null) {
-                    result.append(line);
-                }
-                bufReader.close();
-                inReader.close();
-                in.close();
-            }
-
-        } catch (MalformedURLException e1) {
-            e1.printStackTrace();
-        } catch (ProtocolException e1) {
-            e1.printStackTrace();
-        } catch (IOException e1) {
-            e1.printStackTrace();
-        } finally {
-            if (con != null) {
-                // コネクションを切断
-
-                con.disconnect();
-            }
-        }
-
-        return result.toString();
-    }
-    @Override
-        protected void onPostExecute(String result) {
-
-            Log.d("test","result");
-            JSONObject jsonObject=null;
-            try{
-                jsonObject=new JSONObject(result);
-                //resultの総数を取得
-            int candLength=jsonObject.getJSONArray("results").length();
-            //表示用の文字列生成
-            for(int i=0;i<candLength;i++){
-                String id=jsonObject.getJSONArray("results").getJSONObject(i).getString("place_id");
-                String name=jsonObject.getJSONArray("results").getJSONObject(i).getString("name");
-                Double lat=jsonObject.getJSONArray("results").getJSONObject(i).getJSONObject("geometry").getJSONObject("location").getDouble("lat");
-                Double lng=jsonObject.getJSONArray("results").getJSONObject(i).getJSONObject("geometry").getJSONObject("location").getDouble("lng");
-                Value.spotList.add(new SpotStructure(id,name,0,lat,lng));//候補地のIDをリストに格納する
-                Log.d("test","in asynctask,"+name);
-            }
-            //nextPageToken抜き取り
-            if(!jsonObject.isNull("next_page_token")){
-                new HttpGetPlaces(_latch).execute(new URL("https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=" + String.valueOf(35) + "," +
-                        String.valueOf(135) + "&pagetoken=" + jsonObject.getString("next_page_token") + "&radius=50000&language=ja&key=AIzaSyCke0pASXyPnnJR-GAAvN3Bz7GltgomfEk"));
-            }else{
-
-                _latch.countDown();
-
-            }
-        } catch (JSONException e) {
-            e.printStackTrace();
-
-        } catch (MalformedURLException e) {
-            e.printStackTrace();
-        }
-    }
-}
-*/
-
-
-
-
-
-
-
-
 
 //スレッドを使い、並列でjsonの読み出しを行うクラス。
 class LoadJsonInThread extends Thread {
