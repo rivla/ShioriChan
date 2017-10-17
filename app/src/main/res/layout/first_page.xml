@@ -40,7 +40,7 @@
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_horizontal|center"
                     android:gravity="center_horizontal|center"
-                    android:text="〇〇のしおり xx/yy"
+                    android:text="textView18"
                     android:textSize="50dp" />
 
             </FrameLayout>
@@ -70,7 +70,7 @@
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_vertical|center_horizontal"
                     android:padding="10dp"
-                    android:text="名前 : しおりちゃん"
+                    android:text="textView19"
                     android:textSize="40dp" />
 
             </FrameLayout>

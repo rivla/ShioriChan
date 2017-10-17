@@ -80,8 +80,7 @@
                     android:id="@+id/imageView6"
                     android:layout_width="match_parent"
                     android:layout_height="30dp"
-                    android:layout_weight="0.45"
-                    android:src="@mipmap/arrow_blue" />
+                    android:layout_weight="0.45" />
                 <!-- ココまで1セット -->
 
                 <LinearLayout
@@ -112,8 +111,7 @@
                     android:id="@+id/imageView7"
                     android:layout_width="match_parent"
                     android:layout_height="30dp"
-                    android:layout_weight="0.45"
-                    android:src="@mipmap/arrow_blue" />
+                    android:layout_weight="0.45" />
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -143,8 +141,7 @@
                     android:id="@+id/imageView8"
                     android:layout_width="match_parent"
                     android:layout_height="30dp"
-                    android:layout_weight="0.45"
-                    android:src="@mipmap/arrow_blue" />
+                    android:layout_weight="0.45" />
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -174,8 +171,7 @@
                     android:id="@+id/imageView9"
                     android:layout_width="match_parent"
                     android:layout_height="30dp"
-                    android:layout_weight="0.45"
-                    android:src="@mipmap/arrow_blue" />
+                    android:layout_weight="0.45" />
 
                 <LinearLayout
                     android:layout_width="match_parent"
