@@ -307,14 +307,34 @@ public class MainActivity extends AppCompatActivity implements
                                 for (int i = 0; i < Value.spots_json.getJSONArray("spots").length(); i++) {
                                     String pref_str = Value.spots_json.getJSONArray("spots").getJSONObject(i).getString("prefectures");
                                     String genre_str = Value.spots_json.getJSONArray("spots").getJSONObject(i).getString("genreM");
-                                    //隣接県であり、指定ジャンルと一致した場合リストに格納する
-                                    if ((CheckNeighborPrefecture(pref_str, Value.neighborDicObject) && genre_str.equals(Value.genre))) {
+                                    //隣接県であった場合リストに格納する
+                                    if (CheckNeighborPrefecture(pref_str, Value.neighborDicObject)) {
+
                                         String name_str = Value.spots_json.getJSONArray("spots").getJSONObject(i).getString("name");
                                         String placeID_str = Value.spots_json.getJSONArray("spots").getJSONObject(i).getString("place_id");
                                         String explainText = Value.spots_json.getJSONArray("spots").getJSONObject(i).getString("explain");
                                         double rate_double = Value.spots_json.getJSONArray("spots").getJSONObject(i).getDouble("rating");
                                         double lat_double = Value.spots_json.getJSONArray("spots").getJSONObject(i).getDouble("lat");
                                         double lng_double = Value.spots_json.getJSONArray("spots").getJSONObject(i).getDouble("lng");
+
+                                        // ====== ジャンルとのマッチング ======
+                                        double match_genre_double = 0.0;
+                                        if (genre_str.equals(Value.genre)) {
+                                            match_genre_double = 2.0;
+                                        }
+
+                                        // ====== 自由テキストと観光地名のマッチング ======
+                                        double match_name_double = 0.0;
+                                        if (isMatch(name_str, Value.input_text) == true) {
+                                            match_name_double = 2.0;
+                                        }
+
+                                        // ====== 自由テキストと説明文のマッチング ======
+                                        double match_explain_double = (double) isCount(explainText, Value.input_text);
+
+                                        // ratingの値を更新する
+                                        rate_double += match_genre_double + match_name_double + match_explain_double*2.0;
+
                                         float[] distance = new float[3];//二点間の距離算出結果を格納する変数
                                         Location.distanceBetween(location.getLatitude(), location.getLongitude(), lat_double, lng_double, distance);//入力された場所と候補地との距離算出
                                         firstCandsList.add(new SpotStructure(placeID_str, name_str, genre_str, pref_str, rate_double, lat_double, lng_double, distance[0], explainText, null,null,null,null));
@@ -333,13 +353,15 @@ public class MainActivity extends AppCompatActivity implements
                                 int minDistanceNumber = 0;
                                 double minDistance = Double.MAX_VALUE;
                                 for (int i = 0; firstCandsList.get(i).rate > 4.5; i++) {
+                                    Log.d("result", firstCandsList.get(i).rate + String.valueOf(firstCandsList.get(i).name));
                                     if (firstCandsList.get(i).distance < minDistance) {
                                         minDistance = firstCandsList.get(i).distance;
                                         minDistanceNumber = i;
                                     }
                                 }
                                 //一番初めに訪れる観光地決定、旅程リストに追加
-                                Value.itineraryPlaceList.add(firstCandsList.get(minDistanceNumber));
+//                                Value.itineraryPlaceList.add(firstCandsList.get(minDistanceNumber));
+                                Value.itineraryPlaceList.add(firstCandsList.get(0));
                                 //directionAPIに出発地と第一観光地を渡し、どれくらい時間がかかるかを求める。
                                 try {
                                     JSONObject tempDirectionSearch = httpGet.HttpPlaces(new URL("https://maps.googleapis.com/maps/api/directions/json?origin=" + location.getLatitude() + "," + location.getLongitude() + "&destination=place_id:" + Value.itineraryPlaceList.get(1).placeID + "&key=AIzaSyCke0pASXyPnnJR-GAAvN3Bz7GltgomfEk"));
@@ -1048,6 +1070,23 @@ public class MainActivity extends AppCompatActivity implements
         Log.e("test","category to spending time error!");
         return null;
 
+    }
+
+    // ====== テキストのマッチング（部分一致）を判定するメソッド ======
+    public boolean isMatch(String target, String word) {
+        // 観光地名に自由テキストが含まれているかどうか
+        if (target.matches(".*" + word + ".*")) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    // ====== テキストのマッチング（一致回数）を返すメソッド ======
+    public int isCount(String target, String word) {
+        // (説明文の文字数ー自由テキストの文字を削除した説明文の文字数) / (自由テキストの文字数)
+        // つまり，(説明文に存在する自由テキストの文字数の合計) / （自由テキストの文字数）＝自由テキストの個数
+        return (target.length() - target.replaceAll(word, "").length()) / word.length();
     }
 }
 
