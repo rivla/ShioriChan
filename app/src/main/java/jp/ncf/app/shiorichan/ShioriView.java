@@ -1,11 +1,8 @@
 package jp.ncf.app.shiorichan;
 
-import android.media.Image;
 import android.util.Log;
-
 import android.app.Activity;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.animation.AnimationUtils;
@@ -59,7 +56,7 @@ public class ShioriView extends Activity {
             ImageView imageView5 = (ImageView)v1.findViewById(R.id.imageView5); // 表紙の中央の画像
             imageView5.setImageBitmap(Value.itineraryPlaceList.get(1).getImage()); //
         } else{
-            Log.d(" root_length < 1","受け取ったスケジュールの場所の数が"+Value.itineraryPlaceList.size()+"個です");
+            Log.d("from ShioriView.java : ","受け取ったスケジュールの場所の数が"+Value.itineraryPlaceList.size()+"個です");
         }
             viewFlipper.addView(v1); // ViewFlipperにv1のレイアウトを追加
 
@@ -133,7 +130,7 @@ public class ShioriView extends Activity {
                         v2 = getLayoutInflater().inflate(R.layout.schedule_page, null); // 2週目用
                         break;
                     default: // まずありえない
-                        Log.d("i%5 が0から4以外の数値を返しました","");
+                        Log.d("from ShioriView.java : ","i%5 が0から4以外の数値を返しました");
                         break;
                 }
             }
@@ -169,16 +166,16 @@ public class ShioriView extends Activity {
             // === 観光地の周辺地図のページ === //
             // Mapをつくる
             // Value.itineraryPlaceList.get(0).mapImage // これでgoogle のマップが取ってこれる
-            // ImageViewをつくっってそこに画像を投げる
+            // ImageViewをつくってそこに画像を投げる
 
             View v4 = this.getLayoutInflater().inflate(R.layout.map_page, null);
             // 周辺地図
-            if (Value.itineraryPlaceList.get(0).mapImage != null) {
+            if (Value.itineraryPlaceList.size() > 0) {
                 ImageView imageView2 = (ImageView) v4.findViewById(R.id.imageView2);
                 imageView2.setImageBitmap(Value.itineraryPlaceList.get(0).mapImage); //
             }
             else{
-                Log.d("no image map received","周辺地図を作成出来ませんでした...");
+                Log.d("from ShioriView.java : ","地図を作成出来ませんでした\nValue.itineraryPlaceList.get(0).mapImage を確認して下さい");
             }
             // viewFlipperに追加
             viewFlipper.addView(v4);
@@ -198,7 +195,7 @@ public class ShioriView extends Activity {
 
                 // Handling left to right screen swap.
                 if (X - firstX > adjust) {
-                    Log.d("右方向のスワイプを検知しました","先のページに移動します");
+                    Log.d("from ShioriView.java : ","右方向のスワイプを検知しました -> 先のページに移動します");
                     // Next screen comes in from left.
                     viewFlipper.setInAnimation(AnimationUtils.loadAnimation(this, R.anim.slide_in_from_left));
                     // Current screen goes out from right.
@@ -210,7 +207,7 @@ public class ShioriView extends Activity {
 
                 // Handling right to left screen swap.
                 else if (firstX - X > adjust) {
-                    Log.d("左方向のスワイプを検知しました","前のページに移動します");
+                    Log.d("from ShioriView.java : ","左方向のスワイプを検知しました -> 前のページに移動します");
                     // Next screen comes in from right.
                     viewFlipper.setInAnimation(AnimationUtils.loadAnimation(this, R.anim.slide_in_from_right));
                     // Current screen goes out from left.

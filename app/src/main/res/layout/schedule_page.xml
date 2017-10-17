@@ -9,13 +9,9 @@
     android:weightSum="1">
 
     <!--
-    とりあえず、何もない状態だとまずいので、時刻と観光地名を記述できる
-    最低限のレイアウトでスケジュール画面を作成した
-    課題点 : googleMapの劣化に見える
-            彩りが少ない
-    何かアイデアがあれば福井まで気兼ねなく伝えて下さい...
+    時刻と観光地名を表示するレイアウト
+    今はデバッグ用のtextViewXXと表示されているが、あとで空白にします
     -->
-
 
     <FrameLayout
         android:layout_width="match_parent"
@@ -116,7 +112,7 @@
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_weight="0.47"
+                    android:layout_weight="0.45"
                     android:orientation="horizontal">
 
                     <TextView
