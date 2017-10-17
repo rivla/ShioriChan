@@ -1,14 +1,13 @@
 package jp.ncf.app.shiorichan;
 
-import android.util.Log;
-
 import android.app.Activity;
 import android.os.Bundle;
-
-import android.widget.ViewFlipper;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.animation.AnimationUtils;
 import android.widget.TextView;
+import android.widget.ViewFlipper;
 
 /**
  * Created by ideally on 2017/10/10.
@@ -19,7 +18,10 @@ import android.widget.TextView;
 public class ShioriView extends Activity {
 
     private ViewFlipper viewFlipper;
-
+    //フリックのＸ位置
+    private float X,firstX;
+    // フリックの遊び部分（最低限移動しないといけない距離）
+    private float adjust = 100;
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -27,8 +29,8 @@ public class ShioriView extends Activity {
 
         viewFlipper = (ViewFlipper) findViewById(R.id.viewflipper);
 
-        viewFlipper.setAutoStart(true);     //自動でスライドショーを開始
-        viewFlipper.setFlipInterval(1000);  //更新間隔(ms単位)
+   //     viewFlipper.setAutoStart(true);     //自動でスライドショーを開始
+   //     viewFlipper.setFlipInterval(1000);  //更新間隔(ms単位)
 
 
         // ViewFlipperでつかうlayoutの設定
@@ -87,6 +89,45 @@ public class ShioriView extends Activity {
 
         viewFlipper.addView(v3);
     }
+
+    // Using the following method, we will handle all screen swaps.
+    @Override
+    public boolean onTouchEvent(MotionEvent touchevent) {
+        Log.d("test","in ontouchevent");
+        switch (touchevent.getAction()) {
+            case MotionEvent.ACTION_DOWN:
+                firstX = touchevent.getX();
+                break;
+            case MotionEvent.ACTION_UP:
+                X = touchevent.getX();
+
+                // Handling left to right screen swap.
+                if (X - firstX > adjust) {
+                    // Next screen comes in from left.
+                    viewFlipper.setInAnimation(AnimationUtils.loadAnimation(this, R.anim.slide_in_from_left));
+                    // Current screen goes out from right.
+                    viewFlipper.setOutAnimation(AnimationUtils.loadAnimation(this, R.anim.slide_out_to_right));
+
+                    // Display next screen.
+                    viewFlipper.showNext();
+                }
+
+                // Handling right to left screen swap.
+                else if (firstX - X > adjust) {
+                    // Next screen comes in from right.
+                    viewFlipper.setInAnimation(AnimationUtils.loadAnimation(this, R.anim.slide_in_from_right));
+                    // Current screen goes out from left.
+                    viewFlipper.setOutAnimation(AnimationUtils.loadAnimation(this, R.anim.slide_out_to_left));
+
+
+                    // Display previous screen.
+                    viewFlipper.showPrevious();
+                }
+                break;
+        }
+        return false;
+    }
+
 
     // フリックイベントで
 //    public boolean onFling(MotionEvent e1 // TouchDown時のイベント
