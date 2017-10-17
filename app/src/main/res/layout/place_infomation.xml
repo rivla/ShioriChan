@@ -77,19 +77,19 @@
                 android:id="@+id/textView15"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="＜観光地の名称＞"
-                android:textSize="50dp" />
+                android:text="textView15"
+                android:textSize="30dp" />
 
             <Space
                 android:layout_width="match_parent"
-                android:layout_height="30dp" />
+                android:layout_height="40dp" />
 
             <!-- 観光地の情報 WebViewからの情報を反映？ -->
             <TextView
                 android:id="@+id/textView16"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="＜観光地の説明・情報を入れる＞長くなるとこんな感じに折り返します"
+                android:layout_height="match_parent"
+                android:text="textView16"
                 android:textSize="30dp" />
 
             <Space

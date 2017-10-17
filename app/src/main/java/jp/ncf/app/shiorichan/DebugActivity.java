@@ -118,28 +118,32 @@ public class DebugActivity extends Activity
                     String size_width = "600"; // 640x640まで
                     String size_height = "400";
                     String zoom = "13"; // 0-22まで指定可能
-                    // 岐阜大学 -> やっぱりラーメン -> 岐阜大学病院
-                    String[] markers_lat = {"35.4665196", "35.456388", "35.4679847"};
-                    String[] markers_lng = {"136.7381877", "136.7335473", "136.7312057"};
 
                     // ポリライン(経路の線)は未だ出せていません...
-                    String map_URL = "https://maps.googleapis.com/maps/api/staticmap?&"+
-                            "center="+markers_lat[0]+","+markers_lng[0]+
-                            "&zoom="+zoom+
-                            "&size="+size_width+"x"+size_height+
-                            "&maptype=roadmap"+
-                            "&markers="+markers_lat[0]+","+markers_lng[0]+
-                            "&markers="+markers_lat[1]+","+markers_lng[1]+
-                            "&markers="+markers_lat[2]+","+markers_lng[2]+
-//                            "&path={weight:24|color:red|"+markers_lat[0]+","+markers_lng[0]+
-//                            "|"+markers_lat[1]+","+markers_lng[1]+
-//                            "|"+markers_lat[2]+","+markers_lng[2]+
-//                            "}"+ // 経路の情報
-                            "&key=AIzaSyCke0pASXyPnnJR-GAAvN3Bz7GltgomfEk";
+                    String map_URL = "https://maps.googleapis.com/maps/api/staticmap?";
+                    // ココから詳細設定を追加していき、リクエストのURLを作る
+                    map_URL += "&center="+Value.itineraryPlaceList.get(0).getLat()+","+Value.itineraryPlaceList.get(0).getLng(); // とりあえず、現状はスタート地点にしている
+                    map_URL += "&zoom="+zoom; // mapの拡大率
+                    map_URL += "&size="+size_width+"x"+size_height; // 画像のサイズ
+
+                    // ピンの設定
+                    map_URL += "&maptype=roadmap"; //
+                    for(int i=0; i<Value.itineraryPlaceList.size(); i++) {
+                        map_URL += "&markers=" + Value.itineraryPlaceList.get(i).getLat() + "," + Value.itineraryPlaceList.get(i).getLng();
+                    }
+
+                    // 経路の線 // 未実装
+//                  map_URL += "&path={weight:24|color:red|"+markers_lat[0]+","+markers_lng[0];
+//                  map_URL += "|"+markers_lat[1]+","+markers_lng[1];
+//                  map_URL += "|"+markers_lat[2]+","+markers_lng[2];
+//                  map_URL += "}"; // 経路の情報
+
+                    // API_key
+                    map_URL += "&key=AIzaSyCke0pASXyPnnJR-GAAvN3Bz7GltgomfEk";
 
                     // Google StaticMap の image を取得
                     ImageGetTask task = new ImageGetTask(imageView11);
-                    task.execute(map_URL);
+                    task.execute(map_URL); // ここでImageViewに反映も行っている
 
                 } catch (MalformedURLException e) {
                     e.printStackTrace();
