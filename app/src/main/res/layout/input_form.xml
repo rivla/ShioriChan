@@ -11,25 +11,7 @@
     android:paddingTop="@dimen/activity_vertical_margin"
     tools:context="jp.ncf.app.shiorichan.MainActivity">
 
-    <LinearLayout
-        android:orientation="vertical"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="top">
 
-        <EditText
-            android:id="@+id/editText"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:hint="自然，城，歴史など，自由な言葉を入力してください"
-            />
-        <Button
-            android:text="はじめる"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:id="@+id/startButton"
-            />
-    </LinearLayout>
 
 
     <LinearLayout
@@ -39,18 +21,32 @@
         android:layout_alignParentBottom="true"
         android:layout_alignParentRight="true"
         android:layout_centerInParent="true">
+        <Button
+            android:text="現在地：岐阜"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/debugGifuButton" />
+        <Button
+            android:text="現在地：東京"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/debugTokyoButton" />
+        <Button
+            android:text="現在地：香川"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/debugKagawaButton" />
+        <Button
+            android:text="デバッグモード"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/debugButton" />
 
-    <Button
-        android:text="デバッグモード"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/debugButton" />
-
-    <Button
-        android:text="しおり表示"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/shioriButton" />
+        <Button
+            android:text="しおり表示"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/shioriButton" />
     </LinearLayout>
 
     <LinearLayout
@@ -84,7 +80,7 @@
 
 
         <TextView
-            android:text="興味のあるジャンルを選択してください"
+            android:text="興味のあるジャンルを選択してください(現状意味なし)"
             android:textSize="15dp"
             android:layout_marginTop="30dp"
             android:gravity="center_horizontal"
@@ -131,9 +127,18 @@
             android:layout_gravity="center"
             android:layout_height="wrap_content"
             android:id="@+id/arriveTimeButton" />
-
         </LinearLayout>
+        <EditText
+            android:id="@+id/editText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:hint="自然，城，歴史など，自由な言葉を入力してください"
+            />
+        <Button
+            android:text="はじめる"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:id="@+id/startButton"
+            />
     </LinearLayout>
-
-
 </RelativeLayout>
