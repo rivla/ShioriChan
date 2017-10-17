@@ -156,26 +156,38 @@ public class ShioriView extends Activity {
     }
 
 
-    // スワイプでページめくりを実装する　予定
-    public boolean onFling(MotionEvent e1 // TouchDown時のイベント
-            ,MotionEvent e2   // TouchDown後、指の移動毎に発生するイベント
-            ,float velocityX  // X方向の移動距離
-            ,float velocityY)  // Y方向の移動距離
-    {
-        // 絶対値の取得
-        float dx = Math.abs(velocityX);
-        float dy = Math.abs(velocityY);
-        // 指の移動方向(縦横)および距離の判定
-        Log.d("移動距離", dx+"  "+dy);
-        if (dx > dy && dx > 100) {
-            // 指の移動方向(左右)の判定
-            if (e1.getX() < e2.getX()) {
-                Log.d("移動距離","右にスワイプ");
-                viewFlipper.showPrevious();
-            } else {
-                viewFlipper.showNext();
-            }
-            return true;
+    // Using the following method, we will handle all screen swaps.
+    public boolean onTouchEvent(MotionEvent touchevent) {
+        switch (touchevent.getAction()) {
+
+            case MotionEvent.ACTION_DOWN:
+                firstX = touchevent.getX();
+                break;
+            case MotionEvent.ACTION_UP:
+                X = touchevent.getX();
+
+                // Handling left to right screen swap.
+                if (X - firstX > adjust) {
+                    // Next screen comes in from left.
+                    viewFlipper.setInAnimation(AnimationUtils.loadAnimation(this, R.anim.slide_in_from_left));
+                    // Current screen goes out from right.
+                    viewFlipper.setOutAnimation(AnimationUtils.loadAnimation(this, R.anim.slide_out_to_right));
+
+                    // Display next screen.
+                    viewFlipper.showNext();
+                }
+
+                // Handling right to left screen swap.
+                else if (firstX - X > adjust) {
+                    // Next screen comes in from right.
+                    viewFlipper.setInAnimation(AnimationUtils.loadAnimation(this, R.anim.slide_in_from_right));
+                    // Current screen goes out from left.
+                    viewFlipper.setOutAnimation(AnimationUtils.loadAnimation(this, R.anim.slide_out_to_left));
+
+                    // Display previous screen.
+                    viewFlipper.showPrevious();
+                }
+                break;
         }
         return false;
     }
