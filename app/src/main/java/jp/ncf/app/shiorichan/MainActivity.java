@@ -617,10 +617,10 @@ public class MainActivity extends AppCompatActivity implements
                                         mapsStaticsResult = httpBitmapGet.HttpPlaces(new URL("https://maps.googleapis.com/maps/api/staticmap?size=400x400&path=color:0xff0000ff|weight:5%7Cenc:"+Value.itineraryPlaceList.get(i).polyline+"&key=AIzaSyCke0pASXyPnnJR-GAAvN3Bz7GltgomfEk"));
                                     }
                                     JSONObject detailSearchResult = httpGet.HttpPlaces(new URL("https://maps.googleapis.com/maps/api/place/details/json?placeid=" + Value.itineraryPlaceList.get(i).placeID + "&key=AIzaSyCke0pASXyPnnJR-GAAvN3Bz7GltgomfEk&language=ja"));
+                                    double rate_double = 0;
+                                    String tempExplainMessage=Value.itineraryPlaceList.get(i).explainText;
                                     if(Value.itineraryPlaceList.get(i).genre.equals("レストラン")) {
                                         //レストランは詳細検索を行っておらず、レート値がないためここで得る
-                                        double rate_double = 0;
-                                        String tempExplainMessage=Value.itineraryPlaceList.get(i).explainText;
                                         if (!detailSearchResult.isNull("result")) {
                                             if (!detailSearchResult.getJSONObject("result").isNull("rating")) {
                                                 rate_double = detailSearchResult.getJSONObject("result").getDouble("rating");
@@ -628,8 +628,11 @@ public class MainActivity extends AppCompatActivity implements
                                             if (!detailSearchResult.getJSONObject("result").isNull("formatted_address")) {
                                                 tempExplainMessage=tempExplainMessage+"住所："+detailSearchResult.getJSONObject("result").getString("formatted_address");
                                             }
-                                            if (!detailSearchResult.getJSONObject("result").isNull("formatted_address")) {
-                                                tempExplainMessage=tempExplainMessage+"住所："+detailSearchResult.getJSONObject("result").getString("formatted_address");
+                                            if (!detailSearchResult.getJSONObject("result").isNull("formatted_phone_number")) {
+                                                tempExplainMessage=tempExplainMessage+"電話番号："+detailSearchResult.getJSONObject("result").getString("formatted_phone_number");
+                                            }
+                                            if (!detailSearchResult.getJSONObject("result").isNull("website")) {
+                                                tempExplainMessage=tempExplainMessage+"url："+detailSearchResult.getJSONObject("result").getString("website");
                                             }
                                         }
 
@@ -650,7 +653,7 @@ public class MainActivity extends AppCompatActivity implements
                                             Value.itineraryPlaceList.get(i).lat,
                                             Value.itineraryPlaceList.get(i).lng,
                                             Value.itineraryPlaceList.get(i).distance,
-                                            Value.itineraryPlaceList.get(i).explainText,
+                                            tempExplainMessage,
                                             img_bitmap,
                                             Value.itineraryPlaceList.get(i).departTime,
                                             mapsStaticsResult,
@@ -662,6 +665,47 @@ public class MainActivity extends AppCompatActivity implements
                                     e.printStackTrace();
                                 }
                             }
+//*****************************旅程全体の地図取得******************************
+                            String waypoints="waypoints=";
+                            for(int i=1;i<Value.itineraryPlaceList.size()-2;i++){
+                                waypoints=waypoints+"place_id:"+Value.itineraryPlaceList.get(i).placeID+"|";
+                            }
+                            waypoints=waypoints.substring(0,waypoints.length()-1);
+
+                            try {
+                                JSONObject tempDirectionSearch = httpGet.HttpPlaces(new URL("https://maps.googleapis.com/maps/api/directions/json?" +
+                                        "origin=" + location.getLatitude() + "," + location.getLongitude() + "&" +
+                                        "destination=place_id:" + Value.itineraryPlaceList.get(1).placeID + "&" +
+                                        waypoints+"&"+
+                                        "key=AIzaSyCke0pASXyPnnJR-GAAvN3Bz7GltgomfEk"));
+                                Log.d("test",tempDirectionSearch.toString());
+                                String tempPolyline = tempDirectionSearch.getJSONArray("routes").getJSONObject(0).getJSONObject("overview_polyline").getString("points");
+
+                                Bitmap mapsStaticsResult = httpBitmapGet.HttpPlaces(new URL("https://maps.googleapis.com/maps/api/staticmap?" +
+                                        "size=400x400&" +
+                                        "path=color:0xff0000ff|weight:5%7Cenc:"+tempPolyline+"&" +
+                                        "key=AIzaSyCke0pASXyPnnJR-GAAvN3Bz7GltgomfEk"));
+                                Value.itineraryPlaceList.set(0,new SpotStructure(
+                                        Value.itineraryPlaceList.get(0).placeID,
+                                        Value.itineraryPlaceList.get(0).name,
+                                        Value.itineraryPlaceList.get(0).genre,
+                                        Value.itineraryPlaceList.get(0).prefecture,
+                                        Value.itineraryPlaceList.get(0).rate,
+                                        Value.itineraryPlaceList.get(0).lat,
+                                        Value.itineraryPlaceList.get(0).lng,
+                                        Value.itineraryPlaceList.get(0).distance,
+                                        Value.itineraryPlaceList.get(0).explainText,
+                                        Value.itineraryPlaceList.get(0).image,
+                                        Value.itineraryPlaceList.get(0).departTime,
+                                        mapsStaticsResult,
+                                        Value.itineraryPlaceList.get(0).polyline
+                                ));
+                            } catch (MalformedURLException e) {
+                                e.printStackTrace();
+                            } catch (JSONException e) {
+                                e.printStackTrace();
+                            }
+
 
                             progressDialog.dismiss();//読み込み中表示、終了
                             handler.post(new Runnable() {
