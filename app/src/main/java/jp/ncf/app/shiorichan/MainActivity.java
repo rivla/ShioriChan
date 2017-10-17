@@ -59,6 +59,9 @@ class Value {
     public static String nowPrefecture=null;
     public static String input_text = null; // 自由テキスト入力文字列
     public static boolean error_flag = false; // 入力エラーのフラグ
+    public static JSONObject spots_json;
+    public static JSONObject neighborDicObject;
+    public static JSONObject pair_json;
 }
 
 
@@ -191,12 +194,20 @@ public class MainActivity extends AppCompatActivity implements
             public void onNothingSelected(AdapterView<?> parent) {
             }
         });
-
-
+        //スレッド上でJsonの読み込みを開始する。ユーザーが入力を行っている間、並行して読み出しが出来る。
+        final LoadJsonInThread loadJsonInThread =new LoadJsonInThread();
+        loadJsonInThread.start();
         //スタートボタン
         startButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                progressDialog.show();
+                //Jsonの読み出しが終わっていなかったら、それをまつ。
+                try {
+                    loadJsonInThread.join();
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
                 Log.d("test", "startButton pusshed");
 
                 // 初期化処理
@@ -223,12 +234,10 @@ public class MainActivity extends AppCompatActivity implements
                 // 入力テキストが存在する場合，ジャンルとのマッチングを行う
                 else {
                     // ====== 自由テキストをジャンルに変換 ======
-                    // 辞書とジャンル名の対応jsonを読み込む
-                    JSONObject pair_json = json.ReadJson(getApplicationContext(), "pair.json");
                     // 自由テキストが辞書に登録されている場合の処理
                     try {
                         // 自由テキストに対応するジャンル名のリストを取得する
-                        JSONArray genre_list = pair_json.getJSONArray(Value.input_text);
+                        JSONArray genre_list = Value.pair_json.getJSONArray(Value.input_text);
 
                         // ジャンルが１つであれば決定
                         if (genre_list.length() == 1) {
@@ -255,7 +264,6 @@ public class MainActivity extends AppCompatActivity implements
                 // 入力エラーが発生していなければ処理を実行する
                 if (Value.error_flag == false) {
 
-                    progressDialog.show();
                     //◆スレッド処理開始
                     new Thread(new Runnable() {
                         @Override
@@ -289,17 +297,6 @@ public class MainActivity extends AppCompatActivity implements
                             Value.nowPrefecture = buff.toString();
 
 
-//**************公共クラウドシステムの入ったjsonファイルを取得する******************
-                            ////// 公共クラウドシステム（jsonファイル読み込み用） ///////
-                            // jsonファイルを読み込む
-                            JSONObject spots_json = json.ReadJson(getApplicationContext(), "kanko_all_add_limit.json");
-                            int spotsLength = 0;
-                            try {
-                                // 観光地の総数を取得
-                                spotsLength = spots_json.getJSONArray("spots").length();
-                                Log.d("spotsLength", String.valueOf(spotsLength));
-                            } catch (JSONException e) {
-                            }
 
 //****************************************開始地点を定義***************************************
                             Value.itineraryPlaceList.add(new SpotStructure(null, "出発地", null, Value.nowPrefecture, 0, location.getLatitude(), location.getLongitude(), 0, null, null,departureTime,null,null));
@@ -307,19 +304,18 @@ public class MainActivity extends AppCompatActivity implements
 
 //********************レビュー順にソートし、一つ目の候補地を確定する************************
                             ArrayList<SpotStructure> firstCandsList = new ArrayList<SpotStructure>();//ソート用リスト初期化
-                            JSONObject neighborDicObject = json.ReadJson(getApplicationContext(), "neighbor_pref.json");//隣接県情報の入ったjson読み出し
                             try {
-                                for (int i = 0; i < spotsLength; i++) {
-                                    String pref_str = spots_json.getJSONArray("spots").getJSONObject(i).getString("prefectures");
-                                    String genre_str = spots_json.getJSONArray("spots").getJSONObject(i).getString("genreM");
+                                for (int i = 0; i < Value.spots_json.getJSONArray("spots").length(); i++) {
+                                    String pref_str = Value.spots_json.getJSONArray("spots").getJSONObject(i).getString("prefectures");
+                                    String genre_str = Value.spots_json.getJSONArray("spots").getJSONObject(i).getString("genreM");
                                     //隣接県であり、指定ジャンルと一致した場合リストに格納する
-                                    if ((CheckNeighborPrefecture(pref_str, neighborDicObject) && genre_str.equals(Value.genre))) {
-                                        String name_str = spots_json.getJSONArray("spots").getJSONObject(i).getString("name");
-                                        String placeID_str = spots_json.getJSONArray("spots").getJSONObject(i).getString("place_id");
-                                        String explainText = spots_json.getJSONArray("spots").getJSONObject(i).getString("explain");
-                                        double rate_double = spots_json.getJSONArray("spots").getJSONObject(i).getDouble("rating");
-                                        double lat_double = spots_json.getJSONArray("spots").getJSONObject(i).getDouble("lat");
-                                        double lng_double = spots_json.getJSONArray("spots").getJSONObject(i).getDouble("lng");
+                                    if ((CheckNeighborPrefecture(pref_str, Value.neighborDicObject) && genre_str.equals(Value.genre))) {
+                                        String name_str = Value.spots_json.getJSONArray("spots").getJSONObject(i).getString("name");
+                                        String placeID_str = Value.spots_json.getJSONArray("spots").getJSONObject(i).getString("place_id");
+                                        String explainText = Value.spots_json.getJSONArray("spots").getJSONObject(i).getString("explain");
+                                        double rate_double = Value.spots_json.getJSONArray("spots").getJSONObject(i).getDouble("rating");
+                                        double lat_double = Value.spots_json.getJSONArray("spots").getJSONObject(i).getDouble("lat");
+                                        double lng_double = Value.spots_json.getJSONArray("spots").getJSONObject(i).getDouble("lng");
                                         float[] distance = new float[3];//二点間の距離算出結果を格納する変数
                                         Location.distanceBetween(location.getLatitude(), location.getLongitude(), lat_double, lng_double, distance);//入力された場所と候補地との距離算出
                                         firstCandsList.add(new SpotStructure(placeID_str, name_str, genre_str, pref_str, rate_double, lat_double, lng_double, distance[0], explainText, null,null,null,null));
@@ -455,15 +451,15 @@ public class MainActivity extends AppCompatActivity implements
                                 }else{
                                     eastFromFirstPlace=false;
                                 }
-                                for (int i = 0; i < spotsLength; i++) {
-                                    String pref_str = spots_json.getJSONArray("spots").getJSONObject(i).getString("prefectures");
-                                    double lat_double = spots_json.getJSONArray("spots").getJSONObject(i).getDouble("lat");
-                                    double lng_double = spots_json.getJSONArray("spots").getJSONObject(i).getDouble("lng");
+                                for (int i = 0; i < Value.spots_json.getJSONArray("spots").length(); i++) {
+                                    String pref_str = Value.spots_json.getJSONArray("spots").getJSONObject(i).getString("prefectures");
+                                    double lat_double = Value.spots_json.getJSONArray("spots").getJSONObject(i).getDouble("lat");
+                                    double lng_double = Value.spots_json.getJSONArray("spots").getJSONObject(i).getDouble("lng");
                                     float[] distance = new float[3];//二点間の距離算出結果を格納する変数
                                     Location.distanceBetween(Value.itineraryPlaceList.get(1).lat, Value.itineraryPlaceList.get(1).lng, lat_double, lng_double, distance);//入力された場所と候補地との距離算出
                                     boolean tempThresholdFlg=false;
                                     //隣接県かつ近すぎない候補地をリストに代入
-                                    if (CheckNeighborPrefecture(pref_str, neighborDicObject) && distance[0]>500) {
+                                    if (CheckNeighborPrefecture(pref_str, Value.neighborDicObject) && distance[0]>500) {
                                         if(southFromFirstPlace==true && eastFromFirstPlace==true){
                                             //出発地の方向にある観光地はリストに入れない
                                             if(lat_double<Value.itineraryPlaceList.get(0).lat && lng_double>Value.itineraryPlaceList.get(0).lng){
@@ -485,11 +481,11 @@ public class MainActivity extends AppCompatActivity implements
                                     }
                                     //条件を満たした観光地のみをリストに入れる
                                     if(tempThresholdFlg) {
-                                        String genre_str = spots_json.getJSONArray("spots").getJSONObject(i).getString("genreM");
-                                        String name_str = spots_json.getJSONArray("spots").getJSONObject(i).getString("name");
-                                        String placeID_str = spots_json.getJSONArray("spots").getJSONObject(i).getString("place_id");
-                                        double rate_double = spots_json.getJSONArray("spots").getJSONObject(i).getDouble("rating");
-                                        String explainText = spots_json.getJSONArray("spots").getJSONObject(i).getString("explain");
+                                        String genre_str = Value.spots_json.getJSONArray("spots").getJSONObject(i).getString("genreM");
+                                        String name_str = Value.spots_json.getJSONArray("spots").getJSONObject(i).getString("name");
+                                        String placeID_str = Value.spots_json.getJSONArray("spots").getJSONObject(i).getString("place_id");
+                                        double rate_double = Value.spots_json.getJSONArray("spots").getJSONObject(i).getDouble("rating");
+                                        String explainText = Value.spots_json.getJSONArray("spots").getJSONObject(i).getString("explain");
                                         secondOrLaterCandsList.add(new SpotStructure(placeID_str, name_str, genre_str, pref_str, rate_double, lat_double, lng_double, distance[0], explainText, null, null, null, null));
                                     }
                                 }
@@ -1071,3 +1067,17 @@ final class HttpGetPlaces extends AsyncTask<URL, Void, String> {
 
 
 
+//スレッドを使い、並列でjsonの読み出しを行うクラス。
+class LoadJsonInThread extends Thread {
+
+    public void run() {
+        JsonReader json=new JsonReader();//Json読み込み用クラスのインスタンス
+//**************公共クラウドシステムの入ったjsonファイルを取得する******************
+        ////// 公共クラウドシステム（jsonファイル読み込み用） ///////
+        // jsonファイルを読み込む
+        Value.spots_json = json.ReadJson(MainActivity.getInstance(), "kanko_all_add_limit.json");
+        Value.neighborDicObject = json.ReadJson(MainActivity.getInstance(), "neighbor_pref.json");//隣接県情報の入ったjson読み出し
+        // 辞書とジャンル名の対応jsonを読み込む
+        Value.pair_json = json.ReadJson(MainActivity.getInstance(), "pair.json");
+    }
+}
