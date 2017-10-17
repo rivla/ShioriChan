@@ -506,6 +506,8 @@ public class MainActivity extends AppCompatActivity implements
                             }
                             //Comparatorを用い距離が短い順にソートする
                             Collections.sort(secondOrLaterCandsList, new SpotStructureDistanceComparator());
+
+                            boolean getBackHomeFlg=false;
                             Date ifReturnArriveTime = null;//現時点の観光地から家に帰った場合、家に着く時間を格納する
                             String ifReturnPolyline=null;//現時点の観光地から家に帰った場合のポリライン
                             try {
@@ -514,8 +516,14 @@ public class MainActivity extends AppCompatActivity implements
                                 Calendar calendarToHome=Calendar.getInstance();
                                 calendarToHome.setTime(Value.itineraryPlaceList.get(Value.itineraryPlaceList.size()-1).departTime);
                                 calendarToHome.add(Calendar.SECOND,tempSecondToDestinationToHome);
-                                ifReturnArriveTime=addGenreWaitTime(calendarToHome.getTime(),Value.itineraryPlaceList.get(Value.itineraryPlaceList.size()-1).genre);
-                                ifReturnPolyline=tempDirectionSearchToHome.getJSONArray("routes").getJSONObject(0).getJSONObject("overview_polyline").getString("points");
+                                Date tempReturnHomeTime=addGenreWaitTime(calendarToHome.getTime(),Value.itineraryPlaceList.get(Value.itineraryPlaceList.size()-1).genre);
+                                if(arriveTime.compareTo(tempReturnHomeTime)==-1){
+                                    getBackHomeFlg=true;
+                                    Value.itineraryPlaceList.remove(Value.itineraryPlaceList.size()-1);
+                                }else{
+                                    ifReturnArriveTime=tempReturnHomeTime;
+                                    ifReturnPolyline=tempDirectionSearchToHome.getJSONArray("routes").getJSONObject(0).getJSONObject("overview_polyline").getString("points");
+                                }
                             } catch (JSONException e) {
                                 e.printStackTrace();
 
@@ -523,7 +531,7 @@ public class MainActivity extends AppCompatActivity implements
                                 e.printStackTrace();
                             }
                             //ifReturnArriveTImeが到着予定時間を越すまで、観光地検索を繰り返す
-                            while(arriveTime.compareTo(ifReturnArriveTime)==1){
+                            while(!getBackHomeFlg){
                                 Value.itineraryPlaceList.add(secondOrLaterCandsList.get(0));
                                 secondOrLaterCandsList.remove(0);
                                 try {
@@ -568,8 +576,14 @@ public class MainActivity extends AppCompatActivity implements
                                         Calendar calendarToHome=Calendar.getInstance();
                                         calendarToHome.setTime(Value.itineraryPlaceList.get(focusPlaceNum).departTime);
                                         calendarToHome.add(Calendar.SECOND,tempSecondToDestinationToHome);
-                                        ifReturnArriveTime=addGenreWaitTime(calendarToHome.getTime(),Value.itineraryPlaceList.get(focusPlaceNum).genre);
-                                        ifReturnPolyline=tempDirectionSearchToHome.getJSONArray("routes").getJSONObject(0).getJSONObject("overview_polyline").getString("points");
+                                        Date tempReturnHomeTime=addGenreWaitTime(calendarToHome.getTime(),Value.itineraryPlaceList.get(Value.itineraryPlaceList.size()-1).genre);
+                                        if(arriveTime.compareTo(tempReturnHomeTime)==-1){
+                                            getBackHomeFlg=true;
+                                            Value.itineraryPlaceList.remove(Value.itineraryPlaceList.size()-1);
+                                        }else{
+                                            ifReturnArriveTime=tempReturnHomeTime;
+                                            ifReturnPolyline=tempDirectionSearchToHome.getJSONArray("routes").getJSONObject(0).getJSONObject("overview_polyline").getString("points");
+                                        }
                                     } catch (JSONException e) {
                                         e.printStackTrace();
                                     } catch (MalformedURLException e) {
@@ -602,10 +616,6 @@ public class MainActivity extends AppCompatActivity implements
                                         mapsStaticsResult = httpBitmapGet.HttpPlaces(new URL("https://maps.googleapis.com/maps/api/staticmap?size=400x400&path=color:0xff0000ff|weight:5%7Cenc:"+Value.itineraryPlaceList.get(i).polyline+"&key=AIzaSyCke0pASXyPnnJR-GAAvN3Bz7GltgomfEk"));
                                     }
                                     JSONObject detailSearchResult = httpGet.HttpPlaces(new URL("https://maps.googleapis.com/maps/api/place/details/json?placeid=" + Value.itineraryPlaceList.get(i).placeID + "&key=AIzaSyCke0pASXyPnnJR-GAAvN3Bz7GltgomfEk&language=ja"));
-                                    String pref_str = Value.itineraryPlaceList.get(i).prefecture;
-                                    String genre_str = Value.itineraryPlaceList.get(i).genre;
-                                    String name_str = Value.itineraryPlaceList.get(i).name;
-                                    String placeID_str = Value.itineraryPlaceList.get(i).placeID;
                                     double rate_double = 0;
                                     if(!detailSearchResult.isNull("result")) {
                                         if (!detailSearchResult.getJSONObject("result").isNull("rating")) {
@@ -613,9 +623,6 @@ public class MainActivity extends AppCompatActivity implements
                                             rate_double = detailSearchResult.getJSONObject("result").getDouble("rating");
                                         }
                                     }
-                                    double lat_double = Value.itineraryPlaceList.get(i).lat;
-                                    double lng_double = Value.itineraryPlaceList.get(i).lat;
-                                    String explainText = Value.itineraryPlaceList.get(i).explainText;
                                     Bitmap img_bitmap = null;
                                     if (detailSearchResult.getJSONObject("result").isNull("photos")) {
                                         Log.d("test", String.valueOf(i) + " is not have photo");
@@ -623,7 +630,21 @@ public class MainActivity extends AppCompatActivity implements
                                         //観光地の写真が存在する場合は、ここでリクエストを送りBitmapを得る
                                         img_bitmap = httpBitmapGet.HttpPlaces(new URL("https://maps.googleapis.com/maps/api/place/photo?maxwidth=400&photoreference=" + detailSearchResult.getJSONObject("result").getJSONArray("photos").getJSONObject(0).getString("photo_reference") + "&key=AIzaSyCke0pASXyPnnJR-GAAvN3Bz7GltgomfEk"));
                                     }
-                                    Value.itineraryPlaceList.set(i, new SpotStructure(placeID_str, name_str, genre_str, pref_str, rate_double, lat_double, lng_double, 0, explainText, img_bitmap,null,mapsStaticsResult,null));
+                                    Value.itineraryPlaceList.set(i,new SpotStructure(
+                                            Value.itineraryPlaceList.get(i).placeID,
+                                            Value.itineraryPlaceList.get(i).name,
+                                            Value.itineraryPlaceList.get(i).genre,
+                                            Value.itineraryPlaceList.get(i).prefecture,
+                                            Value.itineraryPlaceList.get(i).rate,
+                                            Value.itineraryPlaceList.get(i).lat,
+                                            Value.itineraryPlaceList.get(i).lng,
+                                            Value.itineraryPlaceList.get(i).distance,
+                                            Value.itineraryPlaceList.get(i).explainText,
+                                            img_bitmap,
+                                            Value.itineraryPlaceList.get(i).departTime,
+                                            mapsStaticsResult,
+                                            Value.itineraryPlaceList.get(i).polyline
+                                    ));
                                 } catch (MalformedURLException e) {
                                     e.printStackTrace();
                                 } catch (JSONException e) {
