@@ -304,6 +304,8 @@ public class MainActivity extends AppCompatActivity implements
 
 //********************レビュー順にソートし、一つ目の候補地を確定する************************
                             ArrayList<SpotStructure> firstCandsList = new ArrayList<SpotStructure>();//ソート用リスト初期化
+                            double rate_double_mean = 0.0; // ratingの和（平均を取るための変数）
+                            double match_spot_count = 0.0; // 隣接県でマッチしたスポット数（平均を取るための変数）
                             try {
                                 for (int i = 0; i < Value.spots_json.getJSONArray("spots").length(); i++) {
                                     String pref_str = Value.spots_json.getJSONArray("spots").getJSONObject(i).getString("prefectures");
@@ -321,26 +323,32 @@ public class MainActivity extends AppCompatActivity implements
                                         // ====== ジャンルとのマッチング ======
                                         double match_genre_double = 0.0;
                                         if (genre_str.equals(Value.genre)) {
-                                            match_genre_double = 2.0;
+                                            match_genre_double = 1.0;
                                         }
 
                                         // ====== 自由テキストと観光地名のマッチング ======
                                         double match_name_double = 0.0;
                                         if (isMatch(name_str, Value.input_text) == true) {
-                                            match_name_double = 2.0;
+                                            match_name_double = 1.0;
                                         }
 
                                         // ====== 自由テキストと説明文のマッチング ======
                                         double match_explain_double = (double) isCount(explainText, Value.input_text);
 
                                         // ratingの値を更新する
-                                        rate_double += match_genre_double + match_name_double*5 + match_explain_double*5.0;
+                                        rate_double += match_genre_double + match_name_double + match_explain_double;
+
+                                        // ratingの加算を行う
+                                        rate_double_mean += rate_double;
+                                        // スポットのマッチの加算を行う
+                                        match_spot_count += 1.0;
 
                                         float[] distance = new float[3];//二点間の距離算出結果を格納する変数
                                         Location.distanceBetween(location.getLatitude(), location.getLongitude(), lat_double, lng_double, distance);//入力された場所と候補地との距離算出
                                         firstCandsList.add(new SpotStructure(placeID_str, name_str, genre_str, pref_str, rate_double, lat_double, lng_double, distance[0], explainText, null,null,null,null));
                                     }
                                 }
+                                rate_double_mean = rate_double_mean / match_spot_count; // ratingの平均を取る
                             } catch (JSONException e) {
                                 Log.e("test", e.toString());
                             }
@@ -353,7 +361,8 @@ public class MainActivity extends AppCompatActivity implements
                                 //レビュー4.5以上の候補地から一番近い場所を選ぶ
                                 int minDistanceNumber = 0;
                                 double minDistance = Double.MAX_VALUE;
-                                for (int i = 0; firstCandsList.get(i).rate > 4.5; i++) {
+                                double center_val = (firstCandsList.get(0).rate + rate_double_mean) / 2.0;
+                                for (int i = 0; firstCandsList.get(i).rate > center_val; i++) {
                                     Log.d("result", firstCandsList.get(i).rate + String.valueOf(firstCandsList.get(i).name));
                                     if (firstCandsList.get(i).distance < minDistance) {
                                         minDistance = firstCandsList.get(i).distance;
@@ -361,8 +370,7 @@ public class MainActivity extends AppCompatActivity implements
                                     }
                                 }
                                 //一番初めに訪れる観光地決定、旅程リストに追加
-//                                Value.itineraryPlaceList.add(firstCandsList.get(minDistanceNumber));
-                                Value.itineraryPlaceList.add(firstCandsList.get(0));
+                                Value.itineraryPlaceList.add(firstCandsList.get(minDistanceNumber));
                                 //directionAPIに出発地と第一観光地を渡し、どれくらい時間がかかるかを求める。
                                 try {
                                     JSONObject tempDirectionSearch = httpGet.HttpPlaces(new URL("https://maps.googleapis.com/maps/api/directions/json?origin=" + location.getLatitude() + "," + location.getLongitude() + "&destination=place_id:" + Value.itineraryPlaceList.get(1).placeID + "&key=AIzaSyCke0pASXyPnnJR-GAAvN3Bz7GltgomfEk"));
