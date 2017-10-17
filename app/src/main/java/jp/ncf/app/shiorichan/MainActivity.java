@@ -201,7 +201,6 @@ public class MainActivity extends AppCompatActivity implements
         startButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                progressDialog.show();
                 //Jsonの読み出しが終わっていなかったら、それをまつ。
                 try {
                     loadJsonInThread.join();
@@ -264,11 +263,11 @@ public class MainActivity extends AppCompatActivity implements
                 // 入力エラーが発生していなければ処理を実行する
                 if (Value.error_flag == false) {
 
+                    progressDialog.show();
                     //◆スレッド処理開始
                     new Thread(new Runnable() {
                         @Override
                         public void run() {
-
 //******************//実機のgoogleplacesversionの問題で緯度経度が取れない場合は、岐阜の座標を代入する*****************************
         /*                if(location==null) {
                             location = new Location("a");//文字列はprovider（適当に入れました)
@@ -299,7 +298,7 @@ public class MainActivity extends AppCompatActivity implements
 
 
 //****************************************開始地点を定義***************************************
-                            Value.itineraryPlaceList.add(new SpotStructure(null, "出発地", null, Value.nowPrefecture, 0, location.getLatitude(), location.getLongitude(), 0, null, null,departureTime,null,null));
+                            Value.itineraryPlaceList.add(new SpotStructure(null, "出発地", "", Value.nowPrefecture, 0, location.getLatitude(), location.getLongitude(), 0, null, null,departureTime,null,null));
                             Log.d("出発地の時刻",Value.itineraryPlaceList.get(0).departTime.toString());
 
 //********************レビュー順にソートし、一つ目の候補地を確定する************************
@@ -392,7 +391,7 @@ public class MainActivity extends AppCompatActivity implements
                                     String genre_str = "レストラン";
                                     String name_str = nearbySearchResult.getJSONArray("results").getJSONObject(i).getString("name");
                                     String placeID_str = nearbySearchResult.getJSONArray("results").getJSONObject(i).getString("place_id");
-                                    String explainText = "restaurant isn't have explain message";
+                                    String explainText = "";
                                     double rate_double = 0;
                                     double lat_double = nearbySearchResult.getJSONArray("results").getJSONObject(i).getJSONObject("geometry").getJSONObject("location").getDouble("lat");
                                     double lng_double = nearbySearchResult.getJSONArray("results").getJSONObject(i).getJSONObject("geometry").getJSONObject("location").getDouble("lng");
@@ -507,7 +506,7 @@ public class MainActivity extends AppCompatActivity implements
                             //Comparatorを用い距離が短い順にソートする
                             Collections.sort(secondOrLaterCandsList, new SpotStructureDistanceComparator());
 
-                            boolean getBackHomeFlg=false;
+                            boolean getBackHomeFlg=false;//次の観光地を探索するか決めるフラグ
                             Date ifReturnArriveTime = null;//現時点の観光地から家に帰った場合、家に着く時間を格納する
                             String ifReturnPolyline=null;//現時点の観光地から家に帰った場合のポリライン
                             try {
@@ -516,12 +515,14 @@ public class MainActivity extends AppCompatActivity implements
                                 Calendar calendarToHome=Calendar.getInstance();
                                 calendarToHome.setTime(Value.itineraryPlaceList.get(Value.itineraryPlaceList.size()-1).departTime);
                                 calendarToHome.add(Calendar.SECOND,tempSecondToDestinationToHome);
+                                //この観光地を見た後家に帰ったとして、家に着く時間
                                 Date tempReturnHomeTime=addGenreWaitTime(calendarToHome.getTime(),Value.itineraryPlaceList.get(Value.itineraryPlaceList.size()-1).genre);
-                                if(arriveTime.compareTo(tempReturnHomeTime)==-1){
+                                //到着時間と比較
+                                if(arriveTime.compareTo(tempReturnHomeTime)==-1){//家にかえる場合、直前の観光地を消す
                                     getBackHomeFlg=true;
                                     Value.itineraryPlaceList.remove(Value.itineraryPlaceList.size()-1);
                                 }else{
-                                    ifReturnArriveTime=tempReturnHomeTime;
+                                    ifReturnArriveTime=tempReturnHomeTime;//取得した、家に帰る場合の到着時刻とポリラインを保持。ここで最後の観光地になった時にこの値を使う。
                                     ifReturnPolyline=tempDirectionSearchToHome.getJSONArray("routes").getJSONObject(0).getJSONObject("overview_polyline").getString("points");
                                 }
                             } catch (JSONException e) {
@@ -599,7 +600,7 @@ public class MainActivity extends AppCompatActivity implements
                             }
 
 //*************************************到着地を旅程リストに代入する***********************************
-                            Value.itineraryPlaceList.add(new SpotStructure(null,"到着地",null,Value.nowPrefecture,0,location.getLatitude(),location.getLongitude(),0,null,null,ifReturnArriveTime,null,ifReturnPolyline));
+                            Value.itineraryPlaceList.add(new SpotStructure(null,"到着地","",Value.nowPrefecture,0,location.getLatitude(),location.getLongitude(),0,null,null,ifReturnArriveTime,null,ifReturnPolyline));
 
                             for (int i = 0; i < Value.itineraryPlaceList.size(); i++) {
                                 Log.d("test", "num:" + String.valueOf(i) + "name:" + Value.itineraryPlaceList.get(i).name + "rate" + String.valueOf(Value.itineraryPlaceList.get(i).rate) + "depTime"+Value.itineraryPlaceList.get(i).departTime.toString());
@@ -616,12 +617,22 @@ public class MainActivity extends AppCompatActivity implements
                                         mapsStaticsResult = httpBitmapGet.HttpPlaces(new URL("https://maps.googleapis.com/maps/api/staticmap?size=400x400&path=color:0xff0000ff|weight:5%7Cenc:"+Value.itineraryPlaceList.get(i).polyline+"&key=AIzaSyCke0pASXyPnnJR-GAAvN3Bz7GltgomfEk"));
                                     }
                                     JSONObject detailSearchResult = httpGet.HttpPlaces(new URL("https://maps.googleapis.com/maps/api/place/details/json?placeid=" + Value.itineraryPlaceList.get(i).placeID + "&key=AIzaSyCke0pASXyPnnJR-GAAvN3Bz7GltgomfEk&language=ja"));
-                                    double rate_double = 0;
-                                    if(!detailSearchResult.isNull("result")) {
-                                        if (!detailSearchResult.getJSONObject("result").isNull("rating")) {
-                                            //レストランは詳細検索を行っておらず、レート値がないためここで得る
-                                            rate_double = detailSearchResult.getJSONObject("result").getDouble("rating");
+                                    if(Value.itineraryPlaceList.get(i).genre.equals("レストラン")) {
+                                        //レストランは詳細検索を行っておらず、レート値がないためここで得る
+                                        double rate_double = 0;
+                                        String tempExplainMessage=Value.itineraryPlaceList.get(i).explainText;
+                                        if (!detailSearchResult.isNull("result")) {
+                                            if (!detailSearchResult.getJSONObject("result").isNull("rating")) {
+                                                rate_double = detailSearchResult.getJSONObject("result").getDouble("rating");
+                                            }
+                                            if (!detailSearchResult.getJSONObject("result").isNull("formatted_address")) {
+                                                tempExplainMessage=tempExplainMessage+"住所："+detailSearchResult.getJSONObject("result").getString("formatted_address");
+                                            }
+                                            if (!detailSearchResult.getJSONObject("result").isNull("formatted_address")) {
+                                                tempExplainMessage=tempExplainMessage+"住所："+detailSearchResult.getJSONObject("result").getString("formatted_address");
+                                            }
                                         }
+
                                     }
                                     Bitmap img_bitmap = null;
                                     if (detailSearchResult.getJSONObject("result").isNull("photos")) {
@@ -1114,9 +1125,9 @@ class LoadJsonInThread extends Thread {
 //**************公共クラウドシステムの入ったjsonファイルを取得する******************
         ////// 公共クラウドシステム（jsonファイル読み込み用） ///////
         // jsonファイルを読み込む
-        Value.spots_json = json.ReadJson(MainActivity.getInstance(), "kanko_all_add_limit.json");
-        Value.neighborDicObject = json.ReadJson(MainActivity.getInstance(), "neighbor_pref.json");//隣接県情報の入ったjson読み出し
         // 辞書とジャンル名の対応jsonを読み込む
         Value.pair_json = json.ReadJson(MainActivity.getInstance(), "pair.json");
+        Value.spots_json = json.ReadJson(MainActivity.getInstance(), "kanko_all_add_limit.json");
+        Value.neighborDicObject = json.ReadJson(MainActivity.getInstance(), "neighbor_pref.json");//隣接県情報の入ったjson読み出し
     }
 }
