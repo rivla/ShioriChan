@@ -13,6 +13,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
+import android.renderscript.Sampler;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
@@ -47,6 +48,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 import java.util.Random;
+import java.util.regex.Pattern;
 
 // ogawa test comment
 //値渡し用、静的変数
@@ -188,8 +190,9 @@ public class MainActivity extends AppCompatActivity implements
             //　アイテムが選択された時
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 Spinner spinner = (Spinner) parent;
-                Value.genre=(String) spinner.getSelectedItem();
+                Value.genre = (String) spinner.getSelectedItem();
             }
+
             //　アイテムが選択されなかった
             public void onNothingSelected(AdapterView<?> parent) {
             }
@@ -316,6 +319,19 @@ public class MainActivity extends AppCompatActivity implements
                                         double rate_double = Value.spots_json.getJSONArray("spots").getJSONObject(i).getDouble("rating");
                                         double lat_double = Value.spots_json.getJSONArray("spots").getJSONObject(i).getDouble("lat");
                                         double lng_double = Value.spots_json.getJSONArray("spots").getJSONObject(i).getDouble("lng");
+
+                                        // 自由テキストと観光地名のマッチングを行う
+                                        double match_name_double = 0.0;
+                                        if (isMatch(name_str, Value.input_text) == true) {
+                                            match_name_double = 5.0;
+                                        }
+
+                                        // 自由テキストと説明文のマッチングを行う
+                                        double match_explain_double = (double) isCount(explainText, Value.input_text);
+
+                                        // ratingの値を更新する
+                                        rate_double += match_name_double + match_explain_double*3.0;
+
                                         float[] distance = new float[3];//二点間の距離算出結果を格納する変数
                                         Location.distanceBetween(location.getLatitude(), location.getLongitude(), lat_double, lng_double, distance);//入力された場所と候補地との距離算出
                                         firstCandsList.add(new SpotStructure(placeID_str, name_str, genre_str, pref_str, rate_double, lat_double, lng_double, distance[0], explainText, null,null,null,null));
@@ -331,6 +347,7 @@ public class MainActivity extends AppCompatActivity implements
                             int minDistanceNumber = 0;
                             double minDistance = Double.MAX_VALUE;
                             for (int i = 0; firstCandsList.get(i).rate > 4.5; i++) {
+                                Log.d("rating", String.valueOf(firstCandsList.get(i).rate + String.valueOf(firstCandsList.get(i).name)));
                                 if (firstCandsList.get(i).distance < minDistance) {
                                     minDistance = firstCandsList.get(i).distance;
                                     minDistanceNumber = i;
@@ -501,7 +518,7 @@ public class MainActivity extends AppCompatActivity implements
                                 Calendar calendarToHome=Calendar.getInstance();
                                 calendarToHome.setTime(Value.itineraryPlaceList.get(Value.itineraryPlaceList.size()-1).departTime);
                                 calendarToHome.add(Calendar.SECOND,tempSecondToDestinationToHome);
-                                ifReturnArriveTime=addGenreWaitTime(calendarToHome.getTime(),Value.itineraryPlaceList.get(Value.itineraryPlaceList.size()-1).genre);
+                                ifReturnArriveTime=addGenreWaitTime(calendarToHome.getTime(), Value.itineraryPlaceList.get(Value.itineraryPlaceList.size() - 1).genre);
                                 ifReturnPolyline=tempDirectionSearchToHome.getJSONArray("routes").getJSONObject(0).getJSONObject("overview_polyline").getString("points");
                             } catch (JSONException e) {
                                 e.printStackTrace();
@@ -954,6 +971,23 @@ public class MainActivity extends AppCompatActivity implements
         Log.e("test","category to spending time error!");
         return null;
 
+    }
+
+    // ====== テキストのマッチング（部分一致）を判定するメソッド ======
+    public boolean isMatch(String target, String word) {
+        // 観光地名に自由テキストが含まれているかどうか
+        if (target.matches(".*" + word + ".*")) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    // ====== テキストのマッチング（一致回数）を返すメソッド ======
+    public int isCount(String target, String word) {
+        // (説明文の文字数ー自由テキストの文字を削除した説明文の文字数) / (自由テキストの文字数)
+        // つまり，(説明文に存在する自由テキストの文字数の合計) / （自由テキストの文字数）＝自由テキストの個数
+        return (target.length() - target.replaceAll(word, "").length()) / word.length();
     }
 }
 
