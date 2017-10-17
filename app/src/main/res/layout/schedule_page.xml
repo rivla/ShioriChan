@@ -70,7 +70,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
-                        android:text="名古屋駅"
+                        android:text="textView5"
                         android:textSize="30dp" />
 
                 </LinearLayout>
@@ -81,7 +81,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="30dp"
                     android:layout_weight="0.45"
-                    app:srcCompat="@mipmap/arrow_blue" />
+                    android:src="@mipmap/arrow_blue" />
                 <!-- ココまで1セット -->
 
                 <LinearLayout
@@ -103,7 +103,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
-                        android:text="岐阜駅"
+                        android:text="textView7"
                         android:textSize="30dp" />
 
                 </LinearLayout>
@@ -113,7 +113,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="30dp"
                     android:layout_weight="0.45"
-                    app:srcCompat="@mipmap/arrow_blue" />
+                    android:src="@mipmap/arrow_blue" />
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -134,7 +134,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
-                        android:text="岐阜大学　工学部　C棟　C634(表示文字列が長いとこうなる)"
+                        android:text="textView9"
                         android:textSize="30dp" />
 
                 </LinearLayout>
@@ -144,7 +144,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="30dp"
                     android:layout_weight="0.45"
-                    app:srcCompat="@mipmap/arrow_blue" />
+                    android:src="@mipmap/arrow_blue" />
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -165,7 +165,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
-                        android:text="大吉ラーメン"
+                        android:text="textView11"
                         android:textSize="30dp" />
 
                 </LinearLayout>
@@ -175,7 +175,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="30dp"
                     android:layout_weight="0.45"
-                    app:srcCompat="@mipmap/arrow_blue" />
+                    android:src="@mipmap/arrow_blue" />
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -196,7 +196,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
-                        android:text="現地解散"
+                        android:text="textView13"
                         android:textSize="30dp" />
 
                 </LinearLayout>

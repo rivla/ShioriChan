@@ -951,6 +951,9 @@ public class MainActivity extends AppCompatActivity implements
         }else if(genre.equals("民宿・ペンション")) {
             calendar.add(Calendar.HOUR, 2);
             return calendar.getTime();
+        }else if(genre.equals("その他")) {
+            calendar.add(Calendar.HOUR, 2);
+            return calendar.getTime();
         }
         Log.e("test","category to spending time error!");
         return null;
