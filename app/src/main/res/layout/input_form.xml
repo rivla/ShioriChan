@@ -12,6 +12,27 @@
     tools:context="jp.ncf.app.shiorichan.MainActivity">
 
     <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="top">
+
+        <EditText
+            android:id="@+id/editText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:hint="自然，城，歴史など，自由な言葉を入力してください"
+            />
+        <Button
+            android:text="はじめる"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:id="@+id/startButton"
+            />
+    </LinearLayout>
+
+
+    <LinearLayout
         android:orientation="horizontal"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -112,26 +133,6 @@
             android:id="@+id/arriveTimeButton" />
 
         </LinearLayout>
-        <Button
-            android:text="はじめる"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:id="@+id/startButton"/>
-    </LinearLayout>
-
-    <LinearLayout
-        xmlns:android="http://schemas.android.com/apk/res/android"
-        android:layout_width="fill_parent"
-        android:layout_height="fill_parent"
-        android:orientation="vertical" >
-
-        <EditText
-            android:id="@+id/editText"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:hint="自然，城，歴史など，自由な言葉を入力してください"
-            />
-
     </LinearLayout>
 
 

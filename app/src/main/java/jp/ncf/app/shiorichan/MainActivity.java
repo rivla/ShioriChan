@@ -108,7 +108,7 @@ public class MainActivity extends AppCompatActivity implements
         departureTime.setMinutes(0);
         departureTime.setSeconds(0);
         final Date arriveTime=new Date();
-        arriveTime.setHours(20);
+        arriveTime.setHours(22);
         arriveTime.setMinutes(0);
         arriveTime.setSeconds(0);
         json=new JsonReader();//Json読み込み用クラスのインスタンス
@@ -201,73 +201,74 @@ public class MainActivity extends AppCompatActivity implements
         startButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //Jsonの読み出しが終わっていなかったら、それをまつ。
-                try {
-                    loadJsonInThread.join();
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-                Log.d("test", "startButton pusshed");
+                progressDialog.show();
+                //◆スレッド処理開始
+                new Thread(new Runnable() {
+                    @Override
+                    public void run() {
 
-                // 初期化処理
-                Value.error_flag = false; // 入力エラーフラグの初期化
-                Value.genre = "";       // ジャンルの初期化
-                Value.itineraryPlaceList=new ArrayList<SpotStructure>();
-
-                // ====== 自由テキスト入力受け取り ======
-                // EditTextオブジェクトを取得
-                EditText editText = (EditText)findViewById(R.id.editText);
-
-                // 入力された文字を取得
-                final String input_text = editText.getText().toString();
-                Value.input_text = input_text;
-                Log.d("inputtext", Value.input_text);
-
-                // 入力テキストが未入力であった場合
-                if (Value.input_text.length() == 0) {
-                    Log.d("input error message", "何も入力されていません");
-                    editText.setError("何も入力されていません");
-                    Value.error_flag = true;
-                }
-
-                // 入力テキストが存在する場合，ジャンルとのマッチングを行う
-                else {
-                    // ====== 自由テキストをジャンルに変換 ======
-                    // 自由テキストが辞書に登録されている場合の処理
+                    //Jsonの読み出しが終わっていなかったら、それをまつ。
                     try {
-                        // 自由テキストに対応するジャンル名のリストを取得する
-                        JSONArray genre_list = Value.pair_json.getJSONArray(Value.input_text);
-
-                        // ジャンルが１つであれば決定
-                        if (genre_list.length() == 1) {
-                            Value.genre = (String) genre_list.get(0);
-                        }
-                        // ジャンルが複数ある場合はランダムで1つ選択する
-                        else {
-                            // 乱数を発生する
-                            Random rand = new Random();
-                            int rand_n = rand.nextInt(genre_list.length());
-                            Value.genre = (String) genre_list.get(rand_n);
-                        }
-                        // 出力確認
-                        Log.d("genre result", Value.genre);
-                    } catch (JSONException e) {
-                        // 入力テキストが辞書に登録されていなかった場合
+                        loadJsonInThread.join();
+                    } catch (InterruptedException e) {
                         e.printStackTrace();
-                        Log.d("input error message", Value.input_text + " は辞書に登録されていません");
-                        editText.setError(Value.input_text + " は辞書に登録されていません");
+                    }
+                    Log.d("test", "startButton pusshed");
+
+                    // 初期化処理
+                    Value.error_flag = false; // 入力エラーフラグの初期化
+                    Value.genre = "";       // ジャンルの初期化
+                    Value.itineraryPlaceList=new ArrayList<SpotStructure>();
+
+                    // ====== 自由テキスト入力受け取り ======
+                    // EditTextオブジェクトを取得
+                    EditText editText = (EditText)findViewById(R.id.editText);
+
+                    // 入力された文字を取得
+                    final String input_text = editText.getText().toString();
+                    Value.input_text = input_text;
+                    Log.d("inputtext", Value.input_text);
+
+                    // 入力テキストが未入力であった場合
+                    if (Value.input_text.length() == 0) {
+                        Log.d("input error message", "何も入力されていません");
+                        editText.setError("何も入力されていません");
                         Value.error_flag = true;
                     }
-                }
 
-                // 入力エラーが発生していなければ処理を実行する
-                if (Value.error_flag == false) {
+                    // 入力テキストが存在する場合，ジャンルとのマッチングを行う
+                    else {
+                        // ====== 自由テキストをジャンルに変換 ======
+                        // 自由テキストが辞書に登録されている場合の処理
+                        try {
+                            // 自由テキストに対応するジャンル名のリストを取得する
+                            JSONArray genre_list = Value.pair_json.getJSONArray(Value.input_text);
 
-                    progressDialog.show();
-                    //◆スレッド処理開始
-                    new Thread(new Runnable() {
-                        @Override
-                        public void run() {
+                            // ジャンルが１つであれば決定
+                            if (genre_list.length() == 1) {
+                                Value.genre = (String) genre_list.get(0);
+                            }
+                            // ジャンルが複数ある場合はランダムで1つ選択する
+                            else {
+                                // 乱数を発生する
+                                Random rand = new Random();
+                                int rand_n = rand.nextInt(genre_list.length());
+                                Value.genre = (String) genre_list.get(rand_n);
+                            }
+                            // 出力確認
+                            Log.d("genre result", Value.genre);
+                        } catch (JSONException e) {
+                            // 入力テキストが辞書に登録されていなかった場合
+                            e.printStackTrace();
+                            Log.d("input error message", Value.input_text + " は辞書に登録されていません");
+                            editText.setError(Value.input_text + " は辞書に登録されていません");
+                            Value.error_flag = true;
+                        }
+                    }
+
+                    // 入力エラーが発生していなければ処理を実行する
+                    if (Value.error_flag == false) {
+
 //******************//実機のgoogleplacesversionの問題で緯度経度が取れない場合は、岐阜の座標を代入する*****************************
         /*                if(location==null) {
                             location = new Location("a");//文字列はprovider（適当に入れました)
@@ -333,7 +334,7 @@ public class MainActivity extends AppCompatActivity implements
                                         double match_explain_double = (double) isCount(explainText, Value.input_text);
 
                                         // ratingの値を更新する
-                                        rate_double += match_genre_double + match_name_double + match_explain_double*2.0;
+                                        rate_double += match_genre_double + match_name_double*5 + match_explain_double*5.0;
 
                                         float[] distance = new float[3];//二点間の距離算出結果を格納する変数
                                         Location.distanceBetween(location.getLatitude(), location.getLongitude(), lat_double, lng_double, distance);//入力された場所と候補地との距離算出
@@ -467,6 +468,7 @@ public class MainActivity extends AppCompatActivity implements
                             }
 
                             Log.d("test", "lunch:" + Value.itineraryPlaceList.get(2).name + "dist:" + String.valueOf(Value.itineraryPlaceList.get(2).distance) + "id" + String.valueOf(Value.itineraryPlaceList.get(2).placeID)+"depTime"+Value.itineraryPlaceList.get(2).departTime.toString());
+                            Log.d("test2",Value.itineraryPlaceList.get(2).departTime.toString());
 
 
 //******************二箇所目以降の候補地を確定させる*************************
@@ -527,9 +529,10 @@ public class MainActivity extends AppCompatActivity implements
                             }
                             //Comparatorを用い距離が短い順にソートする
                             Collections.sort(secondOrLaterCandsList, new SpotStructureDistanceComparator());
+                            Log.d("test3",Value.itineraryPlaceList.get(2).departTime.toString());
 
                             boolean getBackHomeFlg=false;//次の観光地を探索するか決めるフラグ
-                            Date ifReturnArriveTime = null;//現時点の観光地から家に帰った場合、家に着く時間を格納する
+                            Date ifReturnArriveTime =null;//現時点の観光地から家に帰ったとして、家に着く時間を格納する
                             String ifReturnPolyline=null;//現時点の観光地から家に帰った場合のポリライン
                             try {
                                 JSONObject tempDirectionSearchToHome = httpGet.HttpPlaces(new URL("https://maps.googleapis.com/maps/api/directions/json?origin=place_id:"+ Value.itineraryPlaceList.get(Value.itineraryPlaceList.size()-1).placeID+"&destination="+location.getLatitude()+","+location.getLongitude()+"&key=AIzaSyCke0pASXyPnnJR-GAAvN3Bz7GltgomfEk"));
@@ -538,11 +541,22 @@ public class MainActivity extends AppCompatActivity implements
                                 calendarToHome.setTime(Value.itineraryPlaceList.get(Value.itineraryPlaceList.size()-1).departTime);
                                 calendarToHome.add(Calendar.SECOND,tempSecondToDestinationToHome);
                                 //この観光地を見た後家に帰ったとして、家に着く時間
-                                Date tempReturnHomeTime=addGenreWaitTime(calendarToHome.getTime(),Value.itineraryPlaceList.get(Value.itineraryPlaceList.size()-1).genre);
+                                Date tempReturnHomeTime=calendarToHome.getTime();
+                                Log.d("test:tempReturnHomeTime",tempReturnHomeTime.toString());
                                 //到着時間と比較
-                                if(arriveTime.compareTo(tempReturnHomeTime)==-1){//家にかえる場合、直前の観光地を消す
+                                if(arriveTime.compareTo(tempReturnHomeTime)==-1){//家にかえる場合、直前の観光地を消す。ここのifがtrueになるのは、第一候補地が近すぎて昼にすら行けなかった場合。
                                     getBackHomeFlg=true;
+                                    //昼食場所を消去
                                     Value.itineraryPlaceList.remove(Value.itineraryPlaceList.size()-1);
+                                    //リクエストをスローし、第一観光地からまっすぐ家にかえる場合を算出する。
+                                    tempDirectionSearchToHome = httpGet.HttpPlaces(new URL("https://maps.googleapis.com/maps/api/directions/json?origin=place_id:"+ Value.itineraryPlaceList.get(Value.itineraryPlaceList.size()-1).placeID+"&destination="+location.getLatitude()+","+location.getLongitude()+"&key=AIzaSyCke0pASXyPnnJR-GAAvN3Bz7GltgomfEk"));
+                                    tempSecondToDestinationToHome = tempDirectionSearchToHome.getJSONArray("routes").getJSONObject(0).getJSONArray("legs").getJSONObject(0).getJSONObject("duration").getInt("value");
+                                    calendarToHome=Calendar.getInstance();
+                                    calendarToHome.setTime(Value.itineraryPlaceList.get(Value.itineraryPlaceList.size()-1).departTime);
+                                    calendarToHome.add(Calendar.SECOND,tempSecondToDestinationToHome);
+                                    //第一観光地から直帰する場合にかかる時間を記述
+                                    ifReturnArriveTime=calendarToHome.getTime();
+                                    ifReturnPolyline=tempDirectionSearchToHome.getJSONArray("routes").getJSONObject(0).getJSONObject("overview_polyline").getString("points");
                                 }else{
                                     ifReturnArriveTime=tempReturnHomeTime;//取得した、家に帰る場合の到着時刻とポリラインを保持。ここで最後の観光地になった時にこの値を使う。
                                     ifReturnPolyline=tempDirectionSearchToHome.getJSONArray("routes").getJSONObject(0).getJSONObject("overview_polyline").getString("points");
@@ -553,6 +567,8 @@ public class MainActivity extends AppCompatActivity implements
                             } catch (MalformedURLException e) {
                                 e.printStackTrace();
                             }
+//                            Log.d("test4",Value.itineraryPlaceList.get(2).departTime.toString());
+
                             //ifReturnArriveTImeが到着予定時間を越すまで、観光地検索を繰り返す
                             while(!getBackHomeFlg){
                                 Value.itineraryPlaceList.add(secondOrLaterCandsList.get(0));
@@ -574,6 +590,8 @@ public class MainActivity extends AppCompatActivity implements
                                     Date tempDepartTime=addGenreWaitTime(calendar.getTime(),Value.itineraryPlaceList.get(focusPlaceNum).genre);
                                     Log.d("genre",Value.itineraryPlaceList.get(focusPlaceNum).genre);
                                     Log.d("tempDepartTime",tempDepartTime.toString());
+Log.d("test5",Value.itineraryPlaceList.get(2).departTime.toString());
+
                                     String tempPolyline=tempDirectionSearch.getJSONArray("routes").getJSONObject(0).getJSONObject("overview_polyline").getString("points");
                                     Value.itineraryPlaceList.set(focusPlaceNum,new SpotStructure(
                                             Value.itineraryPlaceList.get(focusPlaceNum).placeID,
@@ -599,7 +617,7 @@ public class MainActivity extends AppCompatActivity implements
                                         Calendar calendarToHome=Calendar.getInstance();
                                         calendarToHome.setTime(Value.itineraryPlaceList.get(focusPlaceNum).departTime);
                                         calendarToHome.add(Calendar.SECOND,tempSecondToDestinationToHome);
-                                        Date tempReturnHomeTime=addGenreWaitTime(calendarToHome.getTime(),Value.itineraryPlaceList.get(Value.itineraryPlaceList.size()-1).genre);
+                                        Date tempReturnHomeTime=calendarToHome.getTime();
                                         if(arriveTime.compareTo(tempReturnHomeTime)==-1){
                                             getBackHomeFlg=true;
                                             Value.itineraryPlaceList.remove(Value.itineraryPlaceList.size()-1);
@@ -623,7 +641,8 @@ public class MainActivity extends AppCompatActivity implements
 
 //*************************************到着地を旅程リストに代入する***********************************
                             Value.itineraryPlaceList.add(new SpotStructure(null,"到着地","",Value.nowPrefecture,0,location.getLatitude(),location.getLongitude(),0,null,null,ifReturnArriveTime,null,ifReturnPolyline));
-
+                            Log.d("test5.5",Value.itineraryPlaceList.get(2).name);
+Log.d("test6",Value.itineraryPlaceList.get(2).departTime.toString());
                             for (int i = 0; i < Value.itineraryPlaceList.size(); i++) {
                                 Log.d("test", "num:" + String.valueOf(i) + "name:" + Value.itineraryPlaceList.get(i).name + "rate" + String.valueOf(Value.itineraryPlaceList.get(i).rate) + "depTime"+Value.itineraryPlaceList.get(i).departTime.toString());
                             }
@@ -728,6 +747,46 @@ public class MainActivity extends AppCompatActivity implements
                                 e.printStackTrace();
                             }
 
+//*****************************目的地周辺の地図取得******************************
+                            waypoints="waypoints=";
+                            for(int i=2;i<Value.itineraryPlaceList.size()-3;i++){
+                                waypoints=waypoints+"place_id:"+Value.itineraryPlaceList.get(i).placeID+"|";
+                            }
+                            waypoints=waypoints.substring(0,waypoints.length()-1);
+
+                            try {
+                                JSONObject tempDirectionSearch = httpGet.HttpPlaces(new URL("https://maps.googleapis.com/maps/api/directions/json?" +
+                                        "origin=place_id:" + Value.itineraryPlaceList.get(1).placeID+ "&" +
+                                        "destination=place_id:" + Value.itineraryPlaceList.get(Value.itineraryPlaceList.size()-2).placeID + "&" +
+                                        waypoints+"&"+
+                                        "key=AIzaSyCke0pASXyPnnJR-GAAvN3Bz7GltgomfEk"));
+                                Log.d("test",tempDirectionSearch.toString());
+                                String tempPolyline = tempDirectionSearch.getJSONArray("routes").getJSONObject(0).getJSONObject("overview_polyline").getString("points");
+
+                                Bitmap mapsStaticsResult = httpBitmapGet.HttpPlaces(new URL("https://maps.googleapis.com/maps/api/staticmap?" +
+                                        "size=400x400&" +
+                                        "path=color:0xff0000ff|weight:5%7Cenc:"+tempPolyline+"&" +
+                                        "key=AIzaSyCke0pASXyPnnJR-GAAvN3Bz7GltgomfEk"));
+                                Value.itineraryPlaceList.set(Value.itineraryPlaceList.size()-1,new SpotStructure(
+                                        Value.itineraryPlaceList.get(Value.itineraryPlaceList.size()-1).placeID,
+                                        Value.itineraryPlaceList.get(Value.itineraryPlaceList.size()-1).name,
+                                        Value.itineraryPlaceList.get(Value.itineraryPlaceList.size()-1).genre,
+                                        Value.itineraryPlaceList.get(Value.itineraryPlaceList.size()-1).prefecture,
+                                        Value.itineraryPlaceList.get(Value.itineraryPlaceList.size()-1).rate,
+                                        Value.itineraryPlaceList.get(Value.itineraryPlaceList.size()-1).lat,
+                                        Value.itineraryPlaceList.get(Value.itineraryPlaceList.size()-1).lng,
+                                        Value.itineraryPlaceList.get(Value.itineraryPlaceList.size()-1).distance,
+                                        Value.itineraryPlaceList.get(Value.itineraryPlaceList.size()-1).explainText,
+                                        Value.itineraryPlaceList.get(Value.itineraryPlaceList.size()-1).image,
+                                        Value.itineraryPlaceList.get(Value.itineraryPlaceList.size()-1).departTime,
+                                        mapsStaticsResult,
+                                        Value.itineraryPlaceList.get(Value.itineraryPlaceList.size()-1).polyline
+                                ));
+                            } catch (MalformedURLException e) {
+                                e.printStackTrace();
+                            } catch (JSONException e) {
+                                e.printStackTrace();
+                            }
 
                             progressDialog.dismiss();//読み込み中表示、終了
                             handler.post(new Runnable() {
@@ -740,8 +799,8 @@ public class MainActivity extends AppCompatActivity implements
                                 }
                             });
                         }
-                    }).start();
-                } // 入力エラーのif文のカッコ
+                    } // 入力エラーのif文のカッコ
+                }).start();
 
 
 //******************************
