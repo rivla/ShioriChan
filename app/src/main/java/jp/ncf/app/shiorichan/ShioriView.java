@@ -226,9 +226,9 @@ public class ShioriView extends Activity {
         return super.dispatchTouchEvent(touchevent);
     }
 
-    //到着:13:00
-    //出発:15:00
-    //的な文字列を生成する関数
+    //着:13:00
+    //発:15:00
+    //上記のような文字列を生成する関数
     public String DepArrStringMaker(SpotStructure spot) {
         String tempTimeString="";//この変数に文字列を加算していくことで目的の変数を作成する
         if(spot.arriveTime!=null){

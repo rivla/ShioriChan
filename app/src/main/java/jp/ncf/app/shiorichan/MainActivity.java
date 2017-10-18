@@ -896,7 +896,7 @@ public class MainActivity extends AppCompatActivity implements
 
                             String markers="";
                             for (int i = 1; i < Value.itineraryPlaceList.size() - 1; i++) {
-                                markers=markers+"markers=size:mid|color:purple|label:"+String.valueOf(i)+"|"+String.valueOf(Value.itineraryPlaceList.get(i).lat)+","+String.valueOf(Value.itineraryPlaceList.get(i).lng)+"&";
+                                markers=markers+"markers=color:purple|label:"+String.valueOf(i)+"|"+String.valueOf(Value.itineraryPlaceList.get(i).lat)+","+String.valueOf(Value.itineraryPlaceList.get(i).lng)+"&";
                             }
 
                             try {
