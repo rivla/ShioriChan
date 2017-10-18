@@ -1351,7 +1351,7 @@ Log.d("test6",Value.itineraryPlaceList.get(2).departTime.toString());
         }else if(genre.equals("海水浴場")) {
             calendar.add(Calendar.HOUR, 2);
             return calendar.getTime();
-        }else if(genre.equals("観光農業（体験含む）")) {
+        }else if(genre.equals("観光農林業（体験含む）")) {
             calendar.add(Calendar.HOUR, 2);
             return calendar.getTime();
         }else if(genre.equals("観光牧場（体験含む）")) {
