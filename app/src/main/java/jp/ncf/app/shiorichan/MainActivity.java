@@ -365,7 +365,7 @@ public class MainActivity extends AppCompatActivity implements
                             try {
                                 for (int i = 0; i < Value.spots_json.getJSONArray("spots").length(); i++) {
                                     String pref_str = Value.spots_json.getJSONArray("spots").getJSONObject(i).getString("prefectures");
-                                    String genre_str = Value.spots_json.getJSONArray("spots").getJSONObject(i).getString("genreM");
+                                    String genre_str = Value.spots_json.getJSONArray("spots").getJSONObject(i).getString("genreS");
                                     //隣接県であった場合リストに格納する
                                     if (CheckNeighborPrefecture(pref_str, Value.neighborDicObject)) {
 
@@ -593,7 +593,7 @@ public class MainActivity extends AppCompatActivity implements
                                     }
                                     //条件を満たした観光地のみをリストに入れる
                                     if(tempThresholdFlg) {
-                                        String genre_str = Value.spots_json.getJSONArray("spots").getJSONObject(i).getString("genreM");
+                                        String genre_str = Value.spots_json.getJSONArray("spots").getJSONObject(i).getString("genreS");
                                         String name_str = Value.spots_json.getJSONArray("spots").getJSONObject(i).getString("name");
                                         String placeID_str = Value.spots_json.getJSONArray("spots").getJSONObject(i).getString("place_id");
                                         double rate_double = Value.spots_json.getJSONArray("spots").getJSONObject(i).getDouble("rating");
@@ -1128,6 +1128,8 @@ Log.d("test6",Value.itineraryPlaceList.get(2).departTime.toString());
 //        Log.d("test","false"+checkedPlace);
         return false;
     }
+
+    /*
     public Date addGenreWaitTime(Date date,String genre){
         Calendar calendar=Calendar.getInstance();
         calendar.setTime(date);
@@ -1199,6 +1201,205 @@ Log.d("test6",Value.itineraryPlaceList.get(2).departTime.toString());
             calendar.add(Calendar.HOUR, 2);
             return calendar.getTime();
         }else if(genre.equals("その他")) {
+            calendar.add(Calendar.HOUR, 2);
+            return calendar.getTime();
+        }
+        Log.e("test","category to spending time error!");
+        return null;
+    }
+    */
+
+    public Date addGenreWaitTime(Date date,String genre){
+        Calendar calendar=Calendar.getInstance();
+        calendar.setTime(date);
+        if(genre.equals("レストラン")){
+            calendar.add(Calendar.HOUR,1);
+            return calendar.getTime();
+        }
+        if(genre.equals("山岳")) {
+            calendar.add(Calendar.HOUR,3);
+            return calendar.getTime();
+        }else if(genre.equals("高原")) {
+            calendar.add(Calendar.HOUR, 3);
+            return calendar.getTime();
+        }else if(genre.equals("湖沼")) {
+            calendar.add(Calendar.HOUR, 2);
+            return calendar.getTime();
+        }else if(genre.equals("河川景観")) {
+            calendar.add(Calendar.HOUR, 2);
+            return calendar.getTime();
+        }else if(genre.equals("海岸景観")) {
+            calendar.add(Calendar.HOUR, 2);
+            return calendar.getTime();
+        }else if(genre.equals("海中公園")) {
+            calendar.add(Calendar.HOUR, 2);
+            return calendar.getTime();
+        }else if(genre.equals("その他（特殊地形）")) {
+            calendar.add(Calendar.HOUR, 2);
+            return calendar.getTime();
+        }else if(genre.equals("自然現象")) {
+            calendar.add(Calendar.HOUR, 2);
+            return calendar.getTime();
+        }else if(genre.equals("町並み")) {
+            calendar.add(Calendar.HOUR, 2);
+            return calendar.getTime();
+        }else if(genre.equals("郷土景観")) {
+            calendar.add(Calendar.HOUR, 2);
+            return calendar.getTime();
+        }else if(genre.equals("展望施設")) {
+            calendar.add(Calendar.HOUR, 2);
+            return calendar.getTime();
+        }else if(genre.equals("公園")) {
+            calendar.add(Calendar.HOUR, 1);
+            return calendar.getTime();
+        }else if(genre.equals("庭園")) {
+            calendar.add(Calendar.HOUR, 1);
+            return calendar.getTime();
+        }else if(genre.equals("動物")) {
+            calendar.add(Calendar.HOUR, 1);
+            return calendar.getTime();
+        }else if(genre.equals("植物")) {
+            calendar.add(Calendar.HOUR, 1);
+            return calendar.getTime();
+        }else if(genre.equals("城郭")) {
+            calendar.add(Calendar.HOUR, 2);
+            return calendar.getTime();
+        }else if(genre.equals("旧街道")) {
+            calendar.add(Calendar.HOUR, 2);
+            return calendar.getTime();
+        }else if(genre.equals("史跡")) {
+            calendar.add(Calendar.HOUR, 2);
+            return calendar.getTime();
+        }else if(genre.equals("歴史的建造物")) {
+            calendar.add(Calendar.HOUR, 2);
+            return calendar.getTime();
+        }else if(genre.equals("近代的建造物")) {
+            calendar.add(Calendar.HOUR, 2);
+            return calendar.getTime();
+        }else if(genre.equals("博物館")) {
+            calendar.add(Calendar.HOUR, 2);
+            return calendar.getTime();
+        }else if(genre.equals("美術館")) {
+            calendar.add(Calendar.HOUR, 2);
+            return calendar.getTime();
+        }else if(genre.equals("動・植物園")) {
+            calendar.add(Calendar.HOUR, 2);
+            return calendar.getTime();
+        }else if(genre.equals("水族館")) {
+            calendar.add(Calendar.HOUR, 2);
+            return calendar.getTime();
+        }else if(genre.equals("産業観光施設")) {
+            calendar.add(Calendar.HOUR, 2);
+            return calendar.getTime();
+        }else if(genre.equals("道の駅（見る）")) {
+            calendar.add(Calendar.HOUR, 1);
+            return calendar.getTime();
+        }else if(genre.equals("神社・仏閣等")) {
+            calendar.add(Calendar.HOUR, 2);
+            return calendar.getTime();
+        }else if(genre.equals("地域風俗")) {
+            calendar.add(Calendar.HOUR, 1);
+            return calendar.getTime();
+        }else if(genre.equals("アニメ・音楽舞台")) {
+            calendar.add(Calendar.HOUR, 1);
+            return calendar.getTime();
+        }else if(genre.equals("映画・ドラマロケ他")) {
+            calendar.add(Calendar.HOUR, 1);
+            return calendar.getTime();
+        }else if(genre.equals("その他（名所）")) {
+            calendar.add(Calendar.HOUR, 2);
+            return calendar.getTime();
+        }else if(genre.equals("センター施設")) {
+            calendar.add(Calendar.HOUR, 2);
+            return calendar.getTime();
+        }else if(genre.equals("道の駅（遊ぶ）")) {
+            calendar.add(Calendar.HOUR, 1);
+            return calendar.getTime();
+        }else if(genre.equals("スポーツ・リゾート施設")) {
+            calendar.add(Calendar.HOUR, 2);
+            return calendar.getTime();
+        }else if(genre.equals("サイクリングセンター")) {
+            calendar.add(Calendar.HOUR, 2);
+            return calendar.getTime();
+        }else if(genre.equals("キャンプ場")) {
+            calendar.add(Calendar.HOUR, 2);
+            return calendar.getTime();
+        }else if(genre.equals("フィールド・アスレチック")) {
+            calendar.add(Calendar.HOUR, 2);
+            return calendar.getTime();
+        }else if(genre.equals("フィールド・アーチェリー場")) {
+            calendar.add(Calendar.HOUR, 2);
+            return calendar.getTime();
+        }else if(genre.equals("スケート場")) {
+            calendar.add(Calendar.HOUR, 2);
+            return calendar.getTime();
+        }else if(genre.equals("マリーナ・ヨットハーバー")) {
+            calendar.add(Calendar.HOUR, 2);
+            return calendar.getTime();
+        }else if(genre.equals("サイクリングコース")) {
+            calendar.add(Calendar.HOUR, 2);
+            return calendar.getTime();
+        }else if(genre.equals("ハイキングコース")) {
+            calendar.add(Calendar.HOUR, 3);
+            return calendar.getTime();
+        }else if(genre.equals("自然歩道・自然研究路")) {
+            calendar.add(Calendar.HOUR, 2);
+            return calendar.getTime();
+        }else if(genre.equals("オリエンテーチング・パーマネントコース")) {
+            calendar.add(Calendar.HOUR, 3);
+            return calendar.getTime();
+        }else if(genre.equals("海水浴場")) {
+            calendar.add(Calendar.HOUR, 2);
+            return calendar.getTime();
+        }else if(genre.equals("観光農業（体験含む）")) {
+            calendar.add(Calendar.HOUR, 2);
+            return calendar.getTime();
+        }else if(genre.equals("観光牧場（体験含む）")) {
+            calendar.add(Calendar.HOUR, 2);
+            return calendar.getTime();
+        }else if(genre.equals("観光漁業（体験含む）")) {
+            calendar.add(Calendar.HOUR, 2);
+            return calendar.getTime();
+        }else if(genre.equals("テーマパーク・レジャーランド")) {
+            calendar.add(Calendar.HOUR, 2);
+            return calendar.getTime();
+        }else if(genre.equals("温泉")) {
+            calendar.add(Calendar.HOUR, 1);
+            return calendar.getTime();
+        }else if(genre.equals("その他（遊ぶ）")) {
+            calendar.add(Calendar.HOUR, 2);
+            return calendar.getTime();
+        }else if(genre.equals("ショッピング店")) {
+            calendar.add(Calendar.HOUR, 2);
+            return calendar.getTime();
+        }else if(genre.equals("伝統工芸技術")) {
+            calendar.add(Calendar.HOUR, 2);
+            return calendar.getTime();
+        }else if(genre.equals("その他（買う）")) {
+            calendar.add(Calendar.HOUR, 2);
+            return calendar.getTime();
+        }else if(genre.equals("郷土料理店")) {
+            calendar.add(Calendar.HOUR, 1);
+            return calendar.getTime();
+        }else if(genre.equals("その他（食べる）")) {
+            calendar.add(Calendar.HOUR, 1);
+            return calendar.getTime();
+        }else if(genre.equals("ケーブルカー・ロープウェイ")) {
+            calendar.add(Calendar.HOUR, 2);
+            return calendar.getTime();
+        }else if(genre.equals("レンタサイクル")) {
+            calendar.add(Calendar.HOUR, 2);
+            return calendar.getTime();
+        }else if(genre.equals("遊覧船")) {
+            calendar.add(Calendar.HOUR, 2);
+            return calendar.getTime();
+        }else if(genre.equals("観光列車")) {
+            calendar.add(Calendar.HOUR, 2);
+            return calendar.getTime();
+        }else if(genre.equals("観光周遊バス")) {
+            calendar.add(Calendar.HOUR, 2);
+            return calendar.getTime();
+        }else if(genre.equals("その他（乗り物）")) {
             calendar.add(Calendar.HOUR, 2);
             return calendar.getTime();
         }
