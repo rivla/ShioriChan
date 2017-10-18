@@ -21,7 +21,7 @@
                 android:id="@+id/textView17"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="観光場所周辺の地図"
+                android:text="観光場所周辺の地図　ピンを立てる機能実装予定"
                 android:textSize="40dp"/>
 
             <!-- とりあえず, ドロイドくんを表示しておく -->

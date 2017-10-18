@@ -72,7 +72,6 @@ class Value {
 public class MainActivity extends AppCompatActivity implements
         GoogleApiClient.ConnectionCallbacks,
         GoogleApiClient.OnConnectionFailedListener{
-    String genreStrings[] = {"自然景観","施設景観","公園・庭園","動・植物","文化史跡","文化施設","神社仏閣","地域風俗・風習","その他","祭事","イベント","イベント鑑賞","文化施設","スポーツ・レジャー","温泉","名産品","郷土料理店","車","その他乗り物","旅館","ホテル","民宿・ペンション"};//ジャンルを格納するリスト
     GoogleApiClient mGoogleApiClient;//開始時に自己位置を取得するため、googleapiを利用
     private Location location;//開始時、現在地の座標を保存する変数
     private JsonReader json;
@@ -140,7 +139,6 @@ public class MainActivity extends AppCompatActivity implements
         departureTimeButton.setText(String.format("%02d:%02d",departureTime.getHours(),departureTime.getMinutes()));
         final Button arriveTimeButton=(Button)findViewById(R.id.arriveTimeButton);
         arriveTimeButton.setText(String.format("%02d:%02d",arriveTime.getHours(),arriveTime.getMinutes()));
-        Spinner genreSpinner=(Spinner)findViewById(R.id.genreSpinner);
         final Button startButton=(Button)findViewById(R.id.startButton);
         final Button tokyoButton=(Button)findViewById(R.id.debugTokyoButton);
         final Button nagoyaButton=(Button)findViewById(R.id.debugNagoyaButton);
@@ -236,22 +234,7 @@ public class MainActivity extends AppCompatActivity implements
             }
         });
 
-        // ジャンルスピナー用ArrayAdapter
-        ArrayAdapter<String> adapter= new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, genreStrings);
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-       genreSpinner.setAdapter(adapter);
 
-        // ジャンル選択用スピナーのリスナーを登録
-        genreSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            //　アイテムが選択された時
-            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                Spinner spinner = (Spinner) parent;
-                Value.genre=(String) spinner.getSelectedItem();
-            }
-            //　アイテムが選択されなかった
-            public void onNothingSelected(AdapterView<?> parent) {
-            }
-        });
         //スレッド上でJsonの読み込みを開始する。ユーザーが入力を行っている間、並行して読み出しが出来る。
         final LoadJsonInThread loadJsonInThread =new LoadJsonInThread();
         loadJsonInThread.start();
@@ -1402,7 +1385,11 @@ Log.d("test6",Value.itineraryPlaceList.get(2).departTime.toString());
         }else if(genre.equals("その他（乗り物）")) {
             calendar.add(Calendar.HOUR, 2);
             return calendar.getTime();
+        }else if(genre.equals("その他（イベント）")) {
+            calendar.add(Calendar.HOUR, 2);
+            return calendar.getTime();
         }
+
         Log.e("test","category to spending time error!");
         return null;
 

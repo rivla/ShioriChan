@@ -79,19 +79,6 @@
             android:id="@+id/imageView" />
 
 
-        <TextView
-            android:text="興味のあるジャンルを選択してください(現状意味なし)"
-            android:textSize="15dp"
-            android:layout_marginTop="30dp"
-            android:gravity="center_horizontal"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:id="@+id/instruction" />
-
-        <Spinner
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:id="@+id/genreSpinner" />
 
     <LinearLayout
         android:orientation="horizontal"
