@@ -85,13 +85,17 @@
                 android:layout_height="40dp" />
 
             <!-- 観光地の情報 WebViewからの情報を反映？ -->
-            <TextView
-                android:id="@+id/textView16"
+            <ScrollView
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:text="textView16"
-                android:textSize="30dp" />
-
+                android:id="@+id/explainTextScroll">
+                <TextView
+                    android:id="@+id/textView16"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:text="textView16"
+                    android:textSize="30dp" />
+            </ScrollView>
             <Space
                 android:layout_width="match_parent"
                 android:layout_height="match_parent" />

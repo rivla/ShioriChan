@@ -1,15 +1,17 @@
 package jp.ncf.app.shiorichan;
 
-import android.util.Log;
 import android.app.Activity;
+import android.content.Context;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.animation.AnimationUtils;
-import android.widget.TextView;
-import android.widget.ViewFlipper;
 import android.widget.ImageView;
 import android.widget.RatingBar;
+import android.widget.ScrollView;
+import android.widget.TextView;
+import android.widget.ViewFlipper;
 
 /**
  * Created by ideally on 2017/10/10.
@@ -75,7 +77,7 @@ public class ShioriView extends Activity {
                         // 1つ目の行き先
                         if (Value.itineraryPlaceList.get(i).getName() != null) {
                             TextView textView4 = (TextView) v2.findViewById(R.id.textView4);
-                        textView4.setText(String.format("%02d:%02d", Value.itineraryPlaceList.get(i).departTime.getHours(), Value.itineraryPlaceList.get(i).departTime.getMinutes())); //
+                           textView4.setText(DepArrStringMaker(Value.itineraryPlaceList.get(i))); //
                             TextView textView5 = (TextView) v2.findViewById(R.id.textView5); // v2.findViewByIdで指定する
                             textView5.setText(Value.itineraryPlaceList.get(i).getName());
                         }
@@ -86,7 +88,7 @@ public class ShioriView extends Activity {
                             ImageView imageView6 = (ImageView) v2.findViewById(R.id.imageView6);
                             imageView6.setImageResource(R.mipmap.arrow_blue);
                             TextView textView6 = (TextView) v2.findViewById(R.id.textView6);
-                        textView6.setText(String.format("%02d:%02d", Value.itineraryPlaceList.get(i).departTime.getHours(), Value.itineraryPlaceList.get(i).departTime.getMinutes())); //
+                            textView6.setText(DepArrStringMaker(Value.itineraryPlaceList.get(i))); //
                             TextView textView7 = (TextView) v2.findViewById(R.id.textView7);
                             textView7.setText(Value.itineraryPlaceList.get(i).getName());
                         }
@@ -97,7 +99,7 @@ public class ShioriView extends Activity {
                             ImageView imageView7 = (ImageView) v2.findViewById(R.id.imageView7);
                             imageView7.setImageResource(R.mipmap.arrow_blue);
                             TextView textView8 = (TextView) v2.findViewById(R.id.textView8);
-                        textView8.setText(String.format("%02d:%02d", Value.itineraryPlaceList.get(i).departTime.getHours(), Value.itineraryPlaceList.get(i).departTime.getMinutes())); //
+                            textView8.setText(DepArrStringMaker(Value.itineraryPlaceList.get(i))); //
                             TextView textView9 = (TextView) v2.findViewById(R.id.textView9);
                             textView9.setText(Value.itineraryPlaceList.get(i).getName());
                         }
@@ -108,7 +110,7 @@ public class ShioriView extends Activity {
                             ImageView imageView8 = (ImageView) v2.findViewById(R.id.imageView8);
                             imageView8.setImageResource(R.mipmap.arrow_blue);
                             TextView textView10 = (TextView) v2.findViewById(R.id.textView10);
-                        textView10.setText(String.format("%02d:%02d", Value.itineraryPlaceList.get(i).departTime.getHours(), Value.itineraryPlaceList.get(i).departTime.getMinutes())); //
+                            textView10.setText(DepArrStringMaker(Value.itineraryPlaceList.get(i))); //
                             TextView textView11 = (TextView) v2.findViewById(R.id.textView11);
                             textView11.setText(Value.itineraryPlaceList.get(i).getName());
                         }
@@ -119,7 +121,7 @@ public class ShioriView extends Activity {
                             ImageView imageView9 = (ImageView) v2.findViewById(R.id.imageView9);
                             imageView9.setImageResource(R.mipmap.arrow_blue);
                             TextView textView12 = (TextView) v2.findViewById(R.id.textView12);
-                        textView12.setText(String.format("%02d:%02d", Value.itineraryPlaceList.get(i).departTime.getHours(), Value.itineraryPlaceList.get(i).departTime.getMinutes())); //
+                            textView12.setText(DepArrStringMaker(Value.itineraryPlaceList.get(i))); //
                             TextView textView13 = (TextView) v2.findViewById(R.id.textView13);
                             textView13.setText(Value.itineraryPlaceList.get(i).getName());
                         }
@@ -153,9 +155,11 @@ public class ShioriView extends Activity {
                 TextView textView16 = (TextView) v3.findViewById(R.id.textView16);
                 textView16.setText(Value.itineraryPlaceList.get(i).getExplainText());
 
+
                 // 評価値の☆をつける
                 RatingBar ratingBar = (RatingBar) v3.findViewById(R.id.ratingBar);
                 ratingBar.setRating((float) Value.itineraryPlaceList.get(i).getRate());
+
 
                 // viewFlipperに追加
                 viewFlipper.addView(v3);
@@ -181,15 +185,14 @@ public class ShioriView extends Activity {
             viewFlipper.addView(v4);
 
         }
-
-
-    // Using the following method, we will handle all screen swaps.
-    public boolean onTouchEvent(MotionEvent touchevent) {
+    //onTouchEventの代わりにこちらを使ってください。
+    //ScrollView(説明文のスクロール)が画面タッチ時のイベントを優先して吸い取ってしまいonTouchEventが実行されないため、
+    //ScrollViewよりも優先度の高いdispatchTouchEventを使うことで無理やりスワイプを検知しています。
+    public final boolean dispatchTouchEvent(MotionEvent touchevent){
         switch (touchevent.getAction()) {
-
             case MotionEvent.ACTION_DOWN:
                 firstX = touchevent.getX();
-                break;
+                return super.dispatchTouchEvent(touchevent);
             case MotionEvent.ACTION_UP:
                 X = touchevent.getX();
 
@@ -203,6 +206,7 @@ public class ShioriView extends Activity {
 
                     // Display previous screen.
                     viewFlipper.showPrevious();
+                    return false;
                 }
 
                 // Handling right to left screen swap.
@@ -215,12 +219,41 @@ public class ShioriView extends Activity {
 
                     // Display next screen.
                     viewFlipper.showNext();
+                    return false;
                 }
                 break;
         }
-        return false;
+        return super.dispatchTouchEvent(touchevent);
     }
 
+    //到着:13:00
+    //出発:15:00
+    //的な文字列を生成する関数
+    public String DepArrStringMaker(SpotStructure spot) {
+        String tempTimeString="";//この変数に文字列を加算していくことで目的の変数を作成する
+        if(spot.arriveTime!=null){
+            tempTimeString=tempTimeString+String.format("着:%02d:%02d", spot.arriveTime.getHours(), spot.arriveTime.getMinutes());
+        }
+        if(spot.arriveTime!=null && spot.departTime!=null){
+            tempTimeString=tempTimeString+"\n";
+        }
+        if(spot.departTime!=null){
+            tempTimeString=tempTimeString+String.format("出:%02d:%02d", spot.departTime.getHours(), spot.departTime.getMinutes());
+        }
+        return tempTimeString;
+    }
 
 }
 
+class localScrollView extends android.widget.ScrollView {
+    public localScrollView(Context context) {
+        super(context);
+    }
+
+    @Override
+    public boolean onInterceptTouchEvent(MotionEvent ev) {
+        Log.d("test","interruput");
+        ((Activity)(this.getContext())).onTouchEvent(ev);
+        return super.onInterceptTouchEvent(ev);
+    }
+}

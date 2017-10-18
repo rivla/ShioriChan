@@ -50,24 +50,27 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_weight="0.45"
-                    android:orientation="horizontal">
+                    android:orientation="horizontal"
+                    android:gravity="center">
 
-                    <!-- 時刻の横幅はlayout_width="200dp"で強引に設定している -->
+                    <!-- 時刻の横幅はlayout_width="230dp"で強引に設定している -->
                     <TextView
                         android:id="@+id/textView4"
-                        android:layout_width="200dp"
+                        android:layout_width="250dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
-                        android:text="9:00"
-                        android:textSize="30dp" />
+                        android:text="出9:00\n着:5:00"
+                        android:layout_gravity="center"
+                        android:textSize="25dp" />
 
                     <TextView
                         android:id="@+id/textView5"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
-                        android:text="textView5"
-                        android:textSize="30dp" />
+                        android:text="岐阜大"
+                        android:layout_gravity="center"
+                        android:textSize="30dp"/>
 
                 </LinearLayout>
 
@@ -83,22 +86,24 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_weight="0.50"
-                    android:orientation="horizontal">
+                    android:orientation="horizontal"
+                    android:gravity="center">
 
                     <TextView
                         android:id="@+id/textView6"
-                        android:layout_width="200dp"
+                        android:layout_width="230dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
-                        android:text="10:00"
-                        android:textSize="30dp" />
+                        android:text=""
+                        android:textSize="25dp" />
 
                     <TextView
                         android:id="@+id/textView7"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
-                        android:text="textView7"
+                        android:text=""
+                        android:layout_gravity="center"
                         android:textSize="30dp" />
 
                 </LinearLayout>
@@ -113,22 +118,24 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_weight="0.45"
-                    android:orientation="horizontal">
+                    android:orientation="horizontal"
+                    android:gravity="center">
 
                     <TextView
                         android:id="@+id/textView8"
-                        android:layout_width="200dp"
+                        android:layout_width="230dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
-                        android:text="12:00"
-                        android:textSize="30dp" />
+                        android:text=""
+                        android:textSize="25dp" />
 
                     <TextView
                         android:id="@+id/textView9"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
-                        android:text="textView9"
+                        android:layout_gravity="center"
+                        android:text=""
                         android:textSize="30dp" />
 
                 </LinearLayout>
@@ -143,22 +150,24 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_weight="0.45"
-                    android:orientation="horizontal">
+                    android:orientation="horizontal"
+                    android:gravity="center">
 
                     <TextView
                         android:id="@+id/textView10"
-                        android:layout_width="200dp"
+                        android:layout_width="230dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
-                        android:text="13:00"
-                        android:textSize="30dp" />
+                        android:text=""
+                        android:textSize="25dp" />
 
                     <TextView
                         android:id="@+id/textView11"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
-                        android:text="textView11"
+                        android:text=""
+                        android:layout_gravity="center"
                         android:textSize="30dp" />
 
                 </LinearLayout>
@@ -173,22 +182,24 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:orientation="horizontal">
+                    android:orientation="horizontal"
+                    android:gravity="center">
 
                     <TextView
                         android:id="@+id/textView12"
-                        android:layout_width="200dp"
+                        android:layout_width="230dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
-                        android:text="14:00"
-                        android:textSize="30dp" />
+                        android:text=""
+                        android:textSize="25dp" />
 
                     <TextView
                         android:id="@+id/textView13"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
-                        android:text="textView13"
+                        android:layout_gravity="center"
+                        android:text=""
                         android:textSize="30dp" />
 
                 </LinearLayout>

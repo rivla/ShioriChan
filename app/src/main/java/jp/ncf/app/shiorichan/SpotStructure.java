@@ -22,10 +22,11 @@ class SpotStructure {
     String explainText;
     Bitmap image;
     Date departTime;
+    Date arriveTime;
     Bitmap mapImage;
     String polyline;
 
-    public SpotStructure(String placeID,String name,String genre,String prefecture,double rate,double lat,double lng,double distance,String explainText,Bitmap image,Date departTime,Bitmap mapImage,String polyline){
+    public SpotStructure(String placeID,String name,String genre,String prefecture,double rate,double lat,double lng,double distance,String explainText,Bitmap image,Date departTime,Date arriveTime,Bitmap mapImage,String polyline){
         this.prefecture=prefecture;
         this.placeID=placeID;
         this.name=name;
@@ -37,6 +38,7 @@ class SpotStructure {
         this.explainText=explainText;
         this.image=image;
         this.departTime=departTime;
+        this.arriveTime=arriveTime;
         this.mapImage=mapImage;
         this.polyline=polyline;
     }
