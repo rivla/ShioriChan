@@ -21,27 +21,14 @@
         android:layout_alignParentBottom="true"
         android:layout_alignParentRight="true"
         android:layout_centerInParent="true">
-        <Button
-            android:text="現在地：岐阜"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:id="@+id/debugGifuButton" />
-        <Button
-            android:text="現在地：名古屋"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:id="@+id/debugNagoyaButton" />
-        <Button
-            android:text="現在地：東京"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:id="@+id/debugTokyoButton" />
+
+<!--
         <Button
             android:text="デバッグモード"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:id="@+id/debugButton" />
-
+-->
         <Button
             android:text="しおり表示"
             android:layout_width="wrap_content"
@@ -119,7 +106,13 @@
             android:id="@+id/editText"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:hint="自然，城，歴史など，自由な言葉を入力してください"
+            android:hint="キーワードを入力してください(複数でもOK!)"
+            />
+        <EditText
+            android:id="@+id/nowPlaceEditText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:hint="出発地点を入力してください！（未入力の場合は現在地になります）"
             />
         <Button
             android:text="はじめる"

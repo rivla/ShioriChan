@@ -177,6 +177,12 @@ public class ShioriView extends Activity {
             if (Value.itineraryPlaceList.size() > 0) {
                 ImageView imageView2 = (ImageView) v4.findViewById(R.id.imageView2);
                 imageView2.setImageBitmap(Value.itineraryPlaceList.get(Value.itineraryPlaceList.size()-1).mapImage); //
+                TextView mapPlaceText=(TextView)v4.findViewById(R.id.mapPlaceText);
+                String tempString="";
+                for(int i=1;i<Value.itineraryPlaceList.size()-1;i++){
+                    tempString=tempString+String.valueOf(i)+":"+Value.itineraryPlaceList.get(i).name+"\n";
+                }
+                mapPlaceText.setText(tempString);
             }
             else{
                 Log.d("from ShioriView.java : ","地図を作成出来ませんでした\nValue.itineraryPlaceList.get(0).mapImage を確認して下さい");

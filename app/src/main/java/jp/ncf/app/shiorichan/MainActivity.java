@@ -40,8 +40,10 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
@@ -121,32 +123,18 @@ public class MainActivity extends AppCompatActivity implements
         json=new JsonReader();//Json読み込み用クラスのインスタンス
         httpGet=new HttpGetter();//Httpリクエスト送信用クラスのインスタンス
         progressDialog = new ProgressDialog(this);//読み込み中表示,// 初期設定
-        progressDialog.setTitle("読み込み中…");
+        progressDialog.setTitle("初期値");
         progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
 
-        //******************//実機のgoogleplacesversionの問題で緯度経度が取れない場合は、岐阜の座標を代入する*****************************
-        /*                if(location==null) {
-                            location = new Location("a");//文字列はprovider（適当に入れました)
-                            location.setLatitude(35.4650334);
-                            location.setLongitude(136.73929506);
-                        }
-         */
-        location = new Location("a");//とりあえずデバッグ用として、本来GPSの値が入るところに浜松の値を代入
-        location.setLatitude(34.788739);
-        location.setLongitude(137.6420052);
 
 
 
         Button shioriButton = (Button) findViewById(R.id.shioriButton);
-        Button sendButton = (Button) findViewById(R.id.debugButton);
         final Button departureTimeButton=(Button)findViewById(R.id.departureTimeButton);
         departureTimeButton.setText(String.format("%02d:%02d",departureTime.getHours(),departureTime.getMinutes()));
         final Button arriveTimeButton=(Button)findViewById(R.id.arriveTimeButton);
         arriveTimeButton.setText(String.format("%02d:%02d",arriveTime.getHours(),arriveTime.getMinutes()));
         final Button startButton=(Button)findViewById(R.id.startButton);
-        final Button tokyoButton=(Button)findViewById(R.id.debugTokyoButton);
-        final Button nagoyaButton=(Button)findViewById(R.id.debugNagoyaButton);
-        final Button gifuButton=(Button)findViewById(R.id.debugGifuButton);
         final EditText editText = (EditText)findViewById(R.id.editText);        // EditTextオブジェクトを取得
         //キーボード表示を制御するためのオブジェクト
         inputMethodManager =  (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
@@ -164,29 +152,7 @@ public class MainActivity extends AppCompatActivity implements
                 return false;
             }
         });
-
-
-        tokyoButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                location.setLatitude(35.681167);
-                location.setLongitude(139.767052);
-            }
-        });
-        nagoyaButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                location.setLatitude(35.170915);
-                location.setLongitude(136.881537);
-            }
-        });
-        gifuButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                location.setLatitude(35.464412);
-                location.setLongitude(136.737259);
-            }
-        });
+        /*
         //デバッグモードへ入るボタン
         sendButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -195,6 +161,7 @@ public class MainActivity extends AppCompatActivity implements
                 startActivity(intent);
             }
         });
+        */
         //しおり表示モードへ入るボタン
         shioriButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -246,6 +213,7 @@ public class MainActivity extends AppCompatActivity implements
         startButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                progressDialog.setTitle("しおり作成中…。");
                 progressDialog.show();
                 //◆スレッド処理開始
                 new Thread(new Runnable() {
@@ -258,12 +226,50 @@ public class MainActivity extends AppCompatActivity implements
                         } catch (InterruptedException e) {
                             e.printStackTrace();
                         }
+
+                        //******************//実機のgoogleplacesversionの問題で緯度経度が取れない場合は、岐阜の座標を代入する*****************************
+                        EditText nowPlaceEditText=(EditText) findViewById(R.id.nowPlaceEditText);
+                        if(nowPlaceEditText.getText().toString().equals("")){
+                            if(location==null) {
+                                Log.d("test","GPSが取れませんでした");
+                                location = new Location("a");//文字列はprovider（適当に入れました)
+                                location.setLatitude(35.4650334);
+                                location.setLongitude(136.73929506);
+                            }else {
+                                Log.d("test", "GPSの値を使用します");
+                            }
+                        }else{
+                            //日本語をURLに変換
+                            String urlEncodeResult= null;
+                            try {
+                                urlEncodeResult = URLEncoder.encode(nowPlaceEditText.getText().toString() ,"UTF-8");
+                                JSONObject nowPlaceGeoCodingResult = httpGet.HttpPlaces(new URL("https://maps.googleapis.com/maps/api/geocode/json?address="+urlEncodeResult+"&key=AIzaSyCke0pASXyPnnJR-GAAvN3Bz7GltgomfEk&language=ja"));
+                                Log.d("test",nowPlaceGeoCodingResult.toString());
+                                if(nowPlaceGeoCodingResult.getJSONArray("results").getJSONObject(0).getString("formatted_address").substring(0,2).equals("日本")) {
+                                    Log.d("test", "formatted address is" + nowPlaceGeoCodingResult.getJSONArray("results").getJSONObject(0).getString("formatted_address"));
+                                    location.setLatitude(nowPlaceGeoCodingResult.getJSONArray("results").getJSONObject(0).getJSONObject("geometry").getJSONObject("location").getDouble("lat"));
+                                    location.setLongitude(nowPlaceGeoCodingResult.getJSONArray("results").getJSONObject(0).getJSONObject("geometry").getJSONObject("location").getDouble("lng"));
+                                }else{
+                                    Log.d("test","ここは日本ではありません");
+                                }
+                            } catch (UnsupportedEncodingException e) {
+                                e.printStackTrace();
+                            } catch (MalformedURLException e) {
+                                e.printStackTrace();
+                            } catch (JSONException e) {
+                                e.printStackTrace();
+                            }
+                        }
+
+
+
                         Log.d("test", "startButton pusshed");
 
                         // 初期化処理
                         Value.error_flag = false; // 入力エラーフラグの初期化
                         Value.genre = "";       // ジャンルの初期化
                         Value.itineraryPlaceList = new ArrayList<SpotStructure>();
+                        Value.genre_list=new ArrayList<String>();
 
                         // ====== 自由テキスト入力受け取り ======
 
@@ -271,6 +277,8 @@ public class MainActivity extends AppCompatActivity implements
                         final String input_text = editText.getText().toString();
                         Value.input_text = input_text;
                         Log.d("inputtext", Value.input_text);
+
+
 
                         // 入力テキストが未入力であった場合
                         if (Value.input_text.length() == 0) {
@@ -307,11 +315,16 @@ public class MainActivity extends AppCompatActivity implements
                                         Random rand = new Random();
                                         int rand_n = rand.nextInt(genre_list.length());
                                         Value.genre = (String) genre_list.get(rand_n);
+                                        for(int j=0;j<genre_list.length();j++){
+                                            if(genre_list.get(j).equals(Value.input_list.get(i))){
+                                                Value.genre=(String)genre_list.get(j);
+                                            }
+                                        }
                                     }
                                     // 出力確認
                                     Log.d("genre result", Value.genre);
                                     // ジャンルリストにジャンルを格納する
-                                    Value.genre_list.add(Value.input_list.get(i));
+                                    Value.genre_list.add(Value.genre);
 
                                 } catch (JSONException e) {
                                     // 入力テキストが辞書に登録されていなかった場合
@@ -355,7 +368,7 @@ public class MainActivity extends AppCompatActivity implements
                             Log.d("出発地の時刻", Value.itineraryPlaceList.get(0).departTime.toString());
 
 //********************レビュー順にソートし、一つ目の候補地を確定する************************
-                            ArrayList<SpotStructure> firstCandsList = new ArrayList<SpotStructure>();//ソート用リスト初期化
+                            final ArrayList<SpotStructure> firstCandsList = new ArrayList<SpotStructure>();//ソート用リスト初期化
                             ArrayList<SpotStructure> firstCandsList_org = new ArrayList<SpotStructure>();//ソートしない用リスト初期化
                             double rate_double_mean = 0.0; // ratingの和（平均を取るための変数）
                             double match_spot_count = 0.0; // 隣接県でマッチしたスポット数（平均を取るための変数）
@@ -404,6 +417,9 @@ public class MainActivity extends AppCompatActivity implements
                                                 match_explain_double += 1.0;
                                             }
                                         }
+//                                        Log.d("genreDouble",name_str+String.valueOf(match_genre_double));
+  //                                      Log.d("nameDouble",name_str+String.valueOf(match_name_double));
+    //                                    Log.d("explainDouble",name_str+String.valueOf(match_explain_double));
                                         // ratingの値を更新する
                                         rate_double += match_genre_double + match_name_double + match_explain_double;
 
@@ -431,14 +447,18 @@ public class MainActivity extends AppCompatActivity implements
                             boolean firstPlaceCorrectFlg = false;
                             int minDistanceNumber = 0;
 
-                            if(firstCandsList.get(0).rate<1){
                                 handler.post(new Runnable() {
                                     @Override
                                     public void run() {
-                                        Toast.makeText(MainActivity.getInstance(), "良いプランが出来ませんでした…。", Toast.LENGTH_LONG).show();
+                                        if(firstCandsList.get(0).rate<1.5){
+                                            progressDialog.setTitle("期待できないかも…。");
+                                        }else if(firstCandsList.get(0).rate<2.5){
+                                            progressDialog.setTitle("もうちょっとまってね！");
+                                        }else{
+                                            progressDialog.setTitle("期待しててね！");
+                                        }
                                     }
                                 });
-                            }
 
 
                             while (!firstPlaceCorrectFlg) {
@@ -454,8 +474,8 @@ public class MainActivity extends AppCompatActivity implements
                                     //レビュー4.5以上の候補地から一番近い場所を選ぶ
                                     minDistanceNumber = 0;
                                     double minDistance = Double.MAX_VALUE;
-                                    double center_val = (firstCandsList.get(0).rate + rate_double_mean) / 1.5;
-                                    for (int i = 0; firstCandsList.get(i).rate > center_val; i++) {
+                                    double center_val = (firstCandsList.get(0).rate + rate_double_mean) / 2;
+                                    for (int i = 0; firstCandsList.get(i).rate> firstCandsList.get(0).rate - 0.05 ; i++) {
                                         Log.d("result", firstCandsList.get(i).rate + String.valueOf(firstCandsList.get(i).name));
                                         if (firstCandsList.get(i).distance < minDistance) {
                                             minDistance = firstCandsList.get(i).distance;
@@ -465,6 +485,7 @@ public class MainActivity extends AppCompatActivity implements
 
                                     //一番初めに訪れる観光地決定、旅程リストに追加
                                     Value.itineraryPlaceList.add(firstCandsList.get(minDistanceNumber));
+                                    //Value.itineraryPlaceList.add(firstCandsList.get(0));
                                 }
 
                                 //directionAPIに出発地と第一観光地を渡し、どれくらい時間がかかるかを求める。
@@ -686,7 +707,12 @@ public class MainActivity extends AppCompatActivity implements
                                 }
                             } catch (JSONException e) {
                                 e.printStackTrace();
-
+                                handler.post(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        Toast.makeText(MainActivity.getInstance(), "帰り道がありません", Toast.LENGTH_LONG).show();
+                                    }
+                                });
                             } catch (MalformedURLException e) {
                                 e.printStackTrace();
                             }
@@ -1474,6 +1500,9 @@ public class MainActivity extends AppCompatActivity implements
             calendar.add(Calendar.HOUR, 2);
             return calendar.getTime();
         }else if(genre.equals("その他（イベント）")) {
+            calendar.add(Calendar.HOUR, 2);
+            return calendar.getTime();
+        }else if(genre.equals("スキー場")) {
             calendar.add(Calendar.HOUR, 2);
             return calendar.getTime();
         }
