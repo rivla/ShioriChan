@@ -106,13 +106,13 @@
             android:id="@+id/editText"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:hint="キーワードを入力してください(複数でもOK!)"
+            android:hint="キーワードを入力してね(複数でもOK!)"
             />
         <EditText
             android:id="@+id/nowPlaceEditText"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:hint="出発地点を入力してください！（未入力の場合は現在地になります）"
+            android:hint="出発点を変更できるよ(未入力は現在地)"
             />
         <Button
             android:text="はじめる"
