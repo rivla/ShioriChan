@@ -15,27 +15,33 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_margin="150dp"
+            android:layout_margin="180dp"
             android:orientation="vertical">
 
             <ImageView
                 android:id="@+id/imageView12"
-                android:layout_width="match_parent"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                app:srcCompat="@mipmap/have_a_nice_trip" />
-
-            <ImageView
-                android:id="@+id/imageView2"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                app:srcCompat="@mipmap/travel_woman" />
+                android:src="@mipmap/have_a_nice_trip"/>
 
         </LinearLayout>
 
-        <LinearLayout
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:orientation="horizontal"></LinearLayout>
+        <FrameLayout
+            android:layout_width="320dp"
+            android:layout_height="160dp"
+            android:layout_gravity="bottom|right"
+            android:layout_margin="10dp"
+            android:background="@mipmap/waku2">
+
+            <TextView
+                android:id="@+id/textView20"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_margin="5dp"
+                android:text="協力 :\nGoogleAPI\n公共クラウドシステム\nしおりちゃん"
+                android:textSize="25dp" />
+        </FrameLayout>
 
     </FrameLayout>
 

@@ -32,7 +32,7 @@
                 android:layout_height="100dp"
                 android:layout_gravity="center_horizontal|center"
                 android:layout_margin="20dp"
-                android:background="@mipmap/waku">
+                android:background="@mipmap/waku2">
 
                 <!-- 枠の中に記述する文字列 -->
 
@@ -69,7 +69,7 @@
                 android:layout_height="80dp"
                 android:layout_gravity="center_horizontal"
                 android:layout_margin="20dp"
-                android:background="@mipmap/waku">
+                android:background="@mipmap/waku2">
 
                 <!-- 枠の中に記述する文字列 -->
                 <TextView
