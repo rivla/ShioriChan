@@ -937,10 +937,11 @@ public class MainActivity extends AppCompatActivity implements
                                 e.printStackTrace();
                             }
 */
-                            String waypoints =null;
-                            String markers=null;
 
 //*****************************現在地→第一観光地の地図取得******************************
+                            /*
+                            String waypoints =null;
+                            String markers=null;
                             markers="";
                             for (int i = 1; i < 2; i++) {
                                 markers=markers+"markers=color:purple|label:"+String.valueOf(i)+"|"+String.valueOf(Value.itineraryPlaceList.get(i).lat)+","+String.valueOf(Value.itineraryPlaceList.get(i).lng)+"&";
@@ -981,9 +982,10 @@ public class MainActivity extends AppCompatActivity implements
                             } catch (JSONException e) {
                                 e.printStackTrace();
                             }
-
+/*
 
 //*****************************目的地周辺の地図取得******************************
+                            /*
                             waypoints = "waypoints=";
                             for (int i = 2; i < Value.itineraryPlaceList.size() - 3; i++) {
                                 waypoints = waypoints + "place_id:" + Value.itineraryPlaceList.get(i).placeID + "|";
@@ -1009,6 +1011,43 @@ public class MainActivity extends AppCompatActivity implements
                                         "size=400x400&" +markers+
                                         "path=color:0xff0000ff|weight:5%7Cenc:" + tempPolyline + "&" +
                                         "key=AIzaSyCke0pASXyPnnJR-GAAvN3Bz7GltgomfEk"));
+                                        */
+
+                            try {
+                                Value.itineraryPlaceList.set(0, new SpotStructure(
+                                        Value.itineraryPlaceList.get(0).placeID,
+                                        Value.itineraryPlaceList.get(0).name,
+                                        Value.itineraryPlaceList.get(0).genre,
+                                        Value.itineraryPlaceList.get(0).prefecture,
+                                        Value.itineraryPlaceList.get(0).rate,
+                                        Value.itineraryPlaceList.get(0).lat,
+                                        Value.itineraryPlaceList.get(0).lng,
+                                        Value.itineraryPlaceList.get(0).distance,
+                                        Value.itineraryPlaceList.get(0).explainText,
+                                        Value.itineraryPlaceList.get(0).image,
+                                        Value.itineraryPlaceList.get(0).departTime,
+                                        Value.itineraryPlaceList.get(0).arriveTime,
+                                        staticsMapMaker(0,1,true),
+                                        Value.itineraryPlaceList.get(0).polyline
+                                ));
+                                //最終観光地→現在地
+                                Value.itineraryPlaceList.set(Value.itineraryPlaceList.size() - 2, new SpotStructure(
+                                        Value.itineraryPlaceList.get(Value.itineraryPlaceList.size() - 2).placeID,
+                                        Value.itineraryPlaceList.get(Value.itineraryPlaceList.size() - 2).name,
+                                        Value.itineraryPlaceList.get(Value.itineraryPlaceList.size() - 2).genre,
+                                        Value.itineraryPlaceList.get(Value.itineraryPlaceList.size() - 2).prefecture,
+                                        Value.itineraryPlaceList.get(Value.itineraryPlaceList.size() - 2).rate,
+                                        Value.itineraryPlaceList.get(Value.itineraryPlaceList.size() - 2).lat,
+                                        Value.itineraryPlaceList.get(Value.itineraryPlaceList.size() - 2).lng,
+                                        Value.itineraryPlaceList.get(Value.itineraryPlaceList.size() - 2).distance,
+                                        Value.itineraryPlaceList.get(Value.itineraryPlaceList.size() - 2).explainText,
+                                        Value.itineraryPlaceList.get(Value.itineraryPlaceList.size() - 2).image,
+                                        Value.itineraryPlaceList.get(Value.itineraryPlaceList.size() - 2).departTime,
+                                        Value.itineraryPlaceList.get(Value.itineraryPlaceList.size() - 2).arriveTime,
+                                        staticsMapMaker(Value.itineraryPlaceList.size()-2,Value.itineraryPlaceList.size()-1,true),
+                                        Value.itineraryPlaceList.get(Value.itineraryPlaceList.size() - 2).polyline
+                                ));
+                                //観光地周辺
                                 Value.itineraryPlaceList.set(Value.itineraryPlaceList.size() - 1, new SpotStructure(
                                         Value.itineraryPlaceList.get(Value.itineraryPlaceList.size() - 1).placeID,
                                         Value.itineraryPlaceList.get(Value.itineraryPlaceList.size() - 1).name,
@@ -1022,13 +1061,15 @@ public class MainActivity extends AppCompatActivity implements
                                         Value.itineraryPlaceList.get(Value.itineraryPlaceList.size() - 1).image,
                                         Value.itineraryPlaceList.get(Value.itineraryPlaceList.size() - 1).departTime,
                                         Value.itineraryPlaceList.get(Value.itineraryPlaceList.size() - 1).arriveTime,
-                                        mapsStaticsResult,
+                                        staticsMapMaker(1,Value.itineraryPlaceList.size()-2,false),
                                         Value.itineraryPlaceList.get(Value.itineraryPlaceList.size() - 1).polyline
                                 ));
-                            } catch (MalformedURLException e) {
-                                e.printStackTrace();
                             } catch (JSONException e) {
                                 e.printStackTrace();
+                                Log.e("test",e.toString());
+                            } catch (MalformedURLException e) {
+                                e.printStackTrace();
+                                Log.e("test",e.toString());
                             }
 
                             progressDialog.dismiss();//読み込み中表示、終了
@@ -1616,29 +1657,50 @@ public class MainActivity extends AppCompatActivity implements
     public Bitmap staticsMapMaker(int startNumber,int endNumber,boolean drawWaypoints) throws JSONException, MalformedURLException {
         Bitmap mapsStaticsResult = null;
         if(drawWaypoints){
-            String waypoints = "waypoints=";
+            String waypoints = "";
             if(endNumber-startNumber>1) {
+                waypoints=waypoints+"waypoints=";
                 for (int i = startNumber+1; i < endNumber-1; i++) {
                     waypoints = waypoints + "place_id:" + Value.itineraryPlaceList.get(i).placeID + "|";
                 }
             }
-            waypoints = waypoints.substring(0, waypoints.length() - 1);
-
             String markers="";
             for (int i = startNumber; i < endNumber; i++) {
                 markers=markers+"markers=color:purple|label:"+String.valueOf(i)+"|"+String.valueOf(Value.itineraryPlaceList.get(i).lat)+","+String.valueOf(Value.itineraryPlaceList.get(i).lng)+"&";
             }
             JSONObject tempDirectionSearch = httpGet.HttpPlaces(new URL("https://maps.googleapis.com/maps/api/directions/json?" +
-                    "origin=place_id:" + Value.itineraryPlaceList.get(startNumber).placeID + "&" +
-                    "destination=place_id:" + Value.itineraryPlaceList.get(endNumber).placeID + "&" +
-                    waypoints + "&" +
+                    "origin=" + String.valueOf(Value.itineraryPlaceList.get(startNumber).lat)+","
+                    +String.valueOf(Value.itineraryPlaceList.get(startNumber).lng) + "&" +
+                    "destination=" + String.valueOf(Value.itineraryPlaceList.get(endNumber).lat) +","+
+                    String.valueOf(Value.itineraryPlaceList.get(endNumber).lng) +"&" +
+                    waypoints +
                     "key=AIzaSyCke0pASXyPnnJR-GAAvN3Bz7GltgomfEk"));
-            Log.d("test", tempDirectionSearch.toString());
+
+
+
+            Log.d("test", "https://maps.googleapis.com/maps/api/directions/json?" +
+                    "origin=" + String.valueOf(Value.itineraryPlaceList.get(startNumber).lat)+","
+                    +String.valueOf(Value.itineraryPlaceList.get(startNumber).lng) + "&" +
+                    "destination=" + String.valueOf(Value.itineraryPlaceList.get(endNumber).lat) +","+
+                    String.valueOf(Value.itineraryPlaceList.get(endNumber).lng) +"&" +
+                    waypoints +
+                    "key=AIzaSyCke0pASXyPnnJR-GAAvN3Bz7GltgomfEk");
+
             String tempPolyline = tempDirectionSearch.getJSONArray("routes").getJSONObject(0).getJSONObject("overview_polyline").getString("points");
             mapsStaticsResult = httpBitmapGet.HttpPlaces(new URL("https://maps.googleapis.com/maps/api/staticmap?" +
                     "size=400x400&" +markers+
                     "path=color:0xff0000ff|weight:5%7Cenc:" + tempPolyline + "&" +
                     "key=AIzaSyCke0pASXyPnnJR-GAAvN3Bz7GltgomfEk"));
+        }else{
+            String markers="";
+            for (int i = startNumber; i < endNumber; i++) {
+                markers=markers+"markers=color:purple|label:"+String.valueOf(i)+"|"+String.valueOf(Value.itineraryPlaceList.get(i).lat)+","+String.valueOf(Value.itineraryPlaceList.get(i).lng)+"&";
+            }
+            mapsStaticsResult = httpBitmapGet.HttpPlaces(new URL("https://maps.googleapis.com/maps/api/staticmap?" +
+                    "size=400x400&" +markers+
+                    "path=color:0xff0000ff|weight:5%7Cenc:"  +
+                    "key=AIzaSyCke0pASXyPnnJR-GAAvN3Bz7GltgomfEk"));
+            
         }
     return mapsStaticsResult;
     }
