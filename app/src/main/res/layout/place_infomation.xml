@@ -40,7 +40,8 @@
                     android:id="@+id/imageView3"
                     android:layout_width="200dp"
                     android:layout_height="200dp"
-                    android:src="@mipmap/ic_launcher" />
+                    android:src="@mipmap/no_image"
+                    android:layout_margin="10dp"/>
 
                 <LinearLayout
                     android:layout_width="wrap_content"
@@ -78,13 +79,15 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="textView15"
-                android:textSize="30dp" />
-
-            <Space
-                android:layout_width="match_parent"
-                android:layout_height="40dp" />
+                android:textSize="40dp" />
 
             <!-- 観光地の情報 WebViewからの情報を反映？ -->
+            <ImageView
+                android:id="@+id/imageView2"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:srcCompat="@mipmap/line_simple05_" />
+
             <ScrollView
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"

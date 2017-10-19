@@ -1,39 +1,68 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:orientation="vertical" android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@mipmap/background">
 
     <!-- アプリのタイトル画面(仮) -->
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:orientation="vertical">
-        <Button
-            android:id="@+id/customButton"
-            android:text="設定"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
     <ImageView
         android:id="@+id/imageView4"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:scaleType="fitCenter"
         android:src="@mipmap/title_logo"
-        android:layout_margin="30dp"
-        />
+        android:layout_margin="30dp"/>
 
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <ImageView
+            android:id="@+id/imageView10"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_column="1"
+            android:layout_gravity="bottom|right"
+            android:layout_row="3"
+            android:src="@mipmap/guide_shiori" />
+
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="top|left"
+            android:background="@mipmap/fukidashi"
+            android:padding="47dp">
+
+            <TextView
+                android:id="@+id/textView21"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="気になるジャンルを教えてね！\n動物が見たいなら「動物園」, 歴史に興味があるなら「神社」って入れてくれればOKよ！\私が旅のしおりを作ってあげるわ！"
+                android:textSize="30dp" />
+
+        </FrameLayout>
 
         <ImageButton
-            android:id="@+id/startButton"
-            android:layout_gravity="center"
-            android:gravity="center"
-            android:layout_width="match_parent"
-            android:layout_margin="20dp"
+            android:id="@+id/imageButton"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:scaleType="fitCenter"
-            android:adjustViewBounds="true"
-            android:src="@mipmap/shiori_button_chimera" />
-    </LinearLayout>
+            android:layout_column="0"
+            android:layout_gravity="bottom"
+            android:layout_row="1"
+            android:background="@null"
+            android:padding="30dp"
+            android:src="@mipmap/navigation_go_2" />
+
+        <EditText
+            android:id="@+id/editText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="left|center"
+            android:background="@drawable/frame_style"
+            android:hint="(例) 川, 神社, ロープウェイ など"
+            android:textSize="30dp" />
+
+    </FrameLayout>
+
 </LinearLayout>

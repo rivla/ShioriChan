@@ -38,15 +38,6 @@ public class ShioriView extends Activity {
         setContentView(R.layout.shiori_main);
         viewFlipper = (ViewFlipper) findViewById(R.id.viewflipper);
 
-        // デバッグ用 スライドショー //
-        // viewFlipper.setAutoStart(true);     //自動でスライドショーを開始
-        // viewFlipper.setFlipInterval(1000);  //更新間隔(ms単位)
-
-        // メモ : 情報の参照
-        // Value.itineraryPlaceList.get(INDEX).distance;
-        // Value.itineraryPlaceList.size() // 長さが必要な場合
-        // Log.d("受け取ったデータの長さ",""+Value.itineraryPlaceList.size());
-
         // ViewFlipper にページレイアウトを作る //
         // === 基本的にはxmlを呼び出して, テキストを上書きして, 格納していく === //
 
@@ -66,7 +57,6 @@ public class ShioriView extends Activity {
         } else{
             Log.d("from ShioriView.java : ","受け取ったスケジュールの場所の数が"+Value.itineraryPlaceList.size()+"個です");
         }
-
         viewFlipper.addView(v1); // ViewFlipperにv1のレイアウトを追加
 
         // === Schedule page === //
@@ -89,7 +79,7 @@ public class ShioriView extends Activity {
                     // 2つ目の行き先
                     if (Value.itineraryPlaceList.get(i).getName() != null) {
                         ImageView imageView6 = (ImageView) v2.findViewById(R.id.imageView6);
-                        imageView6.setImageResource(R.mipmap.arrow_blue);
+                        imageView6.setImageResource(R.mipmap.car_keijidousya);
                         TextView textView6 = (TextView) v2.findViewById(R.id.textView6);
                         textView6.setText(DepArrStringMaker(Value.itineraryPlaceList.get(i))); //
                         TextView textView7 = (TextView) v2.findViewById(R.id.textView7);
@@ -100,7 +90,7 @@ public class ShioriView extends Activity {
                     // 3つ目の行き先
                     if (Value.itineraryPlaceList.get(i).getName() != null) {
                         ImageView imageView7 = (ImageView) v2.findViewById(R.id.imageView7);
-                        imageView7.setImageResource(R.mipmap.arrow_blue);
+                        imageView7.setImageResource(R.mipmap.car_keijidousya);
                         TextView textView8 = (TextView) v2.findViewById(R.id.textView8);
                         textView8.setText(DepArrStringMaker(Value.itineraryPlaceList.get(i))); //
                         TextView textView9 = (TextView) v2.findViewById(R.id.textView9);
@@ -111,7 +101,7 @@ public class ShioriView extends Activity {
                     // 4つ目の行き先
                     if (Value.itineraryPlaceList.get(i).getName() != null) {
                         ImageView imageView8 = (ImageView) v2.findViewById(R.id.imageView8);
-                        imageView8.setImageResource(R.mipmap.arrow_blue);
+                        imageView8.setImageResource(R.mipmap.car_keijidousya);
                         TextView textView10 = (TextView) v2.findViewById(R.id.textView10);
                         textView10.setText(DepArrStringMaker(Value.itineraryPlaceList.get(i))); //
                         TextView textView11 = (TextView) v2.findViewById(R.id.textView11);
@@ -122,7 +112,7 @@ public class ShioriView extends Activity {
                     // 5つ目の行き先
                     if (Value.itineraryPlaceList.get(i).getName() != null) {
                         ImageView imageView9 = (ImageView) v2.findViewById(R.id.imageView9);
-                        imageView9.setImageResource(R.mipmap.arrow_blue);
+                        imageView9.setImageResource(R.mipmap.car_keijidousya);
                         TextView textView12 = (TextView) v2.findViewById(R.id.textView12);
                         textView12.setText(DepArrStringMaker(Value.itineraryPlaceList.get(i))); //
                         TextView textView13 = (TextView) v2.findViewById(R.id.textView13);
@@ -210,8 +200,6 @@ public class ShioriView extends Activity {
         View v5 = this.getLayoutInflater().inflate(R.layout.last_page, null);
         viewFlipper.addView(v5);
     }
-
-
 
 
     //onTouchEventの代わりにこちらを使ってください。
