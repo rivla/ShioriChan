@@ -13,6 +13,8 @@ import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.ViewFlipper;
 
+import org.w3c.dom.Text;
+
 /**
  * Created by ideally on 2017/10/10.
  * 担当 : fukui
@@ -51,7 +53,7 @@ public class ShioriView extends Activity {
         // === first page === //
         View v1 = this.getLayoutInflater().inflate(R.layout.first_page, null);
         TextView textView18 = (TextView)v1.findViewById(R.id.textView18);
-        textView18.setText("〇〇のしおり"); // もし変更するならココで
+        textView18.setText("テーマ:"+Value.input_text); // もし変更するならココで
         TextView textView19 = (TextView)v1.findViewById(R.id.textView19);
         textView19.setText("名前 : しおり"); //
         if (Value.itineraryPlaceList.size() > 1) { // もし受け取ったルートの長さが2以上なら...
@@ -70,15 +72,14 @@ public class ShioriView extends Activity {
             // ー＞今のところ、コメントアウトで外してあります
             //
 
-            View v2 = null;
+            View v2 = getLayoutInflater().inflate(R.layout.schedule_page, null);
             for (int i = 0; i < Value.itineraryPlaceList.size(); i++) {
                 switch (i % 5) {
                     case 0:
                         // 1つ目の行き先
-                        v2 = getLayoutInflater().inflate(R.layout.schedule_page, null); // viewを定義
                         if (Value.itineraryPlaceList.get(i).getName() != null) {
                             TextView textView4 = (TextView) v2.findViewById(R.id.textView4);
-//                            textView4.setText(String.format("%02d:%02d", Value.itineraryPlaceList.get(i).departTime.getHours(), Value.itineraryPlaceList.get(i).departTime.getMinutes())); //
+                            textView4.setText(String.format("%02d:%02d", Value.itineraryPlaceList.get(i).departTime.getHours(), Value.itineraryPlaceList.get(i).departTime.getMinutes())); //
                             TextView textView5 = (TextView) v2.findViewById(R.id.textView5); // v2.findViewByIdで指定する
                             textView5.setText(Value.itineraryPlaceList.get(i).getName());
                         }
@@ -89,7 +90,7 @@ public class ShioriView extends Activity {
                             ImageView imageView6 = (ImageView) v2.findViewById(R.id.imageView6);
                             imageView6.setImageResource(R.mipmap.arrow_blue);
                             TextView textView6 = (TextView) v2.findViewById(R.id.textView6);
-//                            textView6.setText(String.format("%02d:%02d", Value.itineraryPlaceList.get(i).departTime.getHours(), Value.itineraryPlaceList.get(i).departTime.getMinutes())); //
+                            textView6.setText(String.format("%02d:%02d", Value.itineraryPlaceList.get(i).departTime.getHours(), Value.itineraryPlaceList.get(i).departTime.getMinutes())); //
                             TextView textView7 = (TextView) v2.findViewById(R.id.textView7);
                             textView7.setText(Value.itineraryPlaceList.get(i).getName());
                         }
@@ -100,7 +101,7 @@ public class ShioriView extends Activity {
                             ImageView imageView7 = (ImageView) v2.findViewById(R.id.imageView7);
                             imageView7.setImageResource(R.mipmap.arrow_blue);
                             TextView textView8 = (TextView) v2.findViewById(R.id.textView8);
-//                            textView8.setText(String.format("%02d:%02d", Value.itineraryPlaceList.get(i).departTime.getHours(), Value.itineraryPlaceList.get(i).departTime.getMinutes())); //
+                            textView8.setText(String.format("%02d:%02d", Value.itineraryPlaceList.get(i).departTime.getHours(), Value.itineraryPlaceList.get(i).departTime.getMinutes())); //
                             TextView textView9 = (TextView) v2.findViewById(R.id.textView9);
                             textView9.setText(Value.itineraryPlaceList.get(i).getName());
                         }
@@ -111,7 +112,7 @@ public class ShioriView extends Activity {
                             ImageView imageView8 = (ImageView) v2.findViewById(R.id.imageView8);
                             imageView8.setImageResource(R.mipmap.arrow_blue);
                             TextView textView10 = (TextView) v2.findViewById(R.id.textView10);
-//                            textView10.setText(String.format("%02d:%02d", Value.itineraryPlaceList.get(i).departTime.getHours(), Value.itineraryPlaceList.get(i).departTime.getMinutes())); //
+                            textView10.setText(String.format("%02d:%02d", Value.itineraryPlaceList.get(i).departTime.getHours(), Value.itineraryPlaceList.get(i).departTime.getMinutes())); //
                             TextView textView11 = (TextView) v2.findViewById(R.id.textView11);
                             textView11.setText(Value.itineraryPlaceList.get(i).getName());
                         }
@@ -122,7 +123,7 @@ public class ShioriView extends Activity {
                             ImageView imageView9 = (ImageView) v2.findViewById(R.id.imageView9);
                             imageView9.setImageResource(R.mipmap.arrow_blue);
                             TextView textView12 = (TextView) v2.findViewById(R.id.textView12);
-//                            textView12.setText(String.format("%02d:%02d", Value.itineraryPlaceList.get(i).departTime.getHours(), Value.itineraryPlaceList.get(i).departTime.getMinutes())); //
+                            textView12.setText(String.format("%02d:%02d", Value.itineraryPlaceList.get(i).departTime.getHours(), Value.itineraryPlaceList.get(i).departTime.getMinutes())); //
                             TextView textView13 = (TextView) v2.findViewById(R.id.textView13);
                             textView13.setText(Value.itineraryPlaceList.get(i).getName());
                         }
@@ -130,18 +131,52 @@ public class ShioriView extends Activity {
                         // viewFlipperに追加
                         viewFlipper.addView(v2);
                         // === 2ページ目終了 === //
-                        v2 = null; // nullにしておく
-
+                        v2 = getLayoutInflater().inflate(R.layout.schedule_page, null); // 2週目用
                         break;
                     default: // まずありえない
                         Log.d("from ShioriView.java : ","i%5 が0から4以外の数値を返しました");
                         break;
                 }
             }
-            if (v2 != null){
-                // viewFlipperに追加
-                viewFlipper.addView(v2);
+            // viewFlipperに追加
+            viewFlipper.addView(v2);
+
+        // === 観光地の周辺地図のページ === //
+        // Mapをつくる
+        // Value.itineraryPlaceList.get(0).mapImage // これでgoogle のマップが取ってこれる
+        // ImageViewをつくってそこに画像を投げる
+
+        View v4 = this.getLayoutInflater().inflate(R.layout.map_page, null);
+        // 周辺地図
+        if (Value.itineraryPlaceList.size() > 0) {
+            ImageView mapImageView1 = (ImageView) v4.findViewById(R.id.mapImage1);
+            mapImageView1.setImageBitmap(Value.itineraryPlaceList.get(0).mapImage); //
+            TextView mapImageText1=(TextView)v4.findViewById(R.id.mapImageText1);
+            mapImageText1.setText(Value.itineraryPlaceList.get(0).name+"→"+Value.itineraryPlaceList.get(1).name);
+
+            ImageView mapImageView2 = (ImageView) v4.findViewById(R.id.mapImage2);
+            mapImageView2.setImageBitmap(Value.itineraryPlaceList.get(1).mapImage); //
+            TextView mapImageText2=(TextView)v4.findViewById(R.id.mapImageText2);
+            mapImageText2.setText(Value.itineraryPlaceList.get(1).name+"→"+Value.itineraryPlaceList.get(Value.itineraryPlaceList.size()-2).name);
+
+            ImageView mapImageView3 = (ImageView) v4.findViewById(R.id.mapImage3);
+            mapImageView3.setImageBitmap(Value.itineraryPlaceList.get(Value.itineraryPlaceList.size()-1).mapImage); //
+            TextView mapImageText3=(TextView)v4.findViewById(R.id.mapImageText3);
+            mapImageText3.setText(Value.itineraryPlaceList.get(Value.itineraryPlaceList.size()-2).name+"→"+Value.itineraryPlaceList.get(Value.itineraryPlaceList.size()-1).name);
+
+            TextView mapPlaceText=(TextView)v4.findViewById(R.id.mapPlaceText);
+            String tempString="";
+            for(int i=0;i<Value.itineraryPlaceList.size();i++){
+                tempString=tempString+String.valueOf(i)+":"+Value.itineraryPlaceList.get(i).name+"\n";
             }
+            mapPlaceText.setText(tempString);
+        }
+        else{
+            Log.d("from ShioriView.java : ","地図を作成出来ませんでした\nValue.itineraryPlaceList.get(0).mapImage を確認して下さい");
+        }
+        // viewFlipperに追加
+        viewFlipper.addView(v4);
+
 
             // === 3ページ目 観光地の情報=== //
             View v3 = this.getLayoutInflater().inflate(R.layout.place_infomation, null);
@@ -153,7 +188,7 @@ public class ShioriView extends Activity {
                 }
                 // 観光地の名称
                 TextView textView15 = (TextView) v3.findViewById(R.id.textView15);
-                textView15.setText(Value.itineraryPlaceList.get(i).getName());
+                textView15.setText(Value.itineraryPlaceList.get(i).prefecture+"\n"+Value.itineraryPlaceList.get(i).getName());
                 // 観光地の説明文
                 TextView textView16 = (TextView) v3.findViewById(R.id.textView16);
                 textView16.setText(Value.itineraryPlaceList.get(i).getExplainText());
@@ -168,28 +203,7 @@ public class ShioriView extends Activity {
                 v3 = this.getLayoutInflater().inflate(R.layout.place_infomation, null); // 2週目以降
             }
 
-            // === 観光地の周辺地図のページ === //
-            // Mapをつくる
-            // Value.itineraryPlaceList.get(0).mapImage // これでgoogle のマップが取ってこれる
-            // ImageViewをつくってそこに画像を投げる
 
-            View v4 = this.getLayoutInflater().inflate(R.layout.map_page, null);
-            // 周辺地図
-            if (Value.itineraryPlaceList.size() > 0) {
-                ImageView imageView2 = (ImageView) v4.findViewById(R.id.imageView2);
-                imageView2.setImageBitmap(Value.itineraryPlaceList.get(Value.itineraryPlaceList.size()-1).mapImage); //
-                TextView mapPlaceText=(TextView)v4.findViewById(R.id.mapPlaceText);
-                String tempString="";
-                for(int i=1;i<Value.itineraryPlaceList.size()-1;i++){
-                    tempString=tempString+String.valueOf(i)+":"+Value.itineraryPlaceList.get(i).name+"\n";
-                }
-                mapPlaceText.setText(tempString);
-            }
-            else{
-                Log.d("from ShioriView.java : ","地図を作成出来ませんでした\nValue.itineraryPlaceList.get(0).mapImage を確認して下さい");
-            }
-            // viewFlipperに追加
-            viewFlipper.addView(v4);
 
         }
     //onTouchEventの代わりにこちらを使ってください。
