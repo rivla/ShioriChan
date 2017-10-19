@@ -20,7 +20,8 @@
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
         android:layout_alignParentRight="true"
-        android:layout_centerInParent="true">
+        android:layout_centerInParent="true"
+        android:id="@+id/linearLayout">
 
 <!--
         <Button
@@ -40,7 +41,8 @@
         android:orientation="vertical"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_centerInParent="true">
+        android:layout_centerInParent="true"
+        android:id="@+id/linearLayout2">
 
         <TextView
             android:text="しおりちゃんに"
@@ -102,6 +104,20 @@
             android:layout_height="wrap_content"
             android:id="@+id/arriveTimeButton" />
         </LinearLayout>
+        <RadioGroup android:layout_height="wrap_content"
+            android:layout_width="wrap_content"
+            android:id="@+id/PrefRadioGroup">
+            <RadioButton android:text="隣接県"
+                android:id="@+id/neighborRadio"
+                android:layout_height="wrap_content"
+                android:layout_width="wrap_content">
+            </RadioButton>
+            <RadioButton android:text="全国"
+                android:id="@+id/japanRadio"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content">
+            </RadioButton>
+        </RadioGroup>
         <EditText
             android:id="@+id/editText"
             android:layout_width="wrap_content"
@@ -121,4 +137,5 @@
             android:id="@+id/startButton"
             />
     </LinearLayout>
+
 </RelativeLayout>

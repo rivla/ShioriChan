@@ -43,7 +43,7 @@
                     android:layout_gravity="center_horizontal|center"
                     android:gravity="center_horizontal|center"
                     android:text="textView18"
-                    android:textSize="50dp" />
+                    android:textSize="45dp" />
             </FrameLayout>
 
             <!-- 画面中央に表示する画像 とりあえずしおりちゃんをおいておく-->

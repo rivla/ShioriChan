@@ -24,7 +24,8 @@ import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.ScrollView;
+import android.widget.RadioButton;
+import android.widget.RadioGroup;
 import android.widget.TimePicker;
 import android.widget.Toast;
 
@@ -71,6 +72,7 @@ class Value {
     public static JSONObject neighborDicObject;
     public static JSONObject pair_json;
     public static int perfect_match_num = -1; // 完全一致する観光地名の場所を保存するための変数（リストの要素番号）
+    public static boolean neighborOrJapanFlg=false;
     // デフォルトは-1であるため，0以上であれば完全一致した観光地があると判断できる
 }
 
@@ -136,6 +138,9 @@ public class MainActivity extends AppCompatActivity implements
         arriveTimeButton.setText(String.format("%02d:%02d",arriveTime.getHours(),arriveTime.getMinutes()));
         final Button startButton=(Button)findViewById(R.id.startButton);
         final EditText editText = (EditText)findViewById(R.id.editText);        // EditTextオブジェクトを取得
+        final RadioGroup prefRadioGroup=(RadioGroup) findViewById(R.id.PrefRadioGroup);
+        prefRadioGroup.check(R.id.neighborRadio);//ラジオボタンを予めチェック
+
         //キーボード表示を制御するためのオブジェクト
         inputMethodManager =  (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
 
@@ -162,6 +167,21 @@ public class MainActivity extends AppCompatActivity implements
             }
         });
         */
+
+        // ラジオグループのチェック状態が変更された時に呼び出されるコールバックリスナーを登録します
+        prefRadioGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
+            public void onCheckedChanged(RadioGroup group, int checkedId) {
+                RadioButton radioButton = (RadioButton) findViewById(checkedId);
+                if (radioButton.getText().equals("全国")) {
+                    Value.neighborOrJapanFlg=true;
+                } else if (radioButton.getText().equals("隣接県")) {
+                    Value.neighborOrJapanFlg=false;
+                } else {
+                    Log.e("test","radioButonError");
+                }
+            }
+        });
+
         //しおり表示モードへ入るボタン
         shioriButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -551,7 +571,7 @@ public class MainActivity extends AppCompatActivity implements
                                         });
                                     }
                                     for (int i = 0; i < candLength; i++) {
-                                        String pref_str = "restaurant don't have pref,if you needs, do DetailSearch";
+                                        String pref_str = "";
                                         String genre_str = "レストラン";
                                         String name_str = nearbySearchResult.getJSONArray("results").getJSONObject(i).getString("name");
                                         String placeID_str = nearbySearchResult.getJSONArray("results").getJSONObject(i).getString("place_id");
@@ -873,6 +893,8 @@ public class MainActivity extends AppCompatActivity implements
                                     e.printStackTrace();
                                 }
                             }
+
+                            /*
 //*****************************旅程全体の地図取得******************************
                             String waypoints = "waypoints=";
                             for (int i = 1; i < Value.itineraryPlaceList.size() - 2; i++) {
@@ -914,6 +936,52 @@ public class MainActivity extends AppCompatActivity implements
                             } catch (JSONException e) {
                                 e.printStackTrace();
                             }
+*/
+                            String waypoints =null;
+                            String markers=null;
+
+//*****************************現在地→第一観光地の地図取得******************************
+                            markers="";
+                            for (int i = 1; i < 2; i++) {
+                                markers=markers+"markers=color:purple|label:"+String.valueOf(i)+"|"+String.valueOf(Value.itineraryPlaceList.get(i).lat)+","+String.valueOf(Value.itineraryPlaceList.get(i).lng)+"&";
+                            }
+
+                            try {
+                                JSONObject tempDirectionSearch = httpGet.HttpPlaces(new URL("https://maps.googleapis.com/maps/api/directions/json?" +
+                                        "origin=place_id:" + Value.itineraryPlaceList.get(0).placeID + "&" +
+                                        "destination=place_id:" + Value.itineraryPlaceList.get(Value.itineraryPlaceList.size() - 2).placeID + "&" +
+                                        waypoints + "&" +
+                                        "key=AIzaSyCke0pASXyPnnJR-GAAvN3Bz7GltgomfEk"));
+                                Log.d("test", tempDirectionSearch.toString());
+                                String tempPolyline = tempDirectionSearch.getJSONArray("routes").getJSONObject(0).getJSONObject("overview_polyline").getString("points");
+
+
+                                Bitmap mapsStaticsResult = httpBitmapGet.HttpPlaces(new URL("https://maps.googleapis.com/maps/api/staticmap?" +
+                                        "size=400x400&" +markers+
+                                        "path=color:0xff0000ff|weight:5%7Cenc:" + tempPolyline + "&" +
+                                        "key=AIzaSyCke0pASXyPnnJR-GAAvN3Bz7GltgomfEk"));
+                                Value.itineraryPlaceList.set(Value.itineraryPlaceList.size() - 1, new SpotStructure(
+                                        Value.itineraryPlaceList.get(Value.itineraryPlaceList.size() - 1).placeID,
+                                        Value.itineraryPlaceList.get(Value.itineraryPlaceList.size() - 1).name,
+                                        Value.itineraryPlaceList.get(Value.itineraryPlaceList.size() - 1).genre,
+                                        Value.itineraryPlaceList.get(Value.itineraryPlaceList.size() - 1).prefecture,
+                                        Value.itineraryPlaceList.get(Value.itineraryPlaceList.size() - 1).rate,
+                                        Value.itineraryPlaceList.get(Value.itineraryPlaceList.size() - 1).lat,
+                                        Value.itineraryPlaceList.get(Value.itineraryPlaceList.size() - 1).lng,
+                                        Value.itineraryPlaceList.get(Value.itineraryPlaceList.size() - 1).distance,
+                                        Value.itineraryPlaceList.get(Value.itineraryPlaceList.size() - 1).explainText,
+                                        Value.itineraryPlaceList.get(Value.itineraryPlaceList.size() - 1).image,
+                                        Value.itineraryPlaceList.get(Value.itineraryPlaceList.size() - 1).departTime,
+                                        Value.itineraryPlaceList.get(Value.itineraryPlaceList.size() - 1).arriveTime,
+                                        mapsStaticsResult,
+                                        Value.itineraryPlaceList.get(Value.itineraryPlaceList.size() - 1).polyline
+                                ));
+                            } catch (MalformedURLException e) {
+                                e.printStackTrace();
+                            } catch (JSONException e) {
+                                e.printStackTrace();
+                            }
+
 
 //*****************************目的地周辺の地図取得******************************
                             waypoints = "waypoints=";
@@ -922,7 +990,7 @@ public class MainActivity extends AppCompatActivity implements
                             }
                             waypoints = waypoints.substring(0, waypoints.length() - 1);
 
-                            String markers="";
+                            markers="";
                             for (int i = 1; i < Value.itineraryPlaceList.size() - 1; i++) {
                                 markers=markers+"markers=color:purple|label:"+String.valueOf(i)+"|"+String.valueOf(Value.itineraryPlaceList.get(i).lat)+","+String.valueOf(Value.itineraryPlaceList.get(i).lng)+"&";
                             }
@@ -1212,6 +1280,9 @@ public class MainActivity extends AppCompatActivity implements
     //******************googleApiより、gpsの値を取得するのに必要なメソッドここまで*****************
 
     public boolean CheckNeighborPrefecture(String checkedPlace,JSONObject neighborDicObject) throws JSONException {
+        if(Value.neighborOrJapanFlg){
+            return true;
+        }
         //jsonファイルを参照し、隣接しているかをチェックする
         if(Value.nowPrefecture.equals(checkedPlace)){
 //            Log.d("test","true"+Value.nowPlace+"chk"+checkedPlace);
@@ -1541,6 +1612,35 @@ public class MainActivity extends AppCompatActivity implements
             input_list_new.add(input_list[i]);
         }
         return input_list_new;
+    }
+    public Bitmap staticsMapMaker(int startNumber,int endNumber,boolean drawWaypoints) throws JSONException, MalformedURLException {
+        Bitmap mapsStaticsResult = null;
+        if(drawWaypoints){
+            String waypoints = "waypoints=";
+            if(endNumber-startNumber>1) {
+                for (int i = startNumber+1; i < endNumber-1; i++) {
+                    waypoints = waypoints + "place_id:" + Value.itineraryPlaceList.get(i).placeID + "|";
+                }
+            }
+            waypoints = waypoints.substring(0, waypoints.length() - 1);
+
+            String markers="";
+            for (int i = startNumber; i < endNumber; i++) {
+                markers=markers+"markers=color:purple|label:"+String.valueOf(i)+"|"+String.valueOf(Value.itineraryPlaceList.get(i).lat)+","+String.valueOf(Value.itineraryPlaceList.get(i).lng)+"&";
+            }
+            JSONObject tempDirectionSearch = httpGet.HttpPlaces(new URL("https://maps.googleapis.com/maps/api/directions/json?" +
+                    "origin=place_id:" + Value.itineraryPlaceList.get(startNumber).placeID + "&" +
+                    "destination=place_id:" + Value.itineraryPlaceList.get(endNumber).placeID + "&" +
+                    waypoints + "&" +
+                    "key=AIzaSyCke0pASXyPnnJR-GAAvN3Bz7GltgomfEk"));
+            Log.d("test", tempDirectionSearch.toString());
+            String tempPolyline = tempDirectionSearch.getJSONArray("routes").getJSONObject(0).getJSONObject("overview_polyline").getString("points");
+            mapsStaticsResult = httpBitmapGet.HttpPlaces(new URL("https://maps.googleapis.com/maps/api/staticmap?" +
+                    "size=400x400&" +markers+
+                    "path=color:0xff0000ff|weight:5%7Cenc:" + tempPolyline + "&" +
+                    "key=AIzaSyCke0pASXyPnnJR-GAAvN3Bz7GltgomfEk"));
+        }
+    return mapsStaticsResult;
     }
 }
 
