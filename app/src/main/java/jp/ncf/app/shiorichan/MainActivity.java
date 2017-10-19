@@ -5,6 +5,7 @@ import android.app.ProgressDialog;
 import android.app.TimePickerDialog;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.location.Address;
@@ -14,6 +15,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
+import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
@@ -73,6 +75,8 @@ class Value {
     public static JSONObject pair_json;
     public static int perfect_match_num = -1; // 完全一致する観光地名の場所を保存するための変数（リストの要素番号）
     public static boolean neighborOrJapanFlg=false;
+    public static Date departureTime=new Date();
+    public static Date arriveTime=new Date();
     // デフォルトは-1であるため，0以上であれば完全一致した観光地があると判断できる
 }
 
@@ -101,6 +105,24 @@ public class MainActivity extends AppCompatActivity implements
         instance = this;
         setContentView(R.layout.input_form);
 
+        //preferenceで設定されたデータを受け取る
+        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
+
+        //昼食が必要かどうかのフラグ
+        final boolean lunchFlg = sharedPreferences.getBoolean("lunchFlg", false);
+
+
+        String list_preference = sharedPreferences.getString("neighborOrJapanMode", "unknown");
+        if(list_preference.equals("全国")){
+            Value.neighborOrJapanFlg=true;
+        }else{
+            Value.neighborOrJapanFlg=false;
+        }
+
+        final String edittext_preference = sharedPreferences.getString("departurePlace", "unknown");
+        Log.d("edit",edittext_preference);
+
+
         //googleAPI(開始時座標取得)のインスタンスの作成
         if (mGoogleApiClient == null) {
             // ATTENTION: This "addApi(AppIndex.API)"was auto-generated to implement the App Indexing API.
@@ -114,6 +136,7 @@ public class MainActivity extends AppCompatActivity implements
 
 //        final int[] departureTime = {10,0};//(時間,分)の順に格納
 //        final int[] arriveTime = {20,0};//(時間,分)の順に格納
+        /*
         final Date departureTime=new Date();
         departureTime.setHours(10);
         departureTime.setMinutes(0);
@@ -122,6 +145,7 @@ public class MainActivity extends AppCompatActivity implements
         arriveTime.setHours(22);
         arriveTime.setMinutes(0);
         arriveTime.setSeconds(0);
+        */
         json=new JsonReader();//Json読み込み用クラスのインスタンス
         httpGet=new HttpGetter();//Httpリクエスト送信用クラスのインスタンス
         progressDialog = new ProgressDialog(this);//読み込み中表示,// 初期設定
@@ -134,9 +158,9 @@ public class MainActivity extends AppCompatActivity implements
         Button shioriButton = (Button) findViewById(R.id.shioriButton);
         Button makeShioriButton = (Button) findViewById(R.id.makeShioriButton);
         final Button departureTimeButton=(Button)findViewById(R.id.departureTimeButton);
-        departureTimeButton.setText(String.format("%02d:%02d",departureTime.getHours(),departureTime.getMinutes()));
+        departureTimeButton.setText(String.format("%02d:%02d",Value.departureTime.getHours(),Value.departureTime.getMinutes()));
         final Button arriveTimeButton=(Button)findViewById(R.id.arriveTimeButton);
-        arriveTimeButton.setText(String.format("%02d:%02d",arriveTime.getHours(),arriveTime.getMinutes()));
+        arriveTimeButton.setText(String.format("%02d:%02d",Value.arriveTime.getHours(),Value.arriveTime.getMinutes()));
         final EditText editText = (EditText)findViewById(R.id.editText);        // EditTextオブジェクトを取得
         final RadioGroup prefRadioGroup=(RadioGroup) findViewById(R.id.PrefRadioGroup);
         prefRadioGroup.check(R.id.neighborRadio);//ラジオボタンを予めチェック
@@ -168,6 +192,7 @@ public class MainActivity extends AppCompatActivity implements
         });
         */
 
+        /*
         // ラジオグループのチェック状態が変更された時に呼び出されるコールバックリスナーを登録します
         prefRadioGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
             public void onCheckedChanged(RadioGroup group, int checkedId) {
@@ -181,6 +206,7 @@ public class MainActivity extends AppCompatActivity implements
                 }
             }
         });
+        */
 
         //しおり表示モードへ入るボタン
         shioriButton.setOnClickListener(new View.OnClickListener() {
@@ -198,12 +224,12 @@ public class MainActivity extends AppCompatActivity implements
                 TimePickerDialog dialog = new TimePickerDialog(MainActivity.getInstance(), new TimePickerDialog.OnTimeSetListener() {
                     @Override
                     public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
-                        departureTime.setHours(hourOfDay);
-                        departureTime.setMinutes(minute);
-                        departureTimeButton.setText(String.format("%02d:%02d", departureTime.getHours(), departureTime.getMinutes()));//時刻をボタンの文字にセット
+                        Value.departureTime.setHours(hourOfDay);
+                        Value.departureTime.setMinutes(minute);
+                        departureTimeButton.setText(String.format("%02d:%02d", Value.departureTime.getHours(), Value.departureTime.getMinutes()));//時刻をボタンの文字にセット
 
                     }
-                }, departureTime.getHours(), departureTime.getMinutes(), true);//初期値を入れる箇所
+                }, Value.departureTime.getHours(), Value.departureTime.getMinutes(), true);//初期値を入れる箇所
                 dialog.show();
             }
         });
@@ -215,12 +241,12 @@ public class MainActivity extends AppCompatActivity implements
                 TimePickerDialog dialog = new TimePickerDialog(MainActivity.getInstance(), new TimePickerDialog.OnTimeSetListener() {
                     @Override
                     public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
-                        arriveTime.setHours(hourOfDay);
-                        arriveTime.setMinutes(minute);
-                        arriveTimeButton.setText(String.format("%02d:%02d", arriveTime.getHours(), arriveTime.getMinutes()));//時刻をボタンの文字にセット
+                        Value.arriveTime.setHours(hourOfDay);
+                        Value.arriveTime.setMinutes(minute);
+                        arriveTimeButton.setText(String.format("%02d:%02d", Value.arriveTime.getHours(), Value.arriveTime.getMinutes()));//時刻をボタンの文字にセット
 
                     }
-                }, arriveTime.getHours(), arriveTime.getMinutes(), true);//初期値を入れる箇所
+                }, Value.arriveTime.getHours(), Value.arriveTime.getMinutes(), true);//初期値を入れる箇所
                 dialog.show();
             }
         });
@@ -248,8 +274,8 @@ public class MainActivity extends AppCompatActivity implements
                         }
 
                         //******************//実機のgoogleplacesversionの問題で緯度経度が取れない場合は、岐阜の座標を代入する*****************************
-                        EditText nowPlaceEditText=(EditText) findViewById(R.id.nowPlaceEditText);
-                        if(nowPlaceEditText.getText().toString().equals("")){
+//                        EditText nowPlaceEditText=(EditText) findViewById(R.id.nowPlaceEditText);
+                        if(edittext_preference.equals("")){
                             if(location==null) {
                                 Log.d("test","GPSが取れませんでした");
                                 location = new Location("a");//文字列はprovider（適当に入れました)
@@ -264,7 +290,7 @@ public class MainActivity extends AppCompatActivity implements
                             // AndroidのGPSが上手く取れない場合に出るエラーに対処するため
                             location = new Location("a");//文字列はprovider（適当に入れました)
                             try {
-                                urlEncodeResult = URLEncoder.encode(nowPlaceEditText.getText().toString() ,"UTF-8");
+                                urlEncodeResult = URLEncoder.encode(edittext_preference ,"UTF-8");
                                 JSONObject nowPlaceGeoCodingResult = httpGet.HttpPlaces(new URL("https://maps.googleapis.com/maps/api/geocode/json?address="+urlEncodeResult+"&key=AIzaSyCke0pASXyPnnJR-GAAvN3Bz7GltgomfEk&language=ja"));
                                 Log.d("test",nowPlaceGeoCodingResult.toString());
                                 if(nowPlaceGeoCodingResult.getJSONArray("results").getJSONObject(0).getString("formatted_address").substring(0,2).equals("日本")) {
@@ -386,10 +412,10 @@ public class MainActivity extends AppCompatActivity implements
 
 
 //****************************************開始地点を定義***************************************
-                            if(nowPlaceEditText.getText().toString().equals("")){
-                                Value.itineraryPlaceList.add(new SpotStructure(null, "現在地", "", Value.nowPrefecture, 0, location.getLatitude(), location.getLongitude(), 0, null, null, departureTime,null, null, null));
+                            if(edittext_preference.equals("")){
+                                Value.itineraryPlaceList.add(new SpotStructure(null, "現在地", "", Value.nowPrefecture, 0, location.getLatitude(), location.getLongitude(), 0, null, null, Value.departureTime,null, null, null));
                             }else{
-                                Value.itineraryPlaceList.add(new SpotStructure(null, nowPlaceEditText.getText().toString(), "", Value.nowPrefecture, 0, location.getLatitude(), location.getLongitude(), 0, null, null, departureTime,null, null, null));
+                                Value.itineraryPlaceList.add(new SpotStructure(null, edittext_preference, "", Value.nowPrefecture, 0, location.getLatitude(), location.getLongitude(), 0, null, null, Value.departureTime,null, null, null));
                             }
                             Log.d("出発地の時刻", Value.itineraryPlaceList.get(0).departTime.toString());
 
@@ -558,8 +584,8 @@ public class MainActivity extends AppCompatActivity implements
 
 //******************************昼食の場所が一つ目の観光地のあとと仮定して、その場所付近の昼食場所をgoogle neabysearchで検索する**********************
 // 昼食のタイミングが固定なのは非常にまずい。
-                            // 第一候補が食べ物関係でない場合のみ実行する
-                            if (Value.itineraryPlaceList.get(Value.itineraryPlaceList.size()-1).genre.equals("郷土料理店") == false && Value.itineraryPlaceList.get(Value.itineraryPlaceList.size()-1).genre.equals("その他（食べる）") == false) {
+                            // 第一候補が食べ物関係でない場合かつ設定画面でランチを必要としている場合のみ実行する
+                            if (Value.itineraryPlaceList.get(Value.itineraryPlaceList.size()-1).genre.equals("郷土料理店") == false && Value.itineraryPlaceList.get(Value.itineraryPlaceList.size()-1).genre.equals("その他（食べる）") == false && lunchFlg) {
                                 JSONObject nearbySearchResult = null;
                                 ArrayList<SpotStructure> lunchCandsList = new ArrayList<SpotStructure>();//ソート用リスト初期化
 
@@ -714,7 +740,7 @@ public class MainActivity extends AppCompatActivity implements
                                 Date tempReturnHomeTime = calendarToHome.getTime();
                                 Log.d("test:tempReturnHomeTime", tempReturnHomeTime.toString());
                                 //到着時間と比較
-                                if (arriveTime.compareTo(tempReturnHomeTime) == -1) {//家にかえる場合、直前の観光地を消す。ここのifがtrueになるのは、第一候補地が近すぎて昼にすら行けなかった場合。
+                                if (Value.arriveTime.compareTo(tempReturnHomeTime) == -1) {//家にかえる場合、直前の観光地を消す。ここのifがtrueになるのは、第一候補地が近すぎて昼にすら行けなかった場合。
                                     getBackHomeFlg = true;
                                     //昼食場所を消去
                                     Value.itineraryPlaceList.remove(Value.itineraryPlaceList.size() - 1);
@@ -805,7 +831,7 @@ public class MainActivity extends AppCompatActivity implements
                                         calendarToHome.setTime(Value.itineraryPlaceList.get(focusPlaceNum).departTime);
                                         calendarToHome.add(Calendar.SECOND, tempSecondToDestinationToHome);
                                         Date tempReturnHomeTime = calendarToHome.getTime();
-                                        if (arriveTime.compareTo(tempReturnHomeTime) == -1) {
+                                        if (Value.arriveTime.compareTo(tempReturnHomeTime) == -1) {
                                             getBackHomeFlg = true;
                                             Value.itineraryPlaceList.remove(Value.itineraryPlaceList.size() - 1);
                                             Value.removeGenreList.remove(Value.removeGenreList.size()-1);
@@ -828,10 +854,10 @@ public class MainActivity extends AppCompatActivity implements
                             }
 
 //*************************************到着地を旅程リストに代入する***********************************
-                            if(nowPlaceEditText.getText().toString().equals("")) {
+                            if(edittext_preference.equals("")) {
                                 Value.itineraryPlaceList.add(new SpotStructure(null, "現在地", "", Value.nowPrefecture, 0, location.getLatitude(), location.getLongitude(), 0, null, null, null, ifReturnArriveTime, null, ifReturnPolyline));
                             }else{
-                                Value.itineraryPlaceList.add(new SpotStructure(null, nowPlaceEditText.getText().toString(), "", Value.nowPrefecture, 0, location.getLatitude(), location.getLongitude(), 0, null, null, null, ifReturnArriveTime, null, ifReturnPolyline));
+                                Value.itineraryPlaceList.add(new SpotStructure(null, edittext_preference, "", Value.nowPrefecture, 0, location.getLatitude(), location.getLongitude(), 0, null, null, null, ifReturnArriveTime, null, ifReturnPolyline));
                             }
                             // Log.d("test5.5", Value.itineraryPlaceList.get(2).name);
                             // Log.d("test6", Value.itineraryPlaceList.get(2).departTime.toString());

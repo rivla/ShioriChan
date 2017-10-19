@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen
+    xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <Preference
+        android:key="departureTime"
+        android:title="出発時間" />
+    <Preference
+        android:key="arriveTime"
+        android:title="到着時間" />
+
+        <ListPreference
+            android:key="neighborOrJapanMode"
+            android:title="全国・隣接県モード切り替え"
+            android:entries="@array/entries_list_preference"
+            android:entryValues="@array/entryvalues_list_preference"
+             />
+
+    <EditTextPreference
+        android:key="departurePlace"
+        android:title="出発地点変更"
+        android:defaultValue="_"
+        />
+    <CheckBoxPreference
+        android:key="lunchFlg"
+        android:title="昼食の場所を提案する"
+        android:defaultValue="true"
+        />
+</PreferenceScreen>
