@@ -241,6 +241,8 @@ public class MainActivity extends AppCompatActivity implements
                         }else{
                             //日本語をURLに変換
                             String urlEncodeResult= null;
+                            // AndroidのGPSが上手く取れない場合に出るエラーに対処するため
+                            location = new Location("a");//文字列はprovider（適当に入れました)
                             try {
                                 urlEncodeResult = URLEncoder.encode(nowPlaceEditText.getText().toString() ,"UTF-8");
                                 JSONObject nowPlaceGeoCodingResult = httpGet.HttpPlaces(new URL("https://maps.googleapis.com/maps/api/geocode/json?address="+urlEncodeResult+"&key=AIzaSyCke0pASXyPnnJR-GAAvN3Bz7GltgomfEk&language=ja"));
