@@ -386,7 +386,11 @@ public class MainActivity extends AppCompatActivity implements
 
 
 //****************************************開始地点を定義***************************************
-                            Value.itineraryPlaceList.add(new SpotStructure(null, "出発地", "", Value.nowPrefecture, 0, location.getLatitude(), location.getLongitude(), 0, null, null, departureTime,null, null, null));
+                            if(nowPlaceEditText.getText().toString().equals("")){
+                                Value.itineraryPlaceList.add(new SpotStructure(null, "現在地", "", Value.nowPrefecture, 0, location.getLatitude(), location.getLongitude(), 0, null, null, departureTime,null, null, null));
+                            }else{
+                                Value.itineraryPlaceList.add(new SpotStructure(null, nowPlaceEditText.getText().toString(), "", Value.nowPrefecture, 0, location.getLatitude(), location.getLongitude(), 0, null, null, departureTime,null, null, null));
+                            }
                             Log.d("出発地の時刻", Value.itineraryPlaceList.get(0).departTime.toString());
 
 //********************レビュー順にソートし、一つ目の候補地を確定する************************
@@ -824,7 +828,11 @@ public class MainActivity extends AppCompatActivity implements
                             }
 
 //*************************************到着地を旅程リストに代入する***********************************
-                            Value.itineraryPlaceList.add(new SpotStructure(null, "到着地", "", Value.nowPrefecture, 0, location.getLatitude(), location.getLongitude(), 0, null, null, null,ifReturnArriveTime, null, ifReturnPolyline));
+                            if(nowPlaceEditText.getText().toString().equals("")) {
+                                Value.itineraryPlaceList.add(new SpotStructure(null, "現在地", "", Value.nowPrefecture, 0, location.getLatitude(), location.getLongitude(), 0, null, null, null, ifReturnArriveTime, null, ifReturnPolyline));
+                            }else{
+                                Value.itineraryPlaceList.add(new SpotStructure(null, nowPlaceEditText.getText().toString(), "", Value.nowPrefecture, 0, location.getLatitude(), location.getLongitude(), 0, null, null, null, ifReturnArriveTime, null, ifReturnPolyline));
+                            }
                             // Log.d("test5.5", Value.itineraryPlaceList.get(2).name);
                             // Log.d("test6", Value.itineraryPlaceList.get(2).departTime.toString());
                             for (int i = 0; i < Value.itineraryPlaceList.size(); i++) {
@@ -1667,6 +1675,7 @@ public class MainActivity extends AppCompatActivity implements
                 for (int i = startNumber+1; i < endNumber-1; i++) {
                     waypoints = waypoints + "place_id:" + Value.itineraryPlaceList.get(i).placeID + "|";
                 }
+                waypoints=waypoints+"&";
             }
             //描画するマーカーの設定。
             String markers="";
@@ -1680,6 +1689,7 @@ public class MainActivity extends AppCompatActivity implements
                     "destination=" + String.valueOf(Value.itineraryPlaceList.get(endNumber).lat) +","+
                     String.valueOf(Value.itineraryPlaceList.get(endNumber).lng) +"&" +
                     waypoints +
+                    "transit_mode=rail&"+
                     "key=AIzaSyCke0pASXyPnnJR-GAAvN3Bz7GltgomfEk"));
             //staticsAPIにリクエストを送り、画像を取得。
             String tempPolyline = tempDirectionSearch.getJSONArray("routes").getJSONObject(0).getJSONObject("overview_polyline").getString("points");
