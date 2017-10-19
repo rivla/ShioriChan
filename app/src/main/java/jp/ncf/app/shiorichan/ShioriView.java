@@ -1,15 +1,17 @@
 package jp.ncf.app.shiorichan;
 
-import android.util.Log;
 import android.app.Activity;
+import android.content.Context;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.animation.AnimationUtils;
-import android.widget.TextView;
-import android.widget.ViewFlipper;
 import android.widget.ImageView;
 import android.widget.RatingBar;
+import android.widget.ScrollView;
+import android.widget.TextView;
+import android.widget.ViewFlipper;
 
 /**
  * Created by ideally on 2017/10/10.
@@ -172,7 +174,13 @@ public class ShioriView extends Activity {
             // 周辺地図
             if (Value.itineraryPlaceList.size() > 0) {
                 ImageView imageView2 = (ImageView) v4.findViewById(R.id.imageView2);
-                imageView2.setImageBitmap(Value.itineraryPlaceList.get(0).mapImage); //
+                imageView2.setImageBitmap(Value.itineraryPlaceList.get(Value.itineraryPlaceList.size()-1).mapImage); //
+                TextView mapPlaceText=(TextView)v4.findViewById(R.id.mapPlaceText);
+                String tempString="";
+                for(int i=1;i<Value.itineraryPlaceList.size()-1;i++){
+                    tempString=tempString+String.valueOf(i)+":"+Value.itineraryPlaceList.get(i).name+"\n";
+                }
+                mapPlaceText.setText(tempString);
             }
             else{
                 Log.d("from ShioriView.java : ","地図を作成出来ませんでした\nValue.itineraryPlaceList.get(0).mapImage を確認して下さい");
@@ -181,15 +189,14 @@ public class ShioriView extends Activity {
             viewFlipper.addView(v4);
 
         }
-
-
-    // Using the following method, we will handle all screen swaps.
-    public boolean onTouchEvent(MotionEvent touchevent) {
+    //onTouchEventの代わりにこちらを使ってください。
+    //ScrollView(説明文のスクロール)が画面タッチ時のイベントを優先して吸い取ってしまいonTouchEventが実行されないため、
+    //ScrollViewよりも優先度の高いdispatchTouchEventを使うことで無理やりスワイプを検知しています。
+    public final boolean dispatchTouchEvent(MotionEvent touchevent){
         switch (touchevent.getAction()) {
-
             case MotionEvent.ACTION_DOWN:
                 firstX = touchevent.getX();
-                break;
+                return super.dispatchTouchEvent(touchevent);
             case MotionEvent.ACTION_UP:
                 X = touchevent.getX();
 
@@ -203,6 +210,7 @@ public class ShioriView extends Activity {
 
                     // Display previous screen.
                     viewFlipper.showPrevious();
+                    return false;
                 }
 
                 // Handling right to left screen swap.
@@ -215,12 +223,41 @@ public class ShioriView extends Activity {
 
                     // Display next screen.
                     viewFlipper.showNext();
+                    return false;
                 }
                 break;
         }
-        return false;
+        return super.dispatchTouchEvent(touchevent);
     }
 
+    //着:13:00
+    //発:15:00
+    //上記のような文字列を生成する関数
+    public String DepArrStringMaker(SpotStructure spot) {
+        String tempTimeString="";//この変数に文字列を加算していくことで目的の変数を作成する
+        if(spot.arriveTime!=null){
+            tempTimeString=tempTimeString+String.format("着:%02d:%02d", spot.arriveTime.getHours(), spot.arriveTime.getMinutes());
+        }
+        if(spot.arriveTime!=null && spot.departTime!=null){
+            tempTimeString=tempTimeString+"\n";
+        }
+        if(spot.departTime!=null){
+            tempTimeString=tempTimeString+String.format("出:%02d:%02d", spot.departTime.getHours(), spot.departTime.getMinutes());
+        }
+        return tempTimeString;
+    }
 
 }
 
+class localScrollView extends android.widget.ScrollView {
+    public localScrollView(Context context) {
+        super(context);
+    }
+
+    @Override
+    public boolean onInterceptTouchEvent(MotionEvent ev) {
+        Log.d("test","interruput");
+        ((Activity)(this.getContext())).onTouchEvent(ev);
+        return super.onInterceptTouchEvent(ev);
+    }
+}

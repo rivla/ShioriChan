@@ -11,6 +11,9 @@
     android:paddingTop="@dimen/activity_vertical_margin"
     tools:context="jp.ncf.app.shiorichan.MainActivity">
 
+
+
+
     <LinearLayout
         android:orientation="horizontal"
         android:layout_width="wrap_content"
@@ -19,17 +22,18 @@
         android:layout_alignParentRight="true"
         android:layout_centerInParent="true">
 
-    <Button
-        android:text="デバッグモード"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/debugButton" />
-
-    <Button
-        android:text="しおり表示"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/shioriButton" />
+<!--
+        <Button
+            android:text="デバッグモード"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/debugButton" />
+-->
+        <Button
+            android:text="しおり表示"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/shioriButton" />
     </LinearLayout>
 
     <LinearLayout
@@ -62,19 +66,6 @@
             android:id="@+id/imageView" />
 
 
-        <TextView
-            android:text="興味のあるジャンルを選択してください"
-            android:textSize="15dp"
-            android:layout_marginTop="30dp"
-            android:gravity="center_horizontal"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:id="@+id/instruction" />
-
-        <Spinner
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:id="@+id/genreSpinner" />
 
     <LinearLayout
         android:orientation="horizontal"
@@ -110,29 +101,24 @@
             android:layout_gravity="center"
             android:layout_height="wrap_content"
             android:id="@+id/arriveTimeButton" />
-
         </LinearLayout>
+        <EditText
+            android:id="@+id/editText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:hint="キーワードを入力してね(複数でもOK!)"
+            />
+        <EditText
+            android:id="@+id/nowPlaceEditText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:hint="出発点を変更できるよ(未入力は現在地)"
+            />
         <Button
             android:text="はじめる"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:id="@+id/startButton"/>
-    </LinearLayout>
-
-    <LinearLayout
-        xmlns:android="http://schemas.android.com/apk/res/android"
-        android:layout_width="fill_parent"
-        android:layout_height="fill_parent"
-        android:orientation="vertical" >
-
-        <EditText
-            android:id="@+id/editText"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:hint="自然，城，歴史など，自由な言葉を入力してください"
+            android:id="@+id/startButton"
             />
-
     </LinearLayout>
-
-
 </RelativeLayout>
