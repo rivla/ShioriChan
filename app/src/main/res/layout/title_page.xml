@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:orientation="vertical" android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@mipmap/background">
@@ -15,27 +16,52 @@
 
     <FrameLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="match_parent">
 
         <ImageView
             android:id="@+id/imageView10"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_gravity="center"
-            android:src="@mipmap/guide_shiori_big" />
-    </FrameLayout>
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_column="1"
+            android:layout_gravity="bottom|right"
+            android:layout_row="3"
+            android:src="@mipmap/guide_shiori" />
 
-    <FrameLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="top|left"
+            android:background="@mipmap/fukidashi"
+            android:padding="47dp">
+
+            <TextView
+                android:id="@+id/textView21"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="気になるジャンルを教えてね！\n動物が見たいなら「動物園」, 歴史に興味があるなら「神社」って入れてくれればOKよ！\私が旅のしおりを作ってあげるわ！"
+                android:textSize="30dp" />
+
+        </FrameLayout>
 
         <ImageButton
             android:id="@+id/imageButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="top|center_horizontal"
+            android:layout_column="0"
+            android:layout_gravity="bottom"
+            android:layout_row="1"
             android:background="@null"
-            android:src="@mipmap/navigation_go" />
+            android:padding="30dp"
+            android:src="@mipmap/navigation_go_2" />
+
+        <EditText
+            android:id="@+id/editText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="left|center"
+            android:background="@drawable/frame_style"
+            android:hint="(例) 川, 神社, ロープウェイ など"
+            android:textSize="30dp" />
 
     </FrameLayout>
 

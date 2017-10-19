@@ -16,8 +16,7 @@
     <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_weight="0.59"
-        android:padding="60dp">
+        android:padding="50dp">
 
         <!-- 枠の中のレイアウト -->
         <LinearLayout
