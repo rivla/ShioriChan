@@ -5,70 +5,14 @@
     android:id="@+id/input_form"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:paddingBottom="@dimen/activity_vertical_margin"
-    android:paddingLeft="@dimen/activity_horizontal_margin"
-    android:paddingRight="@dimen/activity_horizontal_margin"
-    android:paddingTop="@dimen/activity_vertical_margin"
     tools:context="jp.ncf.app.shiorichan.MainActivity">
 
 
-
-
     <LinearLayout
-        android:orientation="horizontal"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:layout_alignParentRight="true"
-        android:layout_centerInParent="true"
-        android:id="@+id/linearLayout">
-
-<!--
-        <Button
-            android:text="デバッグモード"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:id="@+id/debugButton" />
--->
-        <Button
-            android:text="しおり表示"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:id="@+id/shioriButton" />
-    </LinearLayout>
-
-    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
         android:orientation="vertical"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_centerInParent="true"
-        android:id="@+id/linearLayout2">
-
-        <TextView
-            android:text="しおりちゃんに"
-            android:textSize="50dp"
-            android:layout_gravity="center_horizontal"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:id="@+id/title1" />
-        <TextView
-            android:text="おまかせ！"
-            android:textSize="50dp"
-            android:layout_gravity="center_horizontal"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:id="@+id/title2" />
-
-
-        <ImageView
-            android:layout_width="250dp"
-            android:layout_height="250dp"
-            android:layout_gravity="center_horizontal"
-            app:srcCompat="@mipmap/guide_shiori"
-            android:id="@+id/imageView" />
-
-
-
+        android:gravity="center">
     <LinearLayout
         android:orientation="horizontal"
         android:layout_width="wrap_content"
@@ -76,6 +20,7 @@
         android:layout_gravity="center"
         android:layout_marginTop="10dp"
         android:layout_centerInParent="true">
+
 
         <TextView
             android:text="出発時刻"
@@ -132,10 +77,17 @@
             />
         <Button
             android:text="はじめる"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:id="@+id/startButton"
+            android:layout_width="285dp"
+            android:layout_height="wrap_content"
+            android:id="@+id/makeShioriButton"
             />
+        <Button
+            android:text="しおり表示"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/shioriButton"
+            android:gravity="bottom"/>
     </LinearLayout>
+
 
 </RelativeLayout>
