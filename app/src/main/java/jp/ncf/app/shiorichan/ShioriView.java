@@ -62,77 +62,76 @@ public class ShioriView extends Activity {
         } else{
             Log.d("from ShioriView.java : ","受け取ったスケジュールの場所の数が"+Value.itineraryPlaceList.size()+"個です");
         }
-            viewFlipper.addView(v1); // ViewFlipperにv1のレイアウトを追加
 
+        viewFlipper.addView(v1); // ViewFlipperにv1のレイアウトを追加
 
-            // === Schedule page === //
-            // 5つごとに1ページ作成,
+        // === Schedule page === //
+        // 5つごとに1ページ作成,
 
-            View v2 = null;
-            for (int i = 0; i < Value.itineraryPlaceList.size(); i++) {
-                switch (i % 5) {
-                    case 0:
-                        // 1つ目の行き先
-                        v2 = getLayoutInflater().inflate(R.layout.schedule_page, null);
-                        if (Value.itineraryPlaceList.get(i).getName() != null) {
-                            TextView textView4 = (TextView) v2.findViewById(R.id.textView4);
-                            textView4.setText(DepArrStringMaker(Value.itineraryPlaceList.get(i))); //
-                            TextView textView5 = (TextView) v2.findViewById(R.id.textView5); // v2.findViewByIdで指定する
-                            textView5.setText(Value.itineraryPlaceList.get(i).getName());
-                        }
-                        break;
-                    case 1:
-                        // 2つ目の行き先
-                        if (Value.itineraryPlaceList.get(i).getName() != null) {
-                            ImageView imageView6 = (ImageView) v2.findViewById(R.id.imageView6);
-                            imageView6.setImageResource(R.mipmap.arrow_blue);
-                            TextView textView6 = (TextView) v2.findViewById(R.id.textView6);
-                            textView6.setText(DepArrStringMaker(Value.itineraryPlaceList.get(i))); //
-                            TextView textView7 = (TextView) v2.findViewById(R.id.textView7);
-                            textView7.setText(Value.itineraryPlaceList.get(i).getName());
-                        }
-                        break;
-                    case 2:
-                        // 3つ目の行き先
-                        if (Value.itineraryPlaceList.get(i).getName() != null) {
-                            ImageView imageView7 = (ImageView) v2.findViewById(R.id.imageView7);
-                            imageView7.setImageResource(R.mipmap.arrow_blue);
-                            TextView textView8 = (TextView) v2.findViewById(R.id.textView8);
-                            textView8.setText(DepArrStringMaker(Value.itineraryPlaceList.get(i))); //
-                            TextView textView9 = (TextView) v2.findViewById(R.id.textView9);
-                            textView9.setText(Value.itineraryPlaceList.get(i).getName());
-                        }
-                        break;
-                    case 3:
-                        // 4つ目の行き先
-                        if (Value.itineraryPlaceList.get(i).getName() != null) {
-                            ImageView imageView8 = (ImageView) v2.findViewById(R.id.imageView8);
-                            imageView8.setImageResource(R.mipmap.arrow_blue);
-                            TextView textView10 = (TextView) v2.findViewById(R.id.textView10);
-                            textView10.setText(DepArrStringMaker(Value.itineraryPlaceList.get(i))); //
-                            TextView textView11 = (TextView) v2.findViewById(R.id.textView11);
-                            textView11.setText(Value.itineraryPlaceList.get(i).getName());
-                        }
-                        break;
-                    case 4:
-                        // 5つ目の行き先
-                        if (Value.itineraryPlaceList.get(i).getName() != null) {
-                            ImageView imageView9 = (ImageView) v2.findViewById(R.id.imageView9);
-                            imageView9.setImageResource(R.mipmap.arrow_blue);
-                            TextView textView12 = (TextView) v2.findViewById(R.id.textView12);
-                            textView12.setText(DepArrStringMaker(Value.itineraryPlaceList.get(i))); //
-                            TextView textView13 = (TextView) v2.findViewById(R.id.textView13);
-                            textView13.setText(Value.itineraryPlaceList.get(i).getName());
-                        }
-
-                        // viewFlipperに追加
-                        viewFlipper.addView(v2);
-                        // === 2ページ目終了 === //
-                        v2 = null;
-                        break;
-                    default: // まずありえない
-                        Log.d("from ShioriView.java : ","i%5 が0から4以外の数値を返しました");
-                        break;
+        View v2 = null;
+        for (int i = 0; i < Value.itineraryPlaceList.size(); i++) {
+            switch (i % 5) {
+                case 0:
+                    // 1つ目の行き先
+                    v2 = getLayoutInflater().inflate(R.layout.schedule_page, null);
+                    if (Value.itineraryPlaceList.get(i).getName() != null) {
+                        TextView textView4 = (TextView) v2.findViewById(R.id.textView4);
+                        textView4.setText(DepArrStringMaker(Value.itineraryPlaceList.get(i))); //
+                        TextView textView5 = (TextView) v2.findViewById(R.id.textView5); // v2.findViewByIdで指定する
+                        textView5.setText(Value.itineraryPlaceList.get(i).getName());
+                    }
+                    break;
+                case 1:
+                    // 2つ目の行き先
+                    if (Value.itineraryPlaceList.get(i).getName() != null) {
+                        ImageView imageView6 = (ImageView) v2.findViewById(R.id.imageView6);
+                        imageView6.setImageResource(R.mipmap.arrow_blue);
+                        TextView textView6 = (TextView) v2.findViewById(R.id.textView6);
+                        textView6.setText(DepArrStringMaker(Value.itineraryPlaceList.get(i))); //
+                        TextView textView7 = (TextView) v2.findViewById(R.id.textView7);
+                        textView7.setText(Value.itineraryPlaceList.get(i).getName());
+                    }
+                    break;
+                case 2:
+                    // 3つ目の行き先
+                    if (Value.itineraryPlaceList.get(i).getName() != null) {
+                        ImageView imageView7 = (ImageView) v2.findViewById(R.id.imageView7);
+                        imageView7.setImageResource(R.mipmap.arrow_blue);
+                        TextView textView8 = (TextView) v2.findViewById(R.id.textView8);
+                        textView8.setText(DepArrStringMaker(Value.itineraryPlaceList.get(i))); //
+                        TextView textView9 = (TextView) v2.findViewById(R.id.textView9);
+                        textView9.setText(Value.itineraryPlaceList.get(i).getName());
+                    }
+                    break;
+                case 3:
+                    // 4つ目の行き先
+                    if (Value.itineraryPlaceList.get(i).getName() != null) {
+                        ImageView imageView8 = (ImageView) v2.findViewById(R.id.imageView8);
+                        imageView8.setImageResource(R.mipmap.arrow_blue);
+                        TextView textView10 = (TextView) v2.findViewById(R.id.textView10);
+                        textView10.setText(DepArrStringMaker(Value.itineraryPlaceList.get(i))); //
+                        TextView textView11 = (TextView) v2.findViewById(R.id.textView11);
+                        textView11.setText(Value.itineraryPlaceList.get(i).getName());
+                    }
+                    break;
+                case 4:
+                    // 5つ目の行き先
+                    if (Value.itineraryPlaceList.get(i).getName() != null) {
+                        ImageView imageView9 = (ImageView) v2.findViewById(R.id.imageView9);
+                        imageView9.setImageResource(R.mipmap.arrow_blue);
+                        TextView textView12 = (TextView) v2.findViewById(R.id.textView12);
+                        textView12.setText(DepArrStringMaker(Value.itineraryPlaceList.get(i))); //
+                        TextView textView13 = (TextView) v2.findViewById(R.id.textView13);
+                        textView13.setText(Value.itineraryPlaceList.get(i).getName());
+                    }
+                    // viewFlipperに追加
+                    viewFlipper.addView(v2);
+                    // === 2ページ目終了 === //
+                    v2 = null;
+                    break;
+                default: // まずありえない
+                    Log.d("from ShioriView.java : ","i%5 が0から4以外の数値を返しました");
+                    break;
                 }
             }
             if (v2 != null) {
@@ -178,34 +177,39 @@ public class ShioriView extends Activity {
         viewFlipper.addView(v4);
 
 
-            // === 3ページ目 観光地の情報=== //
-            View v3 = this.getLayoutInflater().inflate(R.layout.place_infomation, null);
-            for (int i = 1; i < Value.itineraryPlaceList.size() - 1; i++) { // 出発地点(0)と到着地(最後)は飛ばす
-                // 観光地の画像
-                if (Value.itineraryPlaceList.get(i).getImage() != null) {
-                    ImageView imageView3 = (ImageView) v3.findViewById(R.id.imageView3);
-                    imageView3.setImageBitmap(Value.itineraryPlaceList.get(i).getImage()); //
-                }
-                // 観光地の名称
-                TextView textView15 = (TextView) v3.findViewById(R.id.textView15);
-                textView15.setText(Value.itineraryPlaceList.get(i).prefecture+"\n"+Value.itineraryPlaceList.get(i).getName());
-                // 観光地の説明文
-                TextView textView16 = (TextView) v3.findViewById(R.id.textView16);
-                textView16.setText(Value.itineraryPlaceList.get(i).getExplainText());
-
-                // 評価値の☆をつける
-                RatingBar ratingBar = (RatingBar) v3.findViewById(R.id.ratingBar);
-                ratingBar.setRating((float) Value.itineraryPlaceList.get(i).getRate());
-
-                // viewFlipperに追加
-                viewFlipper.addView(v3);
-
-                v3 = this.getLayoutInflater().inflate(R.layout.place_infomation, null); // 2週目以降
+        // === 3ページ目 観光地の情報=== //
+        View v3 = this.getLayoutInflater().inflate(R.layout.place_infomation, null);
+        for (int i = 1; i < Value.itineraryPlaceList.size() - 1; i++) { // 出発地点(0)と到着地(最後)は飛ばす
+            // 観光地の画像
+            if (Value.itineraryPlaceList.get(i).getImage() != null) {
+                ImageView imageView3 = (ImageView) v3.findViewById(R.id.imageView3);
+                imageView3.setImageBitmap(Value.itineraryPlaceList.get(i).getImage()); //
             }
+            // 観光地の名称
+            TextView textView15 = (TextView) v3.findViewById(R.id.textView15);
+            textView15.setText(Value.itineraryPlaceList.get(i).prefecture+"\n"+Value.itineraryPlaceList.get(i).getName());
+            // 観光地の説明文
+            TextView textView16 = (TextView) v3.findViewById(R.id.textView16);
+            textView16.setText(Value.itineraryPlaceList.get(i).getExplainText());
 
+            // 評価値の☆をつける
+            RatingBar ratingBar = (RatingBar) v3.findViewById(R.id.ratingBar);
+            ratingBar.setRating((float) Value.itineraryPlaceList.get(i).getRate());
 
+            // viewFlipperに追加
+            viewFlipper.addView(v3);
 
+            v3 = this.getLayoutInflater().inflate(R.layout.place_infomation, null); // 2週目以降
         }
+
+        // === 最後のページ Have a nice trip!! === //
+        View v5 = this.getLayoutInflater().inflate(R.layout.last_page, null);
+        viewFlipper.addView(v5);
+    }
+
+
+
+
     //onTouchEventの代わりにこちらを使ってください。
     //ScrollView(説明文のスクロール)が画面タッチ時のイベントを優先して吸い取ってしまいonTouchEventが実行されないため、
     //ScrollViewよりも優先度の高いdispatchTouchEventを使うことで無理やりスワイプを検知しています。
