@@ -146,22 +146,23 @@ public class ShioriView extends Activity {
         // ImageViewをつくってそこに画像を投げる
 
         View v4 = this.getLayoutInflater().inflate(R.layout.map_page, null);
-        // 周辺地図
+        // 周辺地図をセットする。
         if (Value.itineraryPlaceList.size() > 0) {
+            //出発地→第一目的地間の地図。
             ImageView mapImageView1 = (ImageView) v4.findViewById(R.id.mapImage1);
-            mapImageView1.setImageBitmap(Value.itineraryPlaceList.get(0).mapImage); //
+            mapImageView1.setImageBitmap(Value.itineraryPlaceList.get(0).mapImage);
             TextView mapImageText1=(TextView)v4.findViewById(R.id.mapImageText1);
-            mapImageText1.setText(Value.itineraryPlaceList.get(0).name+"→"+Value.itineraryPlaceList.get(1).name);
+            mapImageText1.setText(Value.itineraryPlaceList.get(0).name+"\n↓\n"+Value.itineraryPlaceList.get(1).name);
 
             ImageView mapImageView2 = (ImageView) v4.findViewById(R.id.mapImage2);
-            mapImageView2.setImageBitmap(Value.itineraryPlaceList.get(1).mapImage); //
+            mapImageView2.setImageBitmap(Value.itineraryPlaceList.get(Value.itineraryPlaceList.size()-1).mapImage);
             TextView mapImageText2=(TextView)v4.findViewById(R.id.mapImageText2);
-            mapImageText2.setText(Value.itineraryPlaceList.get(1).name+"→"+Value.itineraryPlaceList.get(Value.itineraryPlaceList.size()-2).name);
+            mapImageText2.setText(Value.itineraryPlaceList.get(1).name+"\n↓\n"+Value.itineraryPlaceList.get(Value.itineraryPlaceList.size()-2).name);
 
             ImageView mapImageView3 = (ImageView) v4.findViewById(R.id.mapImage3);
-            mapImageView3.setImageBitmap(Value.itineraryPlaceList.get(Value.itineraryPlaceList.size()-1).mapImage); //
+            mapImageView3.setImageBitmap(Value.itineraryPlaceList.get(Value.itineraryPlaceList.size()-2).mapImage);
             TextView mapImageText3=(TextView)v4.findViewById(R.id.mapImageText3);
-            mapImageText3.setText(Value.itineraryPlaceList.get(Value.itineraryPlaceList.size()-2).name+"→"+Value.itineraryPlaceList.get(Value.itineraryPlaceList.size()-1).name);
+            mapImageText3.setText(Value.itineraryPlaceList.get(Value.itineraryPlaceList.size()-2).name+"\n↓\n"+Value.itineraryPlaceList.get(Value.itineraryPlaceList.size()-1).name);
 
             TextView mapPlaceText=(TextView)v4.findViewById(R.id.mapPlaceText);
             String tempString="";

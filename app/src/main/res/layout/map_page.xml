@@ -25,7 +25,7 @@
                 android:textSize="40dp"/>
 
 
-            <!-- とりあえず, ドロイドくんを表示しておく -->
+            <!-- ScrollView内のLinearLayout内にスクロールで表示したい情報（地図三枚）を置く。-->
             <ScrollView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -34,45 +34,74 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="vertical"
-                    android:gravity="center"
                     >
-                    <TextView
-                        android:id="@+id/mapImageText1"
-                        android:layout_width="wrap_content"
-                        android:text="test"
-                        android:textSize="20dp"
-                        android:layout_height="wrap_content" />
-                    <ImageView
-                        android:id="@+id/mapImage1"
+                    <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:scaleType="fitStart"
-                        android:adjustViewBounds="true"
-                        android:src="@mipmap/ic_launcher"/>
-                    <TextView
-                        android:id="@+id/mapImageText2"
-                        android:layout_width="match_parent"
-                        android:textSize="20dp"
-                        android:layout_height="wrap_content" />
-                    <ImageView
-                        android:id="@+id/mapImage2"
+                        android:orientation="vertical"
+                        android:gravity="center"
+                        android:background="@drawable/frame_style"
+                        >
+                        <TextView
+                            android:id="@+id/mapImageText1"
+                            android:layout_width="wrap_content"
+                            android:text="testaaaaaaaaaaaaaaaaaaaaaaa"
+                            android:textSize="20dp"
+                            android:gravity="center"
+                            android:layout_height="wrap_content" />
+                        <ImageView
+                            android:id="@+id/mapImage1"
+                            android:layout_width="match_parent"
+                            android:layout_margin="20dp"
+                            android:layout_height="wrap_content"
+                            android:scaleType="fitStart"
+                            android:adjustViewBounds="true"
+                            android:src="@mipmap/ic_launcher"/>
+                    </LinearLayout>
+                    <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:scaleType="fitStart"
-                        android:adjustViewBounds="true"
-                        android:src="@mipmap/ic_launcher"/>
+                        android:orientation="vertical"
+                        android:gravity="center"
+                        android:background="@drawable/frame_style"
+                        >
+                        <TextView
+                            android:id="@+id/mapImageText2"
+                            android:layout_width="match_parent"
+                            android:textSize="20dp"
+                            android:gravity="center"
+                            android:layout_height="wrap_content" />
+                        <ImageView
+                            android:id="@+id/mapImage2"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:scaleType="fitStart"
+                            android:layout_margin="20dp"
+                            android:adjustViewBounds="true"
+                            android:src="@mipmap/ic_launcher"/>
+                    </LinearLayout>
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:gravity="center"
+                    android:background="@drawable/frame_style"
+                    >
                     <TextView
                         android:id="@+id/mapImageText3"
                         android:textSize="20dp"
                         android:layout_width="match_parent"
+                        android:gravity="center"
                         android:layout_height="wrap_content" />
                     <ImageView
                         android:id="@+id/mapImage3"
                         android:layout_width="match_parent"
+                        android:layout_margin="20dp"
                         android:layout_height="wrap_content"
                         android:scaleType="fitStart"
                         android:adjustViewBounds="true"
                         android:src="@mipmap/ic_launcher"/>
+                    </LinearLayout>
             </LinearLayout>
             </ScrollView>
             <TextView

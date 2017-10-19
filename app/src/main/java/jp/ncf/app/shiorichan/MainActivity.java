@@ -1654,20 +1654,26 @@ public class MainActivity extends AppCompatActivity implements
         }
         return input_list_new;
     }
-    public Bitmap staticsMapMaker(int startNumber,int endNumber,boolean drawWaypoints) throws JSONException, MalformedURLException {
+    //itineralyList上の開始位置と終了位置を渡すと、その区間の地図画像を返す関数.booleanはポリラインを使って通る道を表示するかどうか
+    public Bitmap staticsMapMaker(int startNumber,int endNumber,boolean drawPolyline) throws JSONException, MalformedURLException {
+        //画像格納変数
         Bitmap mapsStaticsResult = null;
-        if(drawWaypoints){
+        //ポリラインを描くかどうか
+        if(drawPolyline){
             String waypoints = "";
+            //3箇所以上通る場所がある場合は、経由地をwaypointとして指定する必要がある.waypointを用意するかどうかの条件文。
             if(endNumber-startNumber>1) {
                 waypoints=waypoints+"waypoints=";
                 for (int i = startNumber+1; i < endNumber-1; i++) {
                     waypoints = waypoints + "place_id:" + Value.itineraryPlaceList.get(i).placeID + "|";
                 }
             }
+            //描画するマーカーの設定。
             String markers="";
-            for (int i = startNumber; i < endNumber; i++) {
+            for (int i = startNumber; i <= endNumber; i++) {
                 markers=markers+"markers=color:purple|label:"+String.valueOf(i)+"|"+String.valueOf(Value.itineraryPlaceList.get(i).lat)+","+String.valueOf(Value.itineraryPlaceList.get(i).lng)+"&";
             }
+            //directionAPIにリクエストを送り、ポリラインを取得。
             JSONObject tempDirectionSearch = httpGet.HttpPlaces(new URL("https://maps.googleapis.com/maps/api/directions/json?" +
                     "origin=" + String.valueOf(Value.itineraryPlaceList.get(startNumber).lat)+","
                     +String.valueOf(Value.itineraryPlaceList.get(startNumber).lng) + "&" +
@@ -1675,25 +1681,16 @@ public class MainActivity extends AppCompatActivity implements
                     String.valueOf(Value.itineraryPlaceList.get(endNumber).lng) +"&" +
                     waypoints +
                     "key=AIzaSyCke0pASXyPnnJR-GAAvN3Bz7GltgomfEk"));
-
-
-
-            Log.d("test", "https://maps.googleapis.com/maps/api/directions/json?" +
-                    "origin=" + String.valueOf(Value.itineraryPlaceList.get(startNumber).lat)+","
-                    +String.valueOf(Value.itineraryPlaceList.get(startNumber).lng) + "&" +
-                    "destination=" + String.valueOf(Value.itineraryPlaceList.get(endNumber).lat) +","+
-                    String.valueOf(Value.itineraryPlaceList.get(endNumber).lng) +"&" +
-                    waypoints +
-                    "key=AIzaSyCke0pASXyPnnJR-GAAvN3Bz7GltgomfEk");
-
+            //staticsAPIにリクエストを送り、画像を取得。
             String tempPolyline = tempDirectionSearch.getJSONArray("routes").getJSONObject(0).getJSONObject("overview_polyline").getString("points");
             mapsStaticsResult = httpBitmapGet.HttpPlaces(new URL("https://maps.googleapis.com/maps/api/staticmap?" +
                     "size=400x400&" +markers+
                     "path=color:0xff0000ff|weight:5%7Cenc:" + tempPolyline + "&" +
                     "key=AIzaSyCke0pASXyPnnJR-GAAvN3Bz7GltgomfEk"));
         }else{
+            //以下、ポリラインを描画しないバージョン。
             String markers="";
-            for (int i = startNumber; i < endNumber; i++) {
+            for (int i = startNumber; i <= endNumber; i++) {
                 markers=markers+"markers=color:purple|label:"+String.valueOf(i)+"|"+String.valueOf(Value.itineraryPlaceList.get(i).lat)+","+String.valueOf(Value.itineraryPlaceList.get(i).lng)+"&";
             }
             mapsStaticsResult = httpBitmapGet.HttpPlaces(new URL("https://maps.googleapis.com/maps/api/staticmap?" +
