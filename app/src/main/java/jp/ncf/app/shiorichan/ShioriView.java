@@ -58,7 +58,11 @@ public class ShioriView extends Activity {
         textView19.setText("名前 : しおり"); //
         if (Value.itineraryPlaceList.size() > 1) { // もし受け取ったルートの長さが2以上なら...
             ImageView imageView5 = (ImageView)v1.findViewById(R.id.imageView5); // 表紙の中央の画像
-            imageView5.setImageBitmap(Value.itineraryPlaceList.get(1).getImage()); //
+            if(Value.itineraryPlaceList.get(1).image!=null) {
+                imageView5.setImageBitmap(Value.itineraryPlaceList.get(1).getImage()); //
+            }else{
+
+            }
         } else{
             Log.d("from ShioriView.java : ","受け取ったスケジュールの場所の数が"+Value.itineraryPlaceList.size()+"個です");
         }

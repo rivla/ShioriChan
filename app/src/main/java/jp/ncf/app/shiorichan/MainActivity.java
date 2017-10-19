@@ -132,11 +132,11 @@ public class MainActivity extends AppCompatActivity implements
 
 
         Button shioriButton = (Button) findViewById(R.id.shioriButton);
+        Button makeShioriButton = (Button) findViewById(R.id.makeShioriButton);
         final Button departureTimeButton=(Button)findViewById(R.id.departureTimeButton);
         departureTimeButton.setText(String.format("%02d:%02d",departureTime.getHours(),departureTime.getMinutes()));
         final Button arriveTimeButton=(Button)findViewById(R.id.arriveTimeButton);
         arriveTimeButton.setText(String.format("%02d:%02d",arriveTime.getHours(),arriveTime.getMinutes()));
-        final Button startButton=(Button)findViewById(R.id.startButton);
         final EditText editText = (EditText)findViewById(R.id.editText);        // EditTextオブジェクトを取得
         final RadioGroup prefRadioGroup=(RadioGroup) findViewById(R.id.PrefRadioGroup);
         prefRadioGroup.check(R.id.neighborRadio);//ラジオボタンを予めチェック
@@ -230,7 +230,7 @@ public class MainActivity extends AppCompatActivity implements
         final LoadJsonInThread loadJsonInThread =new LoadJsonInThread();
         loadJsonInThread.start();
         //スタートボタン
-        startButton.setOnClickListener(new View.OnClickListener() {
+        makeShioriButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 progressDialog.setTitle("しおり作成中…。");
