@@ -26,6 +26,7 @@ import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.TimePicker;
@@ -103,24 +104,7 @@ public class MainActivity extends AppCompatActivity implements
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         instance = this;
-        setContentView(R.layout.input_form);
-
-        //preferenceで設定されたデータを受け取る
-        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
-
-        //昼食が必要かどうかのフラグ
-        final boolean lunchFlg = sharedPreferences.getBoolean("lunchFlg", false);
-
-
-        String list_preference = sharedPreferences.getString("neighborOrJapanMode", "unknown");
-        if(list_preference.equals("全国")){
-            Value.neighborOrJapanFlg=true;
-        }else{
-            Value.neighborOrJapanFlg=false;
-        }
-
-        final String edittext_preference = sharedPreferences.getString("departurePlace", "unknown");
-        Log.d("edit",edittext_preference);
+        setContentView(R.layout.title_page);
 
 
         //googleAPI(開始時座標取得)のインスタンスの作成
@@ -133,6 +117,18 @@ public class MainActivity extends AppCompatActivity implements
                     .addApi(LocationServices.API)
                     .addApi(AppIndex.API).build();
         }
+
+        Value.departureTime.setHours(10);
+        Value.departureTime.setMinutes(0);
+        Value.departureTime.setSeconds(0);
+        Value.arriveTime.setHours(22);
+        Value.arriveTime.setMinutes(0);
+        Value.arriveTime.setSeconds(0);
+        SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(this);
+        SharedPreferences.Editor editor = pref.edit();
+        editor.clear().commit();
+
+
 
 //        final int[] departureTime = {10,0};//(時間,分)の順に格納
 //        final int[] arriveTime = {20,0};//(時間,分)の順に格納
@@ -155,15 +151,16 @@ public class MainActivity extends AppCompatActivity implements
 
 
 
-        Button shioriButton = (Button) findViewById(R.id.shioriButton);
-        Button makeShioriButton = (Button) findViewById(R.id.makeShioriButton);
-        final Button departureTimeButton=(Button)findViewById(R.id.departureTimeButton);
-        departureTimeButton.setText(String.format("%02d:%02d",Value.departureTime.getHours(),Value.departureTime.getMinutes()));
-        final Button arriveTimeButton=(Button)findViewById(R.id.arriveTimeButton);
-        arriveTimeButton.setText(String.format("%02d:%02d",Value.arriveTime.getHours(),Value.arriveTime.getMinutes()));
+//        Button shioriButton = (Button) findViewById(R.id.shioriButton);
+        ImageButton startButton = (ImageButton) findViewById(R.id.startButton);
+        Button customButton=(Button)findViewById(R.id.customButton);
+//        final Button departureTimeButton=(Button)findViewById(R.id.departureTimeButton);
+//        departureTimeButton.setText(String.format("%02d:%02d",Value.departureTime.getHours(),Value.departureTime.getMinutes()));
+//        final Button arriveTimeButton=(Button)findViewById(R.id.arriveTimeButton);
+//        arriveTimeButton.setText(String.format("%02d:%02d",Value.arriveTime.getHours(),Value.arriveTime.getMinutes()));
         final EditText editText = (EditText)findViewById(R.id.editText);        // EditTextオブジェクトを取得
-        final RadioGroup prefRadioGroup=(RadioGroup) findViewById(R.id.PrefRadioGroup);
-        prefRadioGroup.check(R.id.neighborRadio);//ラジオボタンを予めチェック
+//        final RadioGroup prefRadioGroup=(RadioGroup) findViewById(R.id.PrefRadioGroup);
+//        prefRadioGroup.check(R.id.neighborRadio);//ラジオボタンを予めチェック
 
         //キーボード表示を制御するためのオブジェクト
         inputMethodManager =  (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
@@ -181,16 +178,13 @@ public class MainActivity extends AppCompatActivity implements
                 return false;
             }
         });
-        /*
-        //デバッグモードへ入るボタン
-        sendButton.setOnClickListener(new View.OnClickListener() {
+        customButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(getApplication(), DebugActivity.class);
+                Intent intent = new Intent(getApplication(), MyPreferenceActivity.class);
                 startActivity(intent);
             }
         });
-        */
 
         /*
         // ラジオグループのチェック状態が変更された時に呼び出されるコールバックリスナーを登録します
@@ -207,7 +201,7 @@ public class MainActivity extends AppCompatActivity implements
             }
         });
         */
-
+/*
         //しおり表示モードへ入るボタン
         shioriButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -233,7 +227,8 @@ public class MainActivity extends AppCompatActivity implements
                 dialog.show();
             }
         });
-
+        */
+/*
         //到着時刻選択ボタン
         arriveTimeButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -250,15 +245,33 @@ public class MainActivity extends AppCompatActivity implements
                 dialog.show();
             }
         });
-
+*/
 
         //スレッド上でJsonの読み込みを開始する。ユーザーが入力を行っている間、並行して読み出しが出来る。
         final LoadJsonInThread loadJsonInThread =new LoadJsonInThread();
         loadJsonInThread.start();
         //スタートボタン
-        makeShioriButton.setOnClickListener(new View.OnClickListener() {
+        startButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                //preferenceで設定されたデータを受け取る
+                SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+
+                //昼食が必要かどうかのフラグ
+                final boolean lunchFlg = sharedPreferences.getBoolean("lunchFlg", false);
+
+
+                String list_preference = sharedPreferences.getString("neighborOrJapanMode", "unknown");
+                if(list_preference.equals("全国")){
+                    Value.neighborOrJapanFlg=true;
+                }else{
+                    Value.neighborOrJapanFlg=false;
+                }
+
+                final String edittext_preference = sharedPreferences.getString("departurePlace", "");
+                Log.d("edit",edittext_preference);
+
+
                 progressDialog.setTitle("しおり作成中…。");
                 progressDialog.show();
                 //◆スレッド処理開始
@@ -745,6 +758,8 @@ public class MainActivity extends AppCompatActivity implements
                                     //昼食場所を消去
                                     Value.itineraryPlaceList.remove(Value.itineraryPlaceList.size() - 1);
                                     //リクエストをスローし、第一観光地からまっすぐ家にかえる場合を算出する。
+                                    Log.d("test",Value.itineraryPlaceList.get(Value.itineraryPlaceList.size() - 1).placeID);
+                                    Log.d("test",location.toString());
                                     tempDirectionSearchToHome = httpGet.HttpPlaces(new URL("https://maps.googleapis.com/maps/api/directions/json?origin=place_id:" + Value.itineraryPlaceList.get(Value.itineraryPlaceList.size() - 1).placeID + "&destination=" + location.getLatitude() + "," + location.getLongitude() + "&key=AIzaSyCke0pASXyPnnJR-GAAvN3Bz7GltgomfEk"));
                                     tempSecondToDestinationToHome = tempDirectionSearchToHome.getJSONArray("routes").getJSONObject(0).getJSONArray("legs").getJSONObject(0).getJSONObject("duration").getInt("value");
                                     calendarToHome = Calendar.getInstance();

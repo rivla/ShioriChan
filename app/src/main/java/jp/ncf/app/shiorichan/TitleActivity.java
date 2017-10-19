@@ -32,7 +32,7 @@ public class TitleActivity extends Activity{
         super.onCreate(savedInstanceState);
         setContentView(R.layout.title_page);
         ImageButton startButton=(ImageButton) findViewById(R.id.startButton);
-        Button customButton=(Button)findViewById(R.id.customButton);
+//        Button customButton=(Button)findViewById(R.id.customButton);
 
         Value.departureTime.setHours(10);
         Value.departureTime.setMinutes(0);
@@ -41,7 +41,7 @@ public class TitleActivity extends Activity{
         Value.arriveTime.setMinutes(0);
         Value.arriveTime.setSeconds(0);
 
-
+/*
         //設定画面
         customButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -50,6 +50,7 @@ public class TitleActivity extends Activity{
                 startActivity(intent);
             }
         });
+        */
 
         //しおり表示モードへ入るボタン
         startButton.setOnClickListener(new View.OnClickListener() {
