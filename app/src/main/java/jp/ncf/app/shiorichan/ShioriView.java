@@ -79,7 +79,7 @@ public class ShioriView extends Activity {
                         // 1つ目の行き先
                         if (Value.itineraryPlaceList.get(i).getName() != null) {
                             TextView textView4 = (TextView) v2.findViewById(R.id.textView4);
-                           textView4.setText(DepArrStringMaker(Value.itineraryPlaceList.get(i))); //
+                            textView4.setText(String.format("%02d:%02d", Value.itineraryPlaceList.get(i).departTime.getHours(), Value.itineraryPlaceList.get(i).departTime.getMinutes())); //
                             TextView textView5 = (TextView) v2.findViewById(R.id.textView5); // v2.findViewByIdで指定する
                             textView5.setText(Value.itineraryPlaceList.get(i).getName());
                         }
@@ -90,7 +90,7 @@ public class ShioriView extends Activity {
                             ImageView imageView6 = (ImageView) v2.findViewById(R.id.imageView6);
                             imageView6.setImageResource(R.mipmap.arrow_blue);
                             TextView textView6 = (TextView) v2.findViewById(R.id.textView6);
-                            textView6.setText(DepArrStringMaker(Value.itineraryPlaceList.get(i))); //
+                            textView6.setText(String.format("%02d:%02d", Value.itineraryPlaceList.get(i).departTime.getHours(), Value.itineraryPlaceList.get(i).departTime.getMinutes())); //
                             TextView textView7 = (TextView) v2.findViewById(R.id.textView7);
                             textView7.setText(Value.itineraryPlaceList.get(i).getName());
                         }
@@ -101,7 +101,7 @@ public class ShioriView extends Activity {
                             ImageView imageView7 = (ImageView) v2.findViewById(R.id.imageView7);
                             imageView7.setImageResource(R.mipmap.arrow_blue);
                             TextView textView8 = (TextView) v2.findViewById(R.id.textView8);
-                            textView8.setText(DepArrStringMaker(Value.itineraryPlaceList.get(i))); //
+                            textView8.setText(String.format("%02d:%02d", Value.itineraryPlaceList.get(i).departTime.getHours(), Value.itineraryPlaceList.get(i).departTime.getMinutes())); //
                             TextView textView9 = (TextView) v2.findViewById(R.id.textView9);
                             textView9.setText(Value.itineraryPlaceList.get(i).getName());
                         }
@@ -112,7 +112,7 @@ public class ShioriView extends Activity {
                             ImageView imageView8 = (ImageView) v2.findViewById(R.id.imageView8);
                             imageView8.setImageResource(R.mipmap.arrow_blue);
                             TextView textView10 = (TextView) v2.findViewById(R.id.textView10);
-                            textView10.setText(DepArrStringMaker(Value.itineraryPlaceList.get(i))); //
+                            textView10.setText(String.format("%02d:%02d", Value.itineraryPlaceList.get(i).departTime.getHours(), Value.itineraryPlaceList.get(i).departTime.getMinutes())); //
                             TextView textView11 = (TextView) v2.findViewById(R.id.textView11);
                             textView11.setText(Value.itineraryPlaceList.get(i).getName());
                         }
@@ -123,7 +123,7 @@ public class ShioriView extends Activity {
                             ImageView imageView9 = (ImageView) v2.findViewById(R.id.imageView9);
                             imageView9.setImageResource(R.mipmap.arrow_blue);
                             TextView textView12 = (TextView) v2.findViewById(R.id.textView12);
-                            textView12.setText(DepArrStringMaker(Value.itineraryPlaceList.get(i))); //
+                            textView12.setText(String.format("%02d:%02d", Value.itineraryPlaceList.get(i).departTime.getHours(), Value.itineraryPlaceList.get(i).departTime.getMinutes())); //
                             TextView textView13 = (TextView) v2.findViewById(R.id.textView13);
                             textView13.setText(Value.itineraryPlaceList.get(i).getName());
                         }
@@ -193,11 +193,9 @@ public class ShioriView extends Activity {
                 TextView textView16 = (TextView) v3.findViewById(R.id.textView16);
                 textView16.setText(Value.itineraryPlaceList.get(i).getExplainText());
 
-
                 // 評価値の☆をつける
                 RatingBar ratingBar = (RatingBar) v3.findViewById(R.id.ratingBar);
                 ratingBar.setRating((float) Value.itineraryPlaceList.get(i).getRate());
-
 
                 // viewFlipperに追加
                 viewFlipper.addView(v3);
