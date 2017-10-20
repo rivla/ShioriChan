@@ -24,8 +24,9 @@ import org.w3c.dom.Text;
 public class ShioriView extends Activity {
 
     private ViewFlipper viewFlipper;
-    //フリックのＸ位置
+    //フリックのＸY位置
     private float X,firstX;
+    private float Y,firstY;
     // フリックの遊び部分（最低限移動しないといけない距離）
     private float adjust = 150;
 
@@ -209,36 +210,49 @@ public class ShioriView extends Activity {
         switch (touchevent.getAction()) {
             case MotionEvent.ACTION_DOWN:
                 firstX = touchevent.getX();
+                firstY = touchevent.getY();
                 return super.dispatchTouchEvent(touchevent);
             case MotionEvent.ACTION_UP:
                 X = touchevent.getX();
+                Y = touchevent.getY();
 
                 // Handling left to right screen swap.
                 if (X - firstX > adjust) {
-                    Log.d("from ShioriView.java : ","右方向のスワイプを検知しました -> 先のページに移動します");
-                    // Next screen comes in from left.
-                    viewFlipper.setInAnimation(AnimationUtils.loadAnimation(this, R.anim.slide_in_from_left));
-                    // Current screen goes out from right.
-                    viewFlipper.setOutAnimation(AnimationUtils.loadAnimation(this, R.anim.slide_out_to_right));
+                    if (Y - firstY  < X - firstX && firstY - Y < X - firstX) { // X方向の移動のほうがおおきかったら...
 
-                    // Display previous screen.
-                    viewFlipper.showPrevious();
+                        Log.d("from ShioriView.java : ", "右方向のスワイプを検知しました -> 先のページに移動します");
+                        // Next screen comes in from left.
+                        viewFlipper.setInAnimation(AnimationUtils.loadAnimation(this, R.anim.slide_in_from_left));
+                        // Current screen goes out from right.
+                        viewFlipper.setOutAnimation(AnimationUtils.loadAnimation(this, R.anim.slide_out_to_right));
 
-                    return false;
+                        // Display previous screen.
+                        viewFlipper.showPrevious();
+
+                        return false;
+                    }
+                    else{
+                        Log.d("from ShioriView.java : ", "上下方向のスワイプと判断しました");
+                    }
                 }
 
                 // Handling right to left screen swap.
                 else if (firstX - X > adjust) {
-                    Log.d("from ShioriView.java : ","左方向のスワイプを検知しました -> 前のページに移動します");
-                    // Next screen comes in from right.
-                    viewFlipper.setInAnimation(AnimationUtils.loadAnimation(this, R.anim.slide_in_from_right));
-                    // Current screen goes out from left.
-                    viewFlipper.setOutAnimation(AnimationUtils.loadAnimation(this, R.anim.slide_out_to_left));
+                    if (Y - firstY < firstX - X && firstY - Y < firstX - X) {
+                        Log.d("from ShioriView.java : ", "左方向のスワイプを検知しました -> 前のページに移動します");
+                        // Next screen comes in from right.
+                        viewFlipper.setInAnimation(AnimationUtils.loadAnimation(this, R.anim.slide_in_from_right));
+                        // Current screen goes out from left.
+                        viewFlipper.setOutAnimation(AnimationUtils.loadAnimation(this, R.anim.slide_out_to_left));
 
-                    // Display next screen.
-                    viewFlipper.showNext();
+                        // Display next screen.
+                        viewFlipper.showNext();
 
-                    return false;
+                        return false;
+                    }
+                    else{
+                            Log.d("from ShioriView.java : ", "上下方向のスワイプと判断しました");
+                    }
                 }
                 break;
         }
