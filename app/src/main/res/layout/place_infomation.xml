@@ -55,7 +55,7 @@
                         android:layout_height="50dp"
                         android:layout_weight="1"
                         android:layout_margin="10dp"
-                        android:text="評価"
+                        android:text="みんなの評価"
                         android:textSize="40dp" />
 
                     <RatingBar

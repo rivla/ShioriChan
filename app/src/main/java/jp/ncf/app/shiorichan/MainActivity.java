@@ -75,7 +75,6 @@ class Value {
     public static boolean neighborOrJapanFlg=false;
     public static Date departureTime=new Date();
     public static Date arriveTime=new Date();
-    public static double firstCandTrueRate
     // デフォルトは-1であるため，0以上であれば完全一致した観光地があると判断できる
 }
 
@@ -636,6 +635,9 @@ public class MainActivity extends AppCompatActivity implements
                                 Collections.sort(lunchCandsList, new SpotStructureDistanceComparator());
 
                                 boolean lunchPlaceCorrectFlg = false;
+                                if(lunchCandsList.isEmpty()){
+                                    lunchPlaceCorrectFlg=true;
+                                }
                                 while (!lunchPlaceCorrectFlg) {
                                     //最も距離の近いレストランの場所をitineraryPlaceListに代入
                                     Value.itineraryPlaceList.add(lunchCandsList.get(0));
@@ -674,7 +676,7 @@ public class MainActivity extends AppCompatActivity implements
                                     }
                                 }
 
-                                Log.d("test", "lunch:" + Value.itineraryPlaceList.get(Value.itineraryPlaceList.size()-1).name + "dist:" + String.valueOf(Value.itineraryPlaceList.get(2).distance) + "id" + String.valueOf(Value.itineraryPlaceList.get(2).placeID) + "depTime" + Value.itineraryPlaceList.get(2).departTime.toString());
+//                                Log.d("test", "lunch:" + Value.itineraryPlaceList.get(Value.itineraryPlaceList.size()-1).name + "dist:" + String.valueOf(Value.itineraryPlaceList.get(2).distance) + "id" + String.valueOf(Value.itineraryPlaceList.get(2).placeID) + "depTime" + Value.itineraryPlaceList.get(2).departTime.toString());
                                 Log.d("test2", Value.itineraryPlaceList.get(Value.itineraryPlaceList.size()-1).departTime.toString());
                             }
 
@@ -739,51 +741,53 @@ public class MainActivity extends AppCompatActivity implements
                             Collections.sort(secondOrLaterCandsList, new SpotStructureDistanceComparator());
                             // Log.d("test3", Value.itineraryPlaceList.get(2).departTime.toString());
 
-                            
                             //一箇所目が遠すぎて昼を食べずに帰る時の処理
                             boolean getBackHomeFlg = false;//次の観光地を探索するか決めるフラグ
                             Date ifReturnArriveTime = null;//現時点の観光地から家に帰ったとして、家に着く時間を格納する
                             String ifReturnPolyline = null;//現時点の観光地から家に帰った場合のポリライン
-                            try {
-                                JSONObject tempDirectionSearchToHome = httpGet.HttpPlaces(new URL("https://maps.googleapis.com/maps/api/directions/json?origin=place_id:" + Value.itineraryPlaceList.get(Value.itineraryPlaceList.size() - 1).placeID + "&destination=" + location.getLatitude() + "," + location.getLongitude() + "&key=AIzaSyCke0pASXyPnnJR-GAAvN3Bz7GltgomfEk"));
-                                int tempSecondToDestinationToHome = tempDirectionSearchToHome.getJSONArray("routes").getJSONObject(0).getJSONArray("legs").getJSONObject(0).getJSONObject("duration").getInt("value");
-                                Calendar calendarToHome = Calendar.getInstance();
-                                calendarToHome.setTime(Value.itineraryPlaceList.get(Value.itineraryPlaceList.size() - 1).departTime);
-                                calendarToHome.add(Calendar.SECOND, tempSecondToDestinationToHome);
-                                //この観光地を見た後家に帰ったとして、家に着く時間
-                                Date tempReturnHomeTime = calendarToHome.getTime();
-                                Log.d("test:tempReturnHomeTime", tempReturnHomeTime.toString());
-                                //到着時間と比較
-                                if (Value.arriveTime.compareTo(tempReturnHomeTime) == -1) {//家にかえる場合、直前の観光地を消す。ここのifがtrueになるのは、第一候補地が近すぎて昼にすら行けなかった場合。
-                                    getBackHomeFlg = true;
-                                    //昼食場所を消去
-                                    Value.itineraryPlaceList.remove(Value.itineraryPlaceList.size() - 1);
-                                    //リクエストをスローし、第一観光地からまっすぐ家にかえる場合を算出する。
-                                    Log.d("test",Value.itineraryPlaceList.get(Value.itineraryPlaceList.size() - 1).placeID);
-                                    Log.d("test",location.toString());
-                                    tempDirectionSearchToHome = httpGet.HttpPlaces(new URL("https://maps.googleapis.com/maps/api/directions/json?origin=place_id:" + Value.itineraryPlaceList.get(Value.itineraryPlaceList.size() - 1).placeID + "&destination=" + location.getLatitude() + "," + location.getLongitude() + "&key=AIzaSyCke0pASXyPnnJR-GAAvN3Bz7GltgomfEk"));
-                                    tempSecondToDestinationToHome = tempDirectionSearchToHome.getJSONArray("routes").getJSONObject(0).getJSONArray("legs").getJSONObject(0).getJSONObject("duration").getInt("value");
-                                    calendarToHome = Calendar.getInstance();
+                                try {
+                                    JSONObject tempDirectionSearchToHome = httpGet.HttpPlaces(new URL("https://maps.googleapis.com/maps/api/directions/json?origin=place_id:" + Value.itineraryPlaceList.get(Value.itineraryPlaceList.size() - 1).placeID + "&destination=" + location.getLatitude() + "," + location.getLongitude() + "&key=AIzaSyCke0pASXyPnnJR-GAAvN3Bz7GltgomfEk"));
+                                    int tempSecondToDestinationToHome = tempDirectionSearchToHome.getJSONArray("routes").getJSONObject(0).getJSONArray("legs").getJSONObject(0).getJSONObject("duration").getInt("value");
+                                    Calendar calendarToHome = Calendar.getInstance();
                                     calendarToHome.setTime(Value.itineraryPlaceList.get(Value.itineraryPlaceList.size() - 1).departTime);
                                     calendarToHome.add(Calendar.SECOND, tempSecondToDestinationToHome);
-                                    //第一観光地から直帰する場合にかかる時間を記述
-                                    ifReturnArriveTime = calendarToHome.getTime();
-                                    ifReturnPolyline = tempDirectionSearchToHome.getJSONArray("routes").getJSONObject(0).getJSONObject("overview_polyline").getString("points");
-                                } else {
-                                    ifReturnArriveTime = tempReturnHomeTime;//取得した、家に帰る場合の到着時刻とポリラインを保持。ここで最後の観光地になった時にこの値を使う。
-                                    ifReturnPolyline = tempDirectionSearchToHome.getJSONArray("routes").getJSONObject(0).getJSONObject("overview_polyline").getString("points");
-                                }
-                            } catch (JSONException e) {
-                                e.printStackTrace();
-                                handler.post(new Runnable() {
-                                    @Override
-                                    public void run() {
-                                        Toast.makeText(MainActivity.getInstance(), "帰り道がありません", Toast.LENGTH_LONG).show();
+                                    //この観光地を見た後家に帰ったとして、家に着く時間
+                                    Date tempReturnHomeTime = calendarToHome.getTime();
+                                    Log.d("test:tempReturnHomeTime", tempReturnHomeTime.toString());
+                                    //到着時間と比較
+                                    if (Value.arriveTime.compareTo(tempReturnHomeTime) == -1) {//家にかえる場合、直前の観光地を消す。ここのifがtrueになるのは、第一候補地が近すぎて昼にすら行けなかった場合。
+                                        getBackHomeFlg = true;
+                                        if (Value.itineraryPlaceList.get(Value.itineraryPlaceList.size()-1).genre.equals("郷土料理店") == false && Value.itineraryPlaceList.get(Value.itineraryPlaceList.size()-1).genre.equals("その他（食べる）") == false && lunchFlg) {
+                                            //昼食場所を消去
+                                            Value.itineraryPlaceList.remove(Value.itineraryPlaceList.size() - 1);
+                                        }
+                                        //リクエストをスローし、第一観光地からまっすぐ家にかえる場合を算出する。
+                                        Log.d("test", Value.itineraryPlaceList.get(Value.itineraryPlaceList.size() - 1).placeID);
+                                        Log.d("test", location.toString());
+                                        tempDirectionSearchToHome = httpGet.HttpPlaces(new URL("https://maps.googleapis.com/maps/api/directions/json?origin=place_id:" + Value.itineraryPlaceList.get(Value.itineraryPlaceList.size() - 1).placeID + "&destination=" + location.getLatitude() + "," + location.getLongitude() + "&key=AIzaSyCke0pASXyPnnJR-GAAvN3Bz7GltgomfEk"));
+                                        tempSecondToDestinationToHome = tempDirectionSearchToHome.getJSONArray("routes").getJSONObject(0).getJSONArray("legs").getJSONObject(0).getJSONObject("duration").getInt("value");
+                                        calendarToHome = Calendar.getInstance();
+                                        calendarToHome.setTime(Value.itineraryPlaceList.get(Value.itineraryPlaceList.size() - 1).departTime);
+                                        calendarToHome.add(Calendar.SECOND, tempSecondToDestinationToHome);
+                                        //第一観光地から直帰する場合にかかる時間を記述
+                                        ifReturnArriveTime = calendarToHome.getTime();
+                                        ifReturnPolyline = tempDirectionSearchToHome.getJSONArray("routes").getJSONObject(0).getJSONObject("overview_polyline").getString("points");
+                                    } else {
+                                        ifReturnArriveTime = tempReturnHomeTime;//取得した、家に帰る場合の到着時刻とポリラインを保持。ここで最後の観光地になった時にこの値を使う。
+                                        ifReturnPolyline = tempDirectionSearchToHome.getJSONArray("routes").getJSONObject(0).getJSONObject("overview_polyline").getString("points");
                                     }
-                                });
-                            } catch (MalformedURLException e) {
-                                e.printStackTrace();
-                            }
+                                } catch (JSONException e) {
+                                    e.printStackTrace();
+                                    handler.post(new Runnable() {
+                                        @Override
+                                        public void run() {
+                                            Toast.makeText(MainActivity.getInstance(), "帰り道がありません", Toast.LENGTH_LONG).show();
+                                        }
+                                    });
+                                } catch (MalformedURLException e) {
+                                    e.printStackTrace();
+                                }
+
 //                            Log.d("test4",Value.itineraryPlaceList.get(2).departTime.toString());
 
 
@@ -884,8 +888,9 @@ public class MainActivity extends AppCompatActivity implements
                             }
 
 //**********************************しおりに載せる観光地は全て決定されたため、各観光地に対してDetail検索を行い写真とレストランのレート、地図を取得する
-                            for (int i = 0; i < Value.itineraryPlaceList.size(); i++) {
-                                Log.d("executing detail search", Value.itineraryPlaceList.get(i).name);
+                            for (int i = 1; i < Value.itineraryPlaceList.size()-1; i++) {
+                                Log.d("itiSize is",String.valueOf(Value.itineraryPlaceList.size()));
+                                Log.d("executing detail search", "i is"+String.valueOf(i)+" "+ Value.itineraryPlaceList.get(i).name);
                                 try {
                                     Bitmap mapsStaticsResult = null;
                                     if (i != 0) {
@@ -902,13 +907,13 @@ public class MainActivity extends AppCompatActivity implements
                                             rate_double = detailSearchResult.getJSONObject("result").getDouble("rating");
                                         }
                                         if (!detailSearchResult.getJSONObject("result").isNull("formatted_address")) {
-                                            tempExplainMessage = tempExplainMessage + "住所：" + detailSearchResult.getJSONObject("result").getString("formatted_address") + "\n";
+                                            tempExplainMessage = tempExplainMessage + "\n\n住所：" + detailSearchResult.getJSONObject("result").getString("formatted_address").substring(3+9,detailSearchResult.getJSONObject("result").getString("formatted_address").length()) + "\n";
                                         }
                                         if (!detailSearchResult.getJSONObject("result").isNull("formatted_phone_number")) {
                                             tempExplainMessage = tempExplainMessage + "電話番号：" + detailSearchResult.getJSONObject("result").getString("formatted_phone_number") + "\n";
                                         }
                                         if (!detailSearchResult.getJSONObject("result").isNull("website")) {
-                                            tempExplainMessage = tempExplainMessage + "url：" + detailSearchResult.getJSONObject("result").getString("website") + "\n";
+                                            tempExplainMessage = tempExplainMessage + "URL：" + detailSearchResult.getJSONObject("result").getString("website") + "\n";
                                         }
 
                                     }

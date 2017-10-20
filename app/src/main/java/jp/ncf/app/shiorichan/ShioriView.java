@@ -3,6 +3,7 @@ package jp.ncf.app.shiorichan;
 import android.app.Activity;
 import android.content.Context;
 import android.os.Bundle;
+import android.text.util.Linkify;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
@@ -50,16 +51,9 @@ public class ShioriView extends Activity {
         textView19.setText("名前 : しおり"); //
         if (Value.itineraryPlaceList.size() > 1) { // もし受け取ったルートの長さが2以上なら...
             ImageView imageView5 = (ImageView)v1.findViewById(R.id.imageView5); // 表紙の中央の画像
-            if(Value.itineraryPlaceList.get(1).image==null){
-                imageView5.setImageResource(R.mipmap.no_image); //
-            }else if(Value.itineraryPlaceList.get(1).rate){
-
-            }
 
             if(Value.itineraryPlaceList.get(1).image!=null) {
                 imageView5.setImageBitmap(Value.itineraryPlaceList.get(1).getImage()); //
-            }else{
-
             }
         } else{
             Log.d("from ShioriView.java : ","受け取ったスケジュールの場所の数が"+Value.itineraryPlaceList.size()+"個です");
@@ -199,6 +193,7 @@ public class ShioriView extends Activity {
             // 観光地の説明文
             TextView textView16 = (TextView) v3.findViewById(R.id.textView16);
             textView16.setText(Value.itineraryPlaceList.get(i).getExplainText());
+            Linkify.addLinks(textView16,Linkify.ALL);
 
             // 評価値の☆をつける
             RatingBar ratingBar = (RatingBar) v3.findViewById(R.id.ratingBar);
