@@ -2,12 +2,13 @@ package jp.ncf.app.shiorichan;
 
 import android.Manifest;
 import android.app.ProgressDialog;
-import android.app.TimePickerDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
+import android.content.res.Resources;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.location.Address;
 import android.location.Geocoder;
 import android.location.Location;
@@ -24,12 +25,8 @@ import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
-import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
-import android.widget.RadioButton;
-import android.widget.RadioGroup;
-import android.widget.TimePicker;
 import android.widget.Toast;
 
 import com.google.android.gms.appindexing.Action;
@@ -78,6 +75,7 @@ class Value {
     public static boolean neighborOrJapanFlg=false;
     public static Date departureTime=new Date();
     public static Date arriveTime=new Date();
+    public static double firstCandTrueRate
     // デフォルトは-1であるため，0以上であれば完全一致した観光地があると判断できる
 }
 
@@ -917,6 +915,12 @@ public class MainActivity extends AppCompatActivity implements
                                     Bitmap img_bitmap = null;
                                     if (detailSearchResult.getJSONObject("result").isNull("photos")) {
                                         Log.d("test", String.valueOf(i) + " is not have photo");
+                                        /*画像がない場合は県の画像を代わりに置く
+                                        Resources r=getResources();
+                                        if(prefStringToId(detailSearchResult.getJSONObject("result").getString("formatted_address"))!=0){
+                                            img_bitmap= BitmapFactory.decodeResource(r,prefStringToId(detailSearchResult.getJSONObject("result").getString("formatted_address")));
+                                        }
+                                        */
                                     } else {
                                         //観光地の写真が存在する場合は、ここでリクエストを送りBitmapを得る
                                         img_bitmap = httpBitmapGet.HttpPlaces(new URL("https://maps.googleapis.com/maps/api/place/photo?maxwidth=400&photoreference=" + detailSearchResult.getJSONObject("result").getJSONArray("photos").getJSONObject(0).getString("photo_reference") + "&key=AIzaSyCke0pASXyPnnJR-GAAvN3Bz7GltgomfEk"));
@@ -1676,90 +1680,98 @@ public class MainActivity extends AppCompatActivity implements
 
     }
     public int prefStringToId(String pref){
-        if(pref.equals("三重県")){
+        if(-1!=pref.indexOf("三重県")){
             return R.mipmap.mie;
-        }else if(pref.equals("京都府")){
+        }else if(-1!=pref.indexOf("京都府")){
             return R.mipmap.kyoto;
-        }else if(pref.equals("佐賀県")){
+        }else if(-1!=pref.indexOf("佐賀県")){
             return R.mipmap.saga;
-        }else if(pref.equals("兵庫県")){
+        }else if(-1!=pref.indexOf("兵庫県")){
             return R.mipmap.hyogo;
-        }else if(pref.equals("北海道")){
+        }else if(-1!=pref.indexOf("北海道")){
             return R.mipmap.hokkaido;
-        }else if(pref.equals("千葉県")){
+        }else if(-1!=pref.indexOf("千葉県")){
             return R.mipmap.chiba;
-        }else if(pref.equals("和歌山県")){
+        }else if(-1!=pref.indexOf("和歌山県")){
             return R.mipmap.wakayama;
-        }else if(pref.equals("埼玉県")){
+        }else if(-1!=pref.indexOf("埼玉県")){
             return R.mipmap.saitama;
-        }else if(pref.equals("大分県")){
+        }else if(-1!=pref.indexOf("大分県")){
             return R.mipmap.oita;
-        }else if(pref.equals("大阪府")){
+        }else if(-1!=pref.indexOf("大阪府")){
             return R.mipmap.osaka;
-        }else if(pref.equals("奈良県")){
+        }else if(-1!=pref.indexOf("奈良県")){
             return R.mipmap.nara;
-        }else if(pref.equals("宮城県")){
+        }else if(-1!=pref.indexOf("宮城県")){
             return R.mipmap.miyagi;
-        }else if(pref.equals("富山県")){
+        }else if(-1!=pref.indexOf("富山県")){
             return R.mipmap.toyama;
-        }else if(pref.equals("山口県")){
+        }else if(-1!=pref.indexOf("山口県")){
             return R.mipmap.yamaguchi;
-        }else if(pref.equals("山形県")){
+        }else if(-1!=pref.indexOf("山形県")){
             return R.mipmap.yamagata;
-        }else if(pref.equals("山梨県")){
+        }else if(-1!=pref.indexOf("山梨県")){
             return R.mipmap.yamanashi;
-        }else if(pref.equals("岐阜県")){
+        }else if(-1!=pref.indexOf("岐阜県")){
             return R.mipmap.gifu;
-        }else if(pref.equals("岡山県")){
+        }else if(-1!=pref.indexOf("岡山県")){
             return R.mipmap.okayama;
-        }else if(pref.equals("岩手県")){
+        }else if(-1!=pref.indexOf("岩手県")){
             return R.mipmap.iwate;
-        }else if(pref.equals("島根県")){
+        }else if(-1!=pref.indexOf("島根県")){
             return R.mipmap.shimane;
-        }else if(pref.equals("広島県")){
+        }else if(-1!=pref.indexOf("広島県")){
             return R.mipmap.hiroshima;
-        }else if(pref.equals("徳島県")){
+        }else if(-1!=pref.indexOf("徳島県")){
             return R.mipmap.tokushima;
-        }else if(pref.equals("愛媛県")){
+        }else if(-1!=pref.indexOf("愛媛県")){
             return R.mipmap.ehime;
-        }else if(pref.equals("愛知県")){
+        }else if(-1!=pref.indexOf("愛知県")){
             return R.mipmap.aichi;
-        }else if(pref.equals("新潟県")){
+        }else if(-1!=pref.indexOf("新潟県")){
             return R.mipmap.niigata;
-        }else if(pref.equals("東京都")){
+        }else if(-1!=pref.indexOf("東京都")){
             return R.mipmap.tokyo;
-        }else if(pref.equals("栃木県")){
+        }else if(-1!=pref.indexOf("栃木県")){
             return R.mipmap.tochigi;
-        }else if(pref.equals("沖縄県")){
+        }else if(-1!=pref.indexOf("沖縄県")){
             return R.mipmap.okinawa;
-        }else if(pref.equals("滋賀県")){
+        }else if(-1!=pref.indexOf("滋賀県")){
             return R.mipmap.shiga;
-        }else if(pref.equals("熊本県")){
+        }else if(-1!=pref.indexOf("熊本県")){
             return R.mipmap.kumamoto;
-        }else if(pref.equals("石川県")){
+        }else if(-1!=pref.indexOf("石川県")){
             return R.mipmap.ishikawa;
-        }else if(pref.equals("神奈川県")){
+        }else if(-1!=pref.indexOf("神奈川県")){
             return R.mipmap.kanagawa;
-        }else if(pref.equals("福井県")){
+        }else if(-1!=pref.indexOf("福井県")){
             return R.mipmap.fukui;
-        }else if(pref.equals("福岡県")){
+        }else if(-1!=pref.indexOf("福岡県")){
             return R.mipmap.fukuoka;
-        }else if(pref.equals("福島県")){
+        }else if(-1!=pref.indexOf("福島県")){
             return R.mipmap.fukushima;
-        }else if(pref.equals("秋田県")){
+        }else if(-1!=pref.indexOf("秋田県")){
             return R.mipmap.akita;
-        }else if(pref.equals("群馬県")){
+        }else if(-1!=pref.indexOf("群馬県")){
             return R.mipmap.gunma;
-        }else if(pref.equals("茨城県")){
+        }else if(-1!=pref.indexOf("茨城県")){
             return R.mipmap.ibaraki;
-        }else if(pref.equals("長崎県")){
+        }else if(-1!=pref.indexOf("長崎県")){
             return R.mipmap.nagasaki;
-        }else if(pref.equals("長野県")){
+        }else if(-1!=pref.indexOf("長野県")){
             return R.mipmap.nagano;
-        }else if(pref.equals("青森県")){
+        }else if(-1!=pref.indexOf("青森県")){
             return R.mipmap.aomori;
-        }else if(pref.equals("静岡県")){
+        }else if(-1!=pref.indexOf("静岡県")){
             return R.mipmap.shizuoka;
+        }else if(-1!=pref.indexOf("鹿児島県")){
+            return R.mipmap.kagoshima;
+        }else if(-1!=pref.indexOf("高知県")){
+            return R.mipmap.kouchi;
+        }else if(-1!=pref.indexOf("宮崎県")){
+            return R.mipmap.miyazaki;
+        }else if(-1!=pref.indexOf("鳥取県")){
+            return R.mipmap.tottori;
         }
         Log.e("test","prefStringToIdに県名がないです"+pref);
         return 0;
