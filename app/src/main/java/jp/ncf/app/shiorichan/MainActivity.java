@@ -127,6 +127,10 @@ public class MainActivity extends AppCompatActivity implements
 
 
 
+
+
+
+
 //        final int[] departureTime = {10,0};//(時間,分)の順に格納
 //        final int[] arriveTime = {20,0};//(時間,分)の順に格納
         /*
@@ -259,12 +263,7 @@ public class MainActivity extends AppCompatActivity implements
                 final boolean lunchFlg = sharedPreferences.getBoolean("lunchFlg", true);
 
 
-                String list_preference = sharedPreferences.getString("neighborOrJapanMode", "隣接県");
-                if(list_preference.equals("全国")){
-                    Value.neighborOrJapanFlg=true;
-                }else{
-                    Value.neighborOrJapanFlg=false;
-                }
+                Value.neighborOrJapanFlg = sharedPreferences.getBoolean("JapanOrNeighborFlg", false);
 
                 final String edittext_preference = sharedPreferences.getString("departurePlace", "");
                 Log.d("edit",edittext_preference);
@@ -934,8 +933,7 @@ public class MainActivity extends AppCompatActivity implements
                                             Value.itineraryPlaceList.get(i).placeID,
                                             Value.itineraryPlaceList.get(i).name,
                                             Value.itineraryPlaceList.get(i).genre,
-                                            Value.itineraryPlaceList.get(i).prefecture,
-                                            rate_double,
+                                            addressToPrefecture(detailSearchResult.getJSONObject("result").getString("formatted_address")),                                            rate_double,
                                             Value.itineraryPlaceList.get(i).lat,
                                             Value.itineraryPlaceList.get(i).lng,
                                             Value.itineraryPlaceList.get(i).distance,
@@ -1684,102 +1682,102 @@ public class MainActivity extends AppCompatActivity implements
         return null;
 
     }
-    public int prefStringToId(String pref){
+    public String addressToPrefecture(String pref){
         if(-1!=pref.indexOf("三重県")){
-            return R.mipmap.mie;
+            return "三重県";
         }else if(-1!=pref.indexOf("京都府")){
-            return R.mipmap.kyoto;
+            return "京都府";
         }else if(-1!=pref.indexOf("佐賀県")){
-            return R.mipmap.saga;
+            return "佐賀県";
         }else if(-1!=pref.indexOf("兵庫県")){
-            return R.mipmap.hyogo;
+            return "兵庫県";
         }else if(-1!=pref.indexOf("北海道")){
-            return R.mipmap.hokkaido;
+            return "北海道";
         }else if(-1!=pref.indexOf("千葉県")){
-            return R.mipmap.chiba;
+            return "千葉県";
         }else if(-1!=pref.indexOf("和歌山県")){
-            return R.mipmap.wakayama;
+            return "和歌山";
         }else if(-1!=pref.indexOf("埼玉県")){
-            return R.mipmap.saitama;
+            return "埼玉県";
         }else if(-1!=pref.indexOf("大分県")){
-            return R.mipmap.oita;
+            return "大分県";
         }else if(-1!=pref.indexOf("大阪府")){
-            return R.mipmap.osaka;
+            return "大阪府";
         }else if(-1!=pref.indexOf("奈良県")){
-            return R.mipmap.nara;
+            return "奈良県";
         }else if(-1!=pref.indexOf("宮城県")){
-            return R.mipmap.miyagi;
+            return "宮城県";
         }else if(-1!=pref.indexOf("富山県")){
-            return R.mipmap.toyama;
+            return "富山県";
         }else if(-1!=pref.indexOf("山口県")){
-            return R.mipmap.yamaguchi;
+            return "山口県";
         }else if(-1!=pref.indexOf("山形県")){
-            return R.mipmap.yamagata;
+            return "山形県";
         }else if(-1!=pref.indexOf("山梨県")){
-            return R.mipmap.yamanashi;
+            return "山梨県";
         }else if(-1!=pref.indexOf("岐阜県")){
-            return R.mipmap.gifu;
+            return "岐阜県";
         }else if(-1!=pref.indexOf("岡山県")){
-            return R.mipmap.okayama;
+            return "岡山県";
         }else if(-1!=pref.indexOf("岩手県")){
-            return R.mipmap.iwate;
+            return "岩手県";
         }else if(-1!=pref.indexOf("島根県")){
-            return R.mipmap.shimane;
+            return "島根県";
         }else if(-1!=pref.indexOf("広島県")){
-            return R.mipmap.hiroshima;
+            return "広島県";
         }else if(-1!=pref.indexOf("徳島県")){
-            return R.mipmap.tokushima;
+            return "徳島県";
         }else if(-1!=pref.indexOf("愛媛県")){
-            return R.mipmap.ehime;
+            return "愛媛県";
         }else if(-1!=pref.indexOf("愛知県")){
-            return R.mipmap.aichi;
+            return "愛知県";
         }else if(-1!=pref.indexOf("新潟県")){
-            return R.mipmap.niigata;
+            return "新潟県";
         }else if(-1!=pref.indexOf("東京都")){
-            return R.mipmap.tokyo;
+            return "東京都";
         }else if(-1!=pref.indexOf("栃木県")){
-            return R.mipmap.tochigi;
+            return "栃木県";
         }else if(-1!=pref.indexOf("沖縄県")){
-            return R.mipmap.okinawa;
+            return "沖縄県";
         }else if(-1!=pref.indexOf("滋賀県")){
-            return R.mipmap.shiga;
+            return "滋賀県";
         }else if(-1!=pref.indexOf("熊本県")){
-            return R.mipmap.kumamoto;
+            return "熊本県";
         }else if(-1!=pref.indexOf("石川県")){
-            return R.mipmap.ishikawa;
+            return "石川県";
         }else if(-1!=pref.indexOf("神奈川県")){
-            return R.mipmap.kanagawa;
+            return "神奈川県";
         }else if(-1!=pref.indexOf("福井県")){
-            return R.mipmap.fukui;
+            return "福井県";
         }else if(-1!=pref.indexOf("福岡県")){
-            return R.mipmap.fukuoka;
+            return "福岡県";
         }else if(-1!=pref.indexOf("福島県")){
-            return R.mipmap.fukushima;
+            return "福島県";
         }else if(-1!=pref.indexOf("秋田県")){
-            return R.mipmap.akita;
+            return "秋田県";
         }else if(-1!=pref.indexOf("群馬県")){
-            return R.mipmap.gunma;
+            return "群馬県";
         }else if(-1!=pref.indexOf("茨城県")){
-            return R.mipmap.ibaraki;
+            return "茨城県";
         }else if(-1!=pref.indexOf("長崎県")){
-            return R.mipmap.nagasaki;
+            return "長崎県";
         }else if(-1!=pref.indexOf("長野県")){
-            return R.mipmap.nagano;
+            return "長野県";
         }else if(-1!=pref.indexOf("青森県")){
-            return R.mipmap.aomori;
+            return "青森県";
         }else if(-1!=pref.indexOf("静岡県")){
-            return R.mipmap.shizuoka;
+            return "静岡県";
         }else if(-1!=pref.indexOf("鹿児島県")){
-            return R.mipmap.kagoshima;
+            return "鹿児島県";
         }else if(-1!=pref.indexOf("高知県")){
-            return R.mipmap.kouchi;
+            return "高知県";
         }else if(-1!=pref.indexOf("宮崎県")){
-            return R.mipmap.miyazaki;
+            return "宮崎県";
         }else if(-1!=pref.indexOf("鳥取県")){
-            return R.mipmap.tottori;
+            return "鳥取県";
         }
         Log.e("test","prefStringToIdに県名がないです"+pref);
-        return 0;
+        return "";
     }
 
     // ====== テキストのマッチング（部分一致）を判定するメソッド ======

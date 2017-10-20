@@ -25,12 +25,6 @@ public class MyPreferenceActivity extends PreferenceActivity implements TimePick
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         addPreferencesFromResource(R.xml.activity_settings);
-        //checkboxの初期値を動的に指定
-        CheckBoxPreference lunchFlgCheckPref=(CheckBoxPreference)findPreference("lunchFlg");
-        lunchFlgCheckPref.setChecked(true);
-        //edittextpreferenceの初期値を動的に指定
-        EditTextPreference editTextPref=(EditTextPreference)findPreference("departurePlace") ;
-        editTextPref.setText("");
 
         //timepickerはないため、preferenceからtimepickerを呼び出す。
         Preference departureTimePref = (Preference) findPreference("departureTime");

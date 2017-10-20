@@ -9,17 +9,18 @@
         android:key="arriveTime"
         android:title="到着時間" />
 
-        <ListPreference
-            android:key="neighborOrJapanMode"
-            android:title="全国・隣接県モード切り替え"
-            android:entries="@array/entries_list_preference"
-            android:entryValues="@array/entryvalues_list_preference"
-             />
+    <CheckBoxPreference
+        android:key="JapanOrNeighborFlg"
+        android:title="行き先の範囲を広げる"
+        android:summary="（入力したジャンル通りの場所が出ない時に試して下さい）"
+        android:defaultValue="false"
+        android:checked="false"
+        />
 
     <EditTextPreference
         android:key="departurePlace"
         android:title="出発地点変更"
-        android:defaultValue="_"
+        android:defaultValue=""
         />
     <CheckBoxPreference
         android:key="lunchFlg"
