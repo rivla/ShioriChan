@@ -1675,131 +1675,95 @@ public class MainActivity extends AppCompatActivity implements
         return null;
 
     }
-    /*
     public int prefStringToId(String pref){
         if(pref.equals("三重県")){
-            return R.mipmap.三重県;
+            return R.mipmap.mie;
         }else if(pref.equals("京都府")){
-            return R.mipmap.京都府;
+            return R.mipmap.kyoto;
         }else if(pref.equals("佐賀県")){
-            return R.mipmap.佐賀県;
+            return R.mipmap.saga;
         }else if(pref.equals("兵庫県")){
-            return R.mipmap.兵庫県;
+            return R.mipmap.hyogo;
         }else if(pref.equals("北海道")){
-            return R.mipmap.北海道;
+            return R.mipmap.hokkaido;
         }else if(pref.equals("千葉県")){
-            return R.mipmap.千葉県;
+            return R.mipmap.chiba;
         }else if(pref.equals("和歌山県")){
-            return R.mipmap.和歌山県;
+            return R.mipmap.wakayama;
         }else if(pref.equals("埼玉県")){
-            return R.mipmap.埼玉県;
+            return R.mipmap.saitama;
         }else if(pref.equals("大分県")){
-            return R.mipmap.大分県;
+            return R.mipmap.oita;
         }else if(pref.equals("大阪府")){
-            return R.mipmap.大阪府;
+            return R.mipmap.osaka;
         }else if(pref.equals("奈良県")){
-            return R.mipmap.奈良県;
+            return R.mipmap.nara;
         }else if(pref.equals("宮城県")){
-            return R.mipmap.宮城県;
+            return R.mipmap.miyagi;
         }else if(pref.equals("富山県")){
-            return R.mipmap.富山県;
+            return R.mipmap.toyama;
         }else if(pref.equals("山口県")){
-            return R.mipmap.山口県;
+            return R.mipmap.yamaguchi;
         }else if(pref.equals("山形県")){
-            return R.mipmap.山形県;
+            return R.mipmap.yamagata;
         }else if(pref.equals("山梨県")){
-            return R.mipmap.山梨県;
+            return R.mipmap.yamanashi;
         }else if(pref.equals("岐阜県")){
-            return R.mipmap.岐阜県;
+            return R.mipmap.gifu;
         }else if(pref.equals("岡山県")){
-            return R.mipmap.岡山県;
+            return R.mipmap.okayama;
         }else if(pref.equals("岩手県")){
-            return R.mipmap.岩手県;
+            return R.mipmap.iwate;
         }else if(pref.equals("島根県")){
-            return R.mipmap.島根県;
+            return R.mipmap.shimane;
         }else if(pref.equals("広島県")){
-            return R.mipmap.広島県;
+            return R.mipmap.hiroshima;
         }else if(pref.equals("徳島県")){
-            return R.mipmap.徳島県;
+            return R.mipmap.tokushima;
         }else if(pref.equals("愛媛県")){
-            return R.mipmap.愛媛県;
+            return R.mipmap.ehime;
         }else if(pref.equals("愛知県")){
-            return R.mipmap.愛知県;
+            return R.mipmap.aichi;
         }else if(pref.equals("新潟県")){
-            return R.mipmap.新潟県;
+            return R.mipmap.niigata;
         }else if(pref.equals("東京都")){
-            return R.mipmap.東京都;
+            return R.mipmap.tokyo;
         }else if(pref.equals("栃木県")){
-            return R.mipmap.栃木県;
+            return R.mipmap.tochigi;
         }else if(pref.equals("沖縄県")){
-            return R.mipmap.沖縄県;
+            return R.mipmap.okinawa;
         }else if(pref.equals("滋賀県")){
-            return R.mipmap.滋賀県;
+            return R.mipmap.shiga;
         }else if(pref.equals("熊本県")){
-            return R.mipmap.熊本県;
+            return R.mipmap.kumamoto;
         }else if(pref.equals("石川県")){
-            return R.mipmap.石川県;
+            return R.mipmap.ishikawa;
         }else if(pref.equals("神奈川県")){
-            return R.mipmap.神奈川県;
+            return R.mipmap.kanagawa;
         }else if(pref.equals("福井県")){
-            return R.mipmap.福井県;
+            return R.mipmap.fukui;
         }else if(pref.equals("福岡県")){
-            return R.mipmap.福岡県;
+            return R.mipmap.fukuoka;
         }else if(pref.equals("福島県")){
-            return R.mipmap.福島県;
+            return R.mipmap.fukushima;
         }else if(pref.equals("秋田県")){
-            return R.mipmap.秋田県;
+            return R.mipmap.akita;
         }else if(pref.equals("群馬県")){
-            return R.mipmap.群馬県;
+            return R.mipmap.gunma;
         }else if(pref.equals("茨城県")){
-            return R.mipmap.茨城県;
+            return R.mipmap.ibaraki;
         }else if(pref.equals("長崎県")){
-            return R.mipmap.長崎県;
+            return R.mipmap.nagasaki;
         }else if(pref.equals("長野県")){
-            return R.mipmap.長野県;
+            return R.mipmap.nagano;
         }else if(pref.equals("青森県")){
-            return R.mipmap.青森県;
+            return R.mipmap.aomori;
         }else if(pref.equals("静岡県")){
-            return R.mipmap.静岡県;
-        }else if(pref.equals("石川県")){
-            return R.mipmap.石川県;
-        }else if(pref.equals("石川県")){
-            return R.mipmap.石川県;
-        }else if(pref.equals("石川県")){
-            return R.mipmap.石川県;
-        }else if(pref.equals("石川県")){
-            return R.mipmap.石川県;
-        }else if(pref.equals("石川県")){
-            return R.mipmap.石川県;
-        }else if(pref.equals("石川県")){
-            return R.mipmap.石川県;
-        }else if(pref.equals("石川県")){
-            return R.mipmap.石川県;
-        }else if(pref.equals("石川県")){
-            return R.mipmap.石川県;
-        }else if(pref.equals("石川県")){
-            return R.mipmap.石川県;
-        }else if(pref.equals("石川県")){
-            return R.mipmap.石川県;
-        }else if(pref.equals("石川県")){
-            return R.mipmap.石川県;
-        }else if(pref.equals("石川県")){
-            return R.mipmap.石川県;
-        }else if(pref.equals("石川県")){
-            return R.mipmap.石川県;
-        }else if(pref.equals("石川県")){
-            return R.mipmap.石川県;
-        }else if(pref.equals("石川県")){
-            return R.mipmap.石川県;
-        }else if(pref.equals("石川県")){
-            return R.mipmap.石川県;
-        }else if(pref.equals("石川県")){
-            return R.mipmap.石川県;
+            return R.mipmap.shizuoka;
         }
         Log.e("test","prefStringToIdに県名がないです"+pref);
         return 0;
     }
-    */
 
     // ====== テキストのマッチング（部分一致）を判定するメソッド ======
     public boolean isMatch(String target, String word) {
