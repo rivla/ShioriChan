@@ -153,7 +153,7 @@ public class MainActivity extends AppCompatActivity implements
 
 //        Button shioriButton = (Button) findViewById(R.id.shioriButton);
         ImageButton startButton = (ImageButton) findViewById(R.id.startButton);
-        Button customButton=(Button)findViewById(R.id.customButton);
+        ImageButton customButton=(ImageButton)findViewById(R.id.imageButton);
 //        final Button departureTimeButton=(Button)findViewById(R.id.departureTimeButton);
 //        departureTimeButton.setText(String.format("%02d:%02d",Value.departureTime.getHours(),Value.departureTime.getMinutes()));
 //        final Button arriveTimeButton=(Button)findViewById(R.id.arriveTimeButton);

@@ -43,17 +43,6 @@
 
         </FrameLayout>
 
-        <ImageButton
-            android:id="@+id/startButton"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_column="0"
-            android:layout_gravity="bottom"
-            android:layout_row="1"
-            android:background="@null"
-            android:padding="30dp"
-            android:src="@mipmap/navigation_go_2" />
-
         <EditText
             android:id="@+id/editText"
             android:layout_width="wrap_content"
@@ -62,15 +51,49 @@
             android:background="@drawable/frame_style"
             android:hint="(例) 川, 神社, ロープウェイ など"
             android:textSize="30dp" />
-        <Button
-            android:id="@+id/customButton"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="設定"
-            />
 
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:gravity="left|bottom"
+            android:orientation="vertical">
 
+            <ImageButton
+                android:id="@+id/startButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_column="0"
+                android:layout_row="1"
+                android:background="@null"
+                android:src="@mipmap/navigation_go_2" />
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <ImageButton
+                    android:id="@+id/imageButton2"
+                    android:layout_width="64dp"
+                    android:layout_height="64dp"
+                    android:layout_weight="1"
+                    android:background="null"
+                    android:scaleType="fitXY"
+                    app:srcCompat="@mipmap/to_help" />
+
+                <ImageButton
+                    android:id="@+id/imageButton"
+                    android:layout_width="64dp"
+                    android:layout_height="64dp"
+                    android:layout_weight="1"
+                    android:background="null"
+                    android:scaleType="fitXY"
+                    app:srcCompat="@mipmap/to_option" />
+            </LinearLayout>
+
+        </LinearLayout>
 
 
     </FrameLayout>
+
 </LinearLayout>
