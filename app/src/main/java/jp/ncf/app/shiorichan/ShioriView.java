@@ -146,22 +146,29 @@ public class ShioriView extends Activity {
             ImageView mapImageView1 = (ImageView) v4.findViewById(R.id.mapImage1);
             mapImageView1.setImageBitmap(Value.itineraryPlaceList.get(0).mapImage);
             TextView mapImageText1=(TextView)v4.findViewById(R.id.mapImageText1);
-            mapImageText1.setText(Value.itineraryPlaceList.get(0).name+"\n↓\n"+Value.itineraryPlaceList.get(1).name);
+            mapImageText1.setText("S:"+Value.itineraryPlaceList.get(0).name+"\n↓\n"+"1:"+Value.itineraryPlaceList.get(1).name);
 
             ImageView mapImageView2 = (ImageView) v4.findViewById(R.id.mapImage2);
             mapImageView2.setImageBitmap(Value.itineraryPlaceList.get(Value.itineraryPlaceList.size()-1).mapImage);
             TextView mapImageText2=(TextView)v4.findViewById(R.id.mapImageText2);
-            mapImageText2.setText(Value.itineraryPlaceList.get(1).name+"\n↓\n"+Value.itineraryPlaceList.get(Value.itineraryPlaceList.size()-2).name);
+            mapImageText2.setText("1:"+Value.itineraryPlaceList.get(1).name+"\n↓\n"+String.valueOf(Value.itineraryPlaceList.size()-2)+":"+Value.itineraryPlaceList.get(Value.itineraryPlaceList.size()-2).name);
 
             ImageView mapImageView3 = (ImageView) v4.findViewById(R.id.mapImage3);
             mapImageView3.setImageBitmap(Value.itineraryPlaceList.get(Value.itineraryPlaceList.size()-2).mapImage);
             TextView mapImageText3=(TextView)v4.findViewById(R.id.mapImageText3);
-            mapImageText3.setText(Value.itineraryPlaceList.get(Value.itineraryPlaceList.size()-2).name+"\n↓\n"+Value.itineraryPlaceList.get(Value.itineraryPlaceList.size()-1).name);
+            mapImageText3.setText(String.valueOf(Value.itineraryPlaceList.size()-2)+":"+Value.itineraryPlaceList.get(Value.itineraryPlaceList.size()-2).name+"\n↓\n"+"G:"+Value.itineraryPlaceList.get(Value.itineraryPlaceList.size()-1).name);
 
+            //地図の下に表示する、観光地リストの表示
             TextView mapPlaceText=(TextView)v4.findViewById(R.id.mapPlaceText);
             String tempString="";
             for(int i=0;i<Value.itineraryPlaceList.size();i++){
-                tempString=tempString+String.valueOf(i)+":"+Value.itineraryPlaceList.get(i).name+"\n";
+                if(i==0){
+                    tempString=tempString+"S:"+Value.itineraryPlaceList.get(i).name+"\n";
+                }else if(i==Value.itineraryPlaceList.size()-1){
+                    tempString=tempString+"G:"+Value.itineraryPlaceList.get(i).name+"\n";
+                }else{
+                    tempString=tempString+String.valueOf(i)+":"+Value.itineraryPlaceList.get(i).name+"\n";
+                }
             }
             mapPlaceText.setText(tempString);
         }

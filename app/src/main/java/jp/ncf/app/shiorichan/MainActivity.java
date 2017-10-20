@@ -1847,7 +1847,13 @@ public class MainActivity extends AppCompatActivity implements
             //描画するマーカーの設定。
             String markers="";
             for (int i = startNumber; i <= endNumber; i++) {
-                markers=markers+"markers=color:purple|label:"+String.valueOf(i)+"|"+String.valueOf(Value.itineraryPlaceList.get(i).lat)+","+String.valueOf(Value.itineraryPlaceList.get(i).lng)+"&";
+                if(i==0){
+                    markers=markers+"markers=color:purple|label:S|"+String.valueOf(Value.itineraryPlaceList.get(i).lat)+","+String.valueOf(Value.itineraryPlaceList.get(i).lng)+"&";
+                }else if(i==Value.itineraryPlaceList.size()-1){
+                    markers=markers+"markers=color:purple|label:G|"+String.valueOf(Value.itineraryPlaceList.get(i).lat)+","+String.valueOf(Value.itineraryPlaceList.get(i).lng)+"&";
+                }else{
+                    markers=markers+"markers=color:purple|label:"+String.valueOf(i)+"|"+String.valueOf(Value.itineraryPlaceList.get(i).lat)+","+String.valueOf(Value.itineraryPlaceList.get(i).lng)+"&";
+                }
             }
             //directionAPIにリクエストを送り、ポリラインを取得。
             JSONObject tempDirectionSearch = httpGet.HttpPlaces(new URL("https://maps.googleapis.com/maps/api/directions/json?" +
