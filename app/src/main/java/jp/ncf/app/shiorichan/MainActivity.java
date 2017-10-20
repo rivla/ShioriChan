@@ -147,6 +147,7 @@ public class MainActivity extends AppCompatActivity implements
         progressDialog = new ProgressDialog(this);//読み込み中表示,// 初期設定
         progressDialog.setTitle("初期値");
         progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+        progressDialog.setCancelable(false);
 
 
 
@@ -258,10 +259,10 @@ public class MainActivity extends AppCompatActivity implements
                 SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
 
                 //昼食が必要かどうかのフラグ
-                final boolean lunchFlg = sharedPreferences.getBoolean("lunchFlg", false);
+                final boolean lunchFlg = sharedPreferences.getBoolean("lunchFlg", true);
 
 
-                String list_preference = sharedPreferences.getString("neighborOrJapanMode", "unknown");
+                String list_preference = sharedPreferences.getString("neighborOrJapanMode", "隣接県");
                 if(list_preference.equals("全国")){
                     Value.neighborOrJapanFlg=true;
                 }else{
@@ -403,6 +404,9 @@ public class MainActivity extends AppCompatActivity implements
                             }
                         }
 
+                        if(Value.error_flag){
+                            progressDialog.dismiss();//読み込み中表示、終了
+                        }
                         // 入力エラーが発生していなければ処理を実行する
                         if (Value.error_flag == false) {
 
@@ -547,7 +551,6 @@ public class MainActivity extends AppCompatActivity implements
                                             minDistanceNumber = i;
                                         }
                                     }
-
                                     //一番初めに訪れる観光地決定、旅程リストに追加
                                     Value.itineraryPlaceList.add(firstCandsList.get(minDistanceNumber));
                                     //Value.itineraryPlaceList.add(firstCandsList.get(0));
@@ -895,21 +898,19 @@ public class MainActivity extends AppCompatActivity implements
                                     JSONObject detailSearchResult = httpGet.HttpPlaces(new URL("https://maps.googleapis.com/maps/api/place/details/json?placeid=" + Value.itineraryPlaceList.get(i).placeID + "&key=AIzaSyCke0pASXyPnnJR-GAAvN3Bz7GltgomfEk&language=ja"));
                                     double rate_double = 0;
                                     String tempExplainMessage = Value.itineraryPlaceList.get(i).explainText;
-                                    if (Value.itineraryPlaceList.get(i).genre.equals("レストラン")) {
-                                        //レストランは詳細検索を行っておらず、レート値がないためここで得る
-                                        if (!detailSearchResult.isNull("result")) {
-                                            if (!detailSearchResult.getJSONObject("result").isNull("rating")) {
-                                                rate_double = detailSearchResult.getJSONObject("result").getDouble("rating");
-                                            }
-                                            if (!detailSearchResult.getJSONObject("result").isNull("formatted_address")) {
-                                                tempExplainMessage = tempExplainMessage + "住所：" + detailSearchResult.getJSONObject("result").getString("formatted_address") + "\n";
-                                            }
-                                            if (!detailSearchResult.getJSONObject("result").isNull("formatted_phone_number")) {
-                                                tempExplainMessage = tempExplainMessage + "電話番号：" + detailSearchResult.getJSONObject("result").getString("formatted_phone_number") + "\n";
-                                            }
-                                            if (!detailSearchResult.getJSONObject("result").isNull("website")) {
-                                                tempExplainMessage = tempExplainMessage + "url：" + detailSearchResult.getJSONObject("result").getString("website") + "\n";
-                                            }
+                                    //レストランの評価値がなかったり、第一候補地でレビュー値を変更しているのでここで読み込む
+                                    if (!detailSearchResult.isNull("result")) {
+                                        if (!detailSearchResult.getJSONObject("result").isNull("rating")) {
+                                            rate_double = detailSearchResult.getJSONObject("result").getDouble("rating");
+                                        }
+                                        if (!detailSearchResult.getJSONObject("result").isNull("formatted_address")) {
+                                            tempExplainMessage = tempExplainMessage + "住所：" + detailSearchResult.getJSONObject("result").getString("formatted_address") + "\n";
+                                        }
+                                        if (!detailSearchResult.getJSONObject("result").isNull("formatted_phone_number")) {
+                                            tempExplainMessage = tempExplainMessage + "電話番号：" + detailSearchResult.getJSONObject("result").getString("formatted_phone_number") + "\n";
+                                        }
+                                        if (!detailSearchResult.getJSONObject("result").isNull("website")) {
+                                            tempExplainMessage = tempExplainMessage + "url：" + detailSearchResult.getJSONObject("result").getString("website") + "\n";
                                         }
 
                                     }
@@ -925,7 +926,7 @@ public class MainActivity extends AppCompatActivity implements
                                             Value.itineraryPlaceList.get(i).name,
                                             Value.itineraryPlaceList.get(i).genre,
                                             Value.itineraryPlaceList.get(i).prefecture,
-                                            Value.itineraryPlaceList.get(i).rate,
+                                            rate_double,
                                             Value.itineraryPlaceList.get(i).lat,
                                             Value.itineraryPlaceList.get(i).lng,
                                             Value.itineraryPlaceList.get(i).distance,
@@ -1674,6 +1675,131 @@ public class MainActivity extends AppCompatActivity implements
         return null;
 
     }
+    /*
+    public int prefStringToId(String pref){
+        if(pref.equals("三重県")){
+            return R.mipmap.三重県;
+        }else if(pref.equals("京都府")){
+            return R.mipmap.京都府;
+        }else if(pref.equals("佐賀県")){
+            return R.mipmap.佐賀県;
+        }else if(pref.equals("兵庫県")){
+            return R.mipmap.兵庫県;
+        }else if(pref.equals("北海道")){
+            return R.mipmap.北海道;
+        }else if(pref.equals("千葉県")){
+            return R.mipmap.千葉県;
+        }else if(pref.equals("和歌山県")){
+            return R.mipmap.和歌山県;
+        }else if(pref.equals("埼玉県")){
+            return R.mipmap.埼玉県;
+        }else if(pref.equals("大分県")){
+            return R.mipmap.大分県;
+        }else if(pref.equals("大阪府")){
+            return R.mipmap.大阪府;
+        }else if(pref.equals("奈良県")){
+            return R.mipmap.奈良県;
+        }else if(pref.equals("宮城県")){
+            return R.mipmap.宮城県;
+        }else if(pref.equals("富山県")){
+            return R.mipmap.富山県;
+        }else if(pref.equals("山口県")){
+            return R.mipmap.山口県;
+        }else if(pref.equals("山形県")){
+            return R.mipmap.山形県;
+        }else if(pref.equals("山梨県")){
+            return R.mipmap.山梨県;
+        }else if(pref.equals("岐阜県")){
+            return R.mipmap.岐阜県;
+        }else if(pref.equals("岡山県")){
+            return R.mipmap.岡山県;
+        }else if(pref.equals("岩手県")){
+            return R.mipmap.岩手県;
+        }else if(pref.equals("島根県")){
+            return R.mipmap.島根県;
+        }else if(pref.equals("広島県")){
+            return R.mipmap.広島県;
+        }else if(pref.equals("徳島県")){
+            return R.mipmap.徳島県;
+        }else if(pref.equals("愛媛県")){
+            return R.mipmap.愛媛県;
+        }else if(pref.equals("愛知県")){
+            return R.mipmap.愛知県;
+        }else if(pref.equals("新潟県")){
+            return R.mipmap.新潟県;
+        }else if(pref.equals("東京都")){
+            return R.mipmap.東京都;
+        }else if(pref.equals("栃木県")){
+            return R.mipmap.栃木県;
+        }else if(pref.equals("沖縄県")){
+            return R.mipmap.沖縄県;
+        }else if(pref.equals("滋賀県")){
+            return R.mipmap.滋賀県;
+        }else if(pref.equals("熊本県")){
+            return R.mipmap.熊本県;
+        }else if(pref.equals("石川県")){
+            return R.mipmap.石川県;
+        }else if(pref.equals("神奈川県")){
+            return R.mipmap.神奈川県;
+        }else if(pref.equals("福井県")){
+            return R.mipmap.福井県;
+        }else if(pref.equals("福岡県")){
+            return R.mipmap.福岡県;
+        }else if(pref.equals("福島県")){
+            return R.mipmap.福島県;
+        }else if(pref.equals("秋田県")){
+            return R.mipmap.秋田県;
+        }else if(pref.equals("群馬県")){
+            return R.mipmap.群馬県;
+        }else if(pref.equals("茨城県")){
+            return R.mipmap.茨城県;
+        }else if(pref.equals("長崎県")){
+            return R.mipmap.長崎県;
+        }else if(pref.equals("長野県")){
+            return R.mipmap.長野県;
+        }else if(pref.equals("青森県")){
+            return R.mipmap.青森県;
+        }else if(pref.equals("静岡県")){
+            return R.mipmap.静岡県;
+        }else if(pref.equals("石川県")){
+            return R.mipmap.石川県;
+        }else if(pref.equals("石川県")){
+            return R.mipmap.石川県;
+        }else if(pref.equals("石川県")){
+            return R.mipmap.石川県;
+        }else if(pref.equals("石川県")){
+            return R.mipmap.石川県;
+        }else if(pref.equals("石川県")){
+            return R.mipmap.石川県;
+        }else if(pref.equals("石川県")){
+            return R.mipmap.石川県;
+        }else if(pref.equals("石川県")){
+            return R.mipmap.石川県;
+        }else if(pref.equals("石川県")){
+            return R.mipmap.石川県;
+        }else if(pref.equals("石川県")){
+            return R.mipmap.石川県;
+        }else if(pref.equals("石川県")){
+            return R.mipmap.石川県;
+        }else if(pref.equals("石川県")){
+            return R.mipmap.石川県;
+        }else if(pref.equals("石川県")){
+            return R.mipmap.石川県;
+        }else if(pref.equals("石川県")){
+            return R.mipmap.石川県;
+        }else if(pref.equals("石川県")){
+            return R.mipmap.石川県;
+        }else if(pref.equals("石川県")){
+            return R.mipmap.石川県;
+        }else if(pref.equals("石川県")){
+            return R.mipmap.石川県;
+        }else if(pref.equals("石川県")){
+            return R.mipmap.石川県;
+        }
+        Log.e("test","prefStringToIdに県名がないです"+pref);
+        return 0;
+    }
+    */
 
     // ====== テキストのマッチング（部分一致）を判定するメソッド ======
     public boolean isMatch(String target, String word) {

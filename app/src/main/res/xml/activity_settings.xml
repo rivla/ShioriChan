@@ -23,7 +23,7 @@
         />
     <CheckBoxPreference
         android:key="lunchFlg"
-        android:title="昼食の場所を提案する"
+        android:title="食事の場所を提案する"
         android:defaultValue="true"
         />
 </PreferenceScreen>
