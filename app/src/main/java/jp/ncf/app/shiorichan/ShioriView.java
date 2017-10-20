@@ -27,7 +27,7 @@ public class ShioriView extends Activity {
     //フリックのＸ位置
     private float X,firstX;
     // フリックの遊び部分（最低限移動しないといけない距離）
-    private float adjust = 100;
+    private float adjust = 150;
 
 
     @Override
