@@ -20,8 +20,8 @@
             android:src="@mipmap/have_a_nice_trip" />
 
         <FrameLayout
-            android:layout_width="320dp"
-            android:layout_height="160dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
             android:layout_gravity="bottom|right"
             android:layout_margin="10dp"
             android:background="@mipmap/waku2">
