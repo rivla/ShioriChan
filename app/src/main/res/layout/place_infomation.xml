@@ -30,7 +30,6 @@
             android:layout_height="match_parent"
             android:orientation="vertical">
 
-            <!-- 観光地の画像、「評価」、レーティングの表示場所のレイアウト -->
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -41,29 +40,33 @@
                     android:layout_width="200dp"
                     android:layout_height="200dp"
                     android:layout_margin="10dp"
+                    android:layout_weight="2"
+                    android:scaleType="centerInside"
                     android:src="@mipmap/no_image" />
 
                 <LinearLayout
                     android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
+                    android:layout_height="match_parent"
                     android:layout_weight="1"
                     android:orientation="vertical">
 
                     <TextView
                         android:id="@+id/textView14"
                         android:layout_width="match_parent"
-                        android:layout_height="50dp"
-                        android:layout_weight="1"
+                        android:layout_height="wrap_content"
                         android:layout_margin="10dp"
+                        android:layout_weight="0.5"
+                        android:gravity="center"
                         android:text="みんなの評価"
-                        android:textSize="40dp" />
+                        android:textSize="20dp" />
 
                     <RatingBar
                         android:id="@+id/ratingBar"
                         android:layout_width="wrap_content"
-                        android:layout_height="50dp"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
                         android:layout_margin="10dp"
-                        android:layout_weight="1"
+                        android:layout_weight="0.1"
                         android:isIndicator="true"
                         android:numStars="5"
                         android:rating="3.5"
@@ -73,7 +76,6 @@
 
             </LinearLayout>
 
-            <!-- 観光地の名称 -->
             <TextView
                 android:id="@+id/textView15"
                 android:layout_width="match_parent"
@@ -81,29 +83,21 @@
                 android:text="textView15"
                 android:textSize="40dp" />
 
-            <!-- 観光地の情報 WebViewからの情報を反映？ -->
-            <ImageView
-                android:id="@+id/imageView2"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                app:srcCompat="@mipmap/line_simple01_" />
-
             <ScrollView
+                android:id="@+id/explainTextScroll"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:id="@+id/explainTextScroll">
+                android:layout_height="match_parent">
+
                 <TextView
                     android:id="@+id/textView16"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:text="textView16"
-                    android:textSize="30dp" />
+                    android:textSize="25dp" />
             </ScrollView>
-            <Space
-                android:layout_width="match_parent"
-                android:layout_height="match_parent" />
 
         </LinearLayout>
+
 
     </FrameLayout>
 

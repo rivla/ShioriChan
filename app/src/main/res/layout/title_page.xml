@@ -104,7 +104,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:scaleType="fitXY"
-                        app:srcCompat="@mipmap/line_simple05_A" />
+                        app:srcCompat="@mipmap/line_simple05_a" />
 
                     <FrameLayout
                         android:layout_width="wrap_content"
