@@ -108,7 +108,7 @@ public class MainActivity extends AppCompatActivity implements
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
         requestWindowFeature(Window.FEATURE_NO_TITLE);
 
-        setContentView(R.layout.title_page);
+        setContentView(new ImageResizeView(this, R.layout.title_page));
 
 
         //googleAPI(開始時座標取得)のインスタンスの作成
