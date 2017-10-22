@@ -2,6 +2,8 @@ package jp.ncf.app.shiorichan;
 
 import android.app.Activity;
 import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.text.util.Linkify;
 import android.util.Log;
