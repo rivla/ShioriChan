@@ -22,82 +22,126 @@
     -->
     <FrameLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:padding="60dp">
+        android:layout_height="match_parent">
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:orientation="vertical">
 
+            <Space
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="1" />
+
             <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_heigth="match_parent"
-                android:orientation="horizontal"
-                android:layout_weight="0.5">
+                android:layout_height="0dp"
+                android:layout_weight="10"
+                android:orientation="horizontal">
 
-                <ImageView
-                    android:id="@+id/imageView3"
-                    android:layout_width="wrap_content"
-                    android:layout_height="0dp"
-                    android:layout_margin="10dp"
-                    android:layout_weight="1"
-                    android:scaleType="centerInside"
-                    android:src="@mipmap/no_image" />
+                <Space
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1" />
 
                 <LinearLayout
-                    android:layout_width="match_parent"
+                    android:layout_width="0dp"
                     android:layout_height="match_parent"
-                    android:layout_weight="1"
+                    android:layout_gravity="center"
+                    android:layout_weight="9"
                     android:orientation="vertical">
 
-                    <TextView
-                        android:id="@+id/textView14"
-                        android:layout_width="wrap_content"
+                    <FrameLayout
+                        android:layout_width="match_parent"
                         android:layout_height="0dp"
-                        android:layout_gravity="center"
-                        android:layout_weight="1"
-                        android:gravity="center"
-                        android:text="みんなの評価"
-                        android:textSize="20dp" />
+                        android:layout_weight="0.6">
 
-                    <RatingBar
-                        android:id="@+id/ratingBar"
-                        android:layout_width="wrap_content"
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:layout_heigth="match_parent"
+                            android:orientation="horizontal">
+
+                            <ImageView
+                                android:id="@+id/imageView3"
+                                android:layout_width="0dp"
+                                android:layout_height="match_parent"
+                                android:layout_weight="1"
+                                android:scaleType="fitCenter"
+                                android:src="@mipmap/no_image" />
+
+                            <LinearLayout
+                                android:layout_width="0dp"
+                                android:layout_height="match_parent"
+                                android:layout_weight="1.3"
+                                android:orientation="vertical">
+
+                                <TextView
+                                    android:id="@+id/textView14"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="0dp"
+                                    android:layout_weight="1"
+                                    android:gravity="center"
+                                    android:text="みんなの評価"
+                                    android:textSize="30dp" />
+
+                                <RatingBar
+                                    android:id="@+id/ratingBar"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="0dp"
+                                    android:layout_gravity="center"
+                                    android:layout_weight="1"
+                                    android:isIndicator="true"
+                                    android:numStars="5"
+                                    android:rating="3.5"
+                                    android:stepSize="0.5" />
+
+                                <Space
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:layout_weight="1" />
+
+                            </LinearLayout>
+                        </LinearLayout>
+
+                    </FrameLayout>
+
+                    <TextView
+                        android:id="@+id/textView15"
+                        android:layout_width="match_parent"
                         android:layout_height="0dp"
-                        android:layout_gravity="center"
-                        android:layout_weight="1"
-                        android:isIndicator="true"
-                        android:numStars="5"
-                        android:rating="3.5"
-                        android:stepSize="0.5" />
+                        android:layout_weight="0.2"
+                        android:text="textView15"
+                        android:textSize="40dp" />
+
+                    <ScrollView
+                        android:id="@+id/explainTextScroll"
+                        android:layout_width="match_parent"
+                        android:layout_height="0dp"
+                        android:layout_weight="1">
+
+                        <TextView
+                            android:id="@+id/textView16"
+                            android:layout_width="match_parent"
+                            android:layout_height="0dp"
+                            android:text="textView16"
+                            android:textSize="25dp" />
+                    </ScrollView>
 
                 </LinearLayout>
 
+                <Space
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1" />
+
             </LinearLayout>
 
-            <TextView
-                android:id="@+id/textView15"
+            <Space
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
-                android:text="textView15"
-                android:textSize="40dp"
-                android:layout_weight="0.2"/>
-
-            <ScrollView
-                android:id="@+id/explainTextScroll"
-                android:layout_width="match_parent"
-                android:layout_height="0dp"
-                android:layout_weight="1">
-
-                <TextView
-                    android:id="@+id/textView16"
-                    android:layout_width="match_parent"
-                    android:layout_height="0dp"
-                    android:text="textView16"
-                    android:textSize="25dp" />
-            </ScrollView>
+                android:layout_weight="1" />
 
         </LinearLayout>
 
