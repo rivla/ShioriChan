@@ -341,7 +341,6 @@ public class MainActivity extends AppCompatActivity implements
         startButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Log.d("debug",fukidashiText.getText().toString());
                 //preferenceで設定されたデータを受け取る
                 SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
 
