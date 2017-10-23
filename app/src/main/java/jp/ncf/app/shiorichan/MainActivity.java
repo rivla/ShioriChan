@@ -165,9 +165,9 @@ public class MainActivity extends AppCompatActivity implements
         final EditText editText = (EditText)findViewById(R.id.editText);        // EditTextオブジェクトを取得
 //        final RadioGroup prefRadioGroup=(RadioGroup) findViewById(R.id.PrefRadioGroup);
 //        prefRadioGroup.check(R.id.neighborRadio);//ラジオボタンを予めチェック
-        ResizeTextView fukidashiText=(ResizeTextView)findViewById(R.id.textView21);
-        fukidashiText.setModelText("気になるジャンルを教えてね！");
-        fukidashiText.setText("気になるジャンルを教えてね！\\n動物が見たいなら「動物園」, 歴史に興味があるなら「神社」って入れてくれればOKよ！\\n私が旅のしおりを作ってあげるわ！");
+//        ResizeTextView fukidashiText=(ResizeTextView)findViewById(R.id.textView21);
+//        fukidashiText.setModelText("気になるジャンルを教えてね！");
+//        fukidashiText.setText("気になるジャンルを教えてね！\\n動物が見たいなら「動物園」, 歴史に興味があるなら「神社」って入れてくれればOKよ！\\n私が旅のしおりを作ってあげるわ！");
 
         //キーボード表示を制御するためのオブジェクト
         inputMethodManager =  (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
