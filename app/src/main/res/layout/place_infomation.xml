@@ -73,7 +73,7 @@
                             <LinearLayout
                                 android:layout_width="0dp"
                                 android:layout_height="match_parent"
-                                android:layout_weight="1.5"
+                                android:layout_weight="2"
                                 android:orientation="vertical">
 
                                 <TextView
@@ -85,21 +85,25 @@
                                     android:text="みんなの評価"
                                     android:textSize="30dp" />
 
-                                <RatingBar
-                                    android:id="@+id/ratingBar"
-                                    android:layout_width="wrap_content"
+                                <FrameLayout
+                                    android:layout_width="match_parent"
                                     android:layout_height="0dp"
-                                    android:layout_gravity="center"
-                                    android:layout_weight="1"
-                                    android:isIndicator="true"
-                                    android:numStars="5"
-                                    android:rating="3.5"
-                                    android:stepSize="0.5" />
+                                    android:layout_weight="1">
+
+                                    <RatingBar
+                                        android:id="@+id/ratingBar"
+                                        style="@style/Widget.AppCompat.RatingBar.Indicator"
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:layout_gravity="center"
+                                        android:numStars="5"
+                                        android:rating="3.5"
+                                        android:stepSize="0.5" />
+                                </FrameLayout>
 
                                 <Space
                                     android:layout_width="match_parent"
-                                    android:layout_height="wrap_content"
-                                    android:layout_weight="1.5" />
+                                    android:layout_height="wrap_content" />
 
                             </LinearLayout>
                         </LinearLayout>
