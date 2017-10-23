@@ -61,7 +61,9 @@ class Value {
     public static double lng = 0.0;//デバッグアクティビティでのみ使っている変数なので、そちらがいらなくなったら消す
     public static String next_page_token = null;//デバッグアクティビティでのみ使っている変数なので、そちらがいらなくなったら消す
     public static String genre = "";
+    public static double genre_sim = 0.0;
     public static ArrayList<String> genre_list = new ArrayList(); // ジャンルリスト
+    public static ArrayList genre_sim_list = new ArrayList(); // ジャンルの類似度リスト
     public static ArrayList<SpotStructure> itineraryPlaceList=new ArrayList<SpotStructure>();
     public static String nowPrefecture=null;
     public static String input_text = null; // 自由テキスト入力文字列
@@ -361,28 +363,28 @@ public class MainActivity extends AppCompatActivity implements
                                 // 自由テキストが辞書に登録されている場合の処理
                                 try {
                                     // 自由テキストに対応するジャンル名のリストを取得する
-                                    JSONArray genre_list = Value.pair_json.getJSONArray(Value.input_list.get(i));
+                                    JSONArray genre_sim_json_list = Value.pair_json.getJSONArray(Value.input_list.get(i));
 
-                                    // ジャンルが１つであれば決定
-                                    if (genre_list.length() == 1) {
-                                        Value.genre = (String) genre_list.get(0);
-                                    }
-                                    // ジャンルが複数ある場合はランダムで1つ選択する
-                                    else {
-                                        // 乱数を発生する
-                                        Random rand = new Random();
-                                        int rand_n = rand.nextInt(genre_list.length());
-                                        Value.genre = (String) genre_list.get(rand_n);
-                                        for(int j=0;j<genre_list.length();j++){
-                                            if(genre_list.get(j).equals(Value.input_list.get(i))){
-                                                Value.genre=(String)genre_list.get(j);
-                                            }
-                                        }
-                                    }
+                                    // ジャンルを決定する
+                                    Value.genre = (String) genre_sim_json_list.get(0);
+                                    Value.genre_sim = (double) genre_sim_json_list.get(1);
+//                                    // ジャンルが複数ある場合はランダムで1つ選択する
+//                                    else {
+//                                        // 乱数を発生する
+//                                        Random rand = new Random();
+//                                        int rand_n = rand.nextInt(genre_list.length());
+//                                        Value.genre = (String) genre_list.get(rand_n);
+//                                        for(int j=0;j<genre_list.length();j++){
+//                                            if(genre_list.get(j).equals(Value.input_list.get(i))){
+//                                                Value.genre=(String)genre_list.get(j);
+//                                            }
+//                                        }
+//                                    }
                                     // 出力確認
-                                    Log.d("genre result", Value.genre);
+                                    Log.d("genre result", Value.genre + "," + String.valueOf(Value.genre_sim));
                                     // ジャンルリストにジャンルを格納する
                                     Value.genre_list.add(Value.genre);
+                                    Value.genre_sim_list.add(Value.genre_sim);
 
                                 } catch (JSONException e) {
                                     // 入力テキストが辞書に登録されていなかった場合
@@ -458,35 +460,44 @@ public class MainActivity extends AppCompatActivity implements
                                         double rate_double = Value.spots_json.getJSONArray("spots").getJSONObject(i).getDouble("rating");
                                         double lat_double = Value.spots_json.getJSONArray("spots").getJSONObject(i).getDouble("lat");
                                         double lng_double = Value.spots_json.getJSONArray("spots").getJSONObject(i).getDouble("lng");
+                                        double name_length = Value.spots_json.getJSONArray("spots").getJSONObject(i).getDouble("name_length");
+                                        double explain_length = Value.spots_json.getJSONArray("spots").getJSONObject(i).getDouble("explain_length");
 
+                                        // ====== レビューの平均点を用いた評価値 ======
                                         rate_double = rate_double / 5.0; // 最大で1.0になるように正規化する
-                                        // ====== ジャンルとのマッチング ======
+
+                                        // ====== ジャンルとの類似度を用いた評価値 ======
                                         double match_genre_double = 0.0;
                                         for (int j = 0; j < Value.genre_list.size(); j++) {
                                             if (genre_str.equals(Value.genre_list.get(j))) {
-                                                match_genre_double += 1.0;
+                                                match_genre_double += (double) Value.genre_sim_list.get(j);
                                             }
                                         }
 
                                         double match_name_double = 0.0;
                                         double match_explain_double = 0.0;
                                         for (int j = 0; j < Value.input_list.size(); j++) {
-                                            // ====== 自由テキストと観光地名のマッチング ======
-                                            if (isMatch(name_str, Value.input_list.get(j)) == true) {
-                                                match_name_double += 1.0;
-                                            }
+                                            // ====== 自由テキストと観光地名の正規化TFを用いた評価値 ======
+                                            double match_name_count = (double) isCount(name_str, Value.input_list.get(j));
+                                            match_name_count = match_name_count / name_length;
+                                            match_name_double += match_name_count;
 
                                             // ====== 自由テキストと説明文のマッチング ======
-                                            double match_count = (double) isCount(explainText, Value.input_list.get(j));
-                                            if (match_count > 0.0) {
-                                                match_explain_double += 1.0;
-                                            }
+                                            double match_explain_count = (double) isCount(explainText, Value.input_list.get(j));
+                                            match_explain_count = match_explain_count / explain_length;
+                                            match_explain_double += match_explain_count;
                                         }
 //                                        Log.d("genreDouble",name_str+String.valueOf(match_genre_double));
-  //                                      Log.d("nameDouble",name_str+String.valueOf(match_name_double));
-    //                                    Log.d("explainDouble",name_str+String.valueOf(match_explain_double));
+//                                        Log.d("nameDouble",name_str+String.valueOf(match_name_double));
+//                                        Log.d("explainDouble",name_str+String.valueOf(match_explain_double));
                                         // ratingの値を更新する
                                         rate_double += match_genre_double + match_name_double + match_explain_double;
+                                        rate_double = rate_double * 10000;  // 10000倍する
+                                        rate_double = Math.round(rate_double); // 小数点以下を切り捨てる
+                                        rate_double = rate_double / 10000.0; // 10000で割る
+                                        if (rate_double > 1.0) {
+                                            Log.d("rate result", name_str + String.valueOf(rate_double));
+                                        }
 
                                         // ratingの加算を行う
                                         rate_double_mean += rate_double;
@@ -1874,7 +1885,7 @@ class LoadJsonInThread extends Thread {
         ////// 公共クラウドシステム（jsonファイル読み込み用） ///////
         // jsonファイルを読み込む
         // 辞書とジャンル名の対応jsonを読み込む
-        Value.pair_json = json.ReadJson(MainActivity.getInstance(), "pair.json");
+        Value.pair_json = json.ReadJson(MainActivity.getInstance(), "pair_limit.json");
         Value.spots_json = json.ReadJson(MainActivity.getInstance(), "kanko_all_add_limit.json");
         Value.neighborDicObject = json.ReadJson(MainActivity.getInstance(), "neighbor_pref.json");//隣接県情報の入ったjson読み出し
     }
