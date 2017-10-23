@@ -14,14 +14,14 @@
 
         <ImageView
             android:id="@+id/imageView12"
-            android:layout_width="256dp"
-            android:layout_height="256dp"
+            android:layout_width="200dp"
+            android:layout_height="200dp"
             android:layout_gravity="center"
             android:src="@mipmap/have_a_nice_trip" />
 
         <FrameLayout
-            android:layout_width="320dp"
-            android:layout_height="160dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
             android:layout_gravity="bottom|right"
             android:layout_margin="10dp"
             android:background="@mipmap/waku2">
@@ -33,7 +33,7 @@
                 android:layout_gravity="center"
                 android:layout_margin="5dp"
                 android:text="協力 :\nGoogleAPI\n公共クラウドシステム\nしおりちゃん"
-                android:textSize="25dp" />
+                android:textSize="20sp" />
         </FrameLayout>
 
     </FrameLayout>
