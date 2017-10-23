@@ -42,6 +42,7 @@ public class ResizeTextView extends TextView
     @Override
     protected void onLayout(boolean changed, int left, int top, int right, int bottom)
     {
+        Log.d("onlayout","");
         super.onLayout(changed, left, top, right, bottom);
         resize();
     }
@@ -49,7 +50,7 @@ public class ResizeTextView extends TextView
     /**
      * テキストサイズ調整
      */
-    private void resize()
+    public void resize()
     {
         /** 最小のテキストサイズ */
         final float MIN_TEXT_SIZE = 10f;
@@ -57,6 +58,7 @@ public class ResizeTextView extends TextView
         int viewHeight = this.getHeight(); // Viewの縦幅
         int viewWidth = this.getWidth(); // Viewの横幅
 
+        Log.d("height",String.valueOf(viewHeight));
         // テキストサイズ
         float textSize = getTextSize();
 
@@ -79,6 +81,7 @@ public class ResizeTextView extends TextView
         // 縦幅と、横幅が収まるまでループ
         while (viewHeight < textHeight | viewWidth < textWidth)
         {
+            Log.d("test","loop"+String.valueOf(textWidth)+" "+String .valueOf(viewHeight));
             // 調整しているテキストサイズが、定義している最小サイズ以下か。
             if (MIN_TEXT_SIZE >= textSize)
             {

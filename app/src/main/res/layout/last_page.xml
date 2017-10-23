@@ -60,7 +60,7 @@
                 android:layout_weight="1"
                 android:background="@mipmap/waku2">
 
-                <TextView
+                <jp.ncf.app.shiorichan.FontFitTextView
                     android:id="@+id/textView20"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"

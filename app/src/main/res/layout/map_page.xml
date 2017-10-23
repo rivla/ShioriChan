@@ -33,11 +33,12 @@
                 android:layout_height="match_parent"
                 android:orientation="vertical">
 
-                <TextView
+                <jp.ncf.app.shiorichan.FontFitTextView
                     android:id="@+id/textView17"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_margin="10dp"
+                    android:textAlignment="center"
                     android:text="観光場所周辺の地図"
                     android:textSize="40dp" />
 
@@ -61,7 +62,7 @@
                             android:gravity="center"
                             android:orientation="vertical">
 
-                            <TextView
+                            <jp.ncf.app.shiorichan.FontFitTextView
                                 android:id="@+id/mapImageText1"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
@@ -91,7 +92,7 @@
                             android:gravity="center"
                             android:orientation="vertical">
 
-                            <TextView
+                            <jp.ncf.app.shiorichan.FontFitTextView
                                 android:id="@+id/mapImageText2"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
@@ -120,7 +121,7 @@
                             android:gravity="center"
                             android:orientation="vertical">
 
-                            <TextView
+                            <jp.ncf.app.shiorichan.FontFitTextView
                                 android:id="@+id/mapImageText3"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
@@ -145,7 +146,7 @@
                     </LinearLayout>
                 </ScrollView>
 
-                <TextView
+                <jp.ncf.app.shiorichan.FontFitTextView
                     android:id="@+id/mapPlaceText"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"

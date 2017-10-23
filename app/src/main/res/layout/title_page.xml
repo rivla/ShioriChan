@@ -33,101 +33,113 @@
         />
     </FrameLayout>
 
-
-    <FrameLayout
-        android:layout_width="match_parent"
-        android:layout_weight="2"
-        android:layout_height="0dp">
-        <ImageView
-            android:id="@+id/imageView17"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:scaleType="fitXY"
-            app:srcCompat="@mipmap/fukidashiv2" />
-
-        <TextView
-            android:id="@+id/textView21"
-            android:layout_height="match_parent"
-            android:layout_width="match_parent"
-            android:padding="12dp"
-            android:textSize="19dp"
-            android:text="気になるジャンルを教えてね！\n動物が見たいなら「動物園」, 歴史に興味があるなら「神社」って入れてくれればOKよ！\n私が旅のしおりを作ってあげるわ！"
-            android:layout_gravity="center"
-            android:paddingLeft="10dp"
-            android:paddingRight="10dp" />
-    </FrameLayout>
-
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_weight="2"
-        android:layout_height="0dp">
+        android:layout_height="0dp"
+        android:orientation="horizontal"
+        android:layout_weight="0.5">
+    <FrameLayout
+        android:layout_width="0dp"
+        android:layout_weight="0.7"
+        android:layout_height="match_parent">
+        <ImageView
+            android:id="@+id/imageView18"
+            android:layout_width="match_parent"
+            android:scaleType="fitXY"
+            app:srcCompat="@mipmap/line_simple05_"
+            android:layout_height="match_parent" />
+
         <LinearLayout
-             android:layout_width="match_parent"
-             android:layout_height="match_parent"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+            <ImageView
+                android:id="@+id/imageView"
+                android:layout_width="wrap_content"
+                android:scaleType="fitXY"
+                app:srcCompat="@mipmap/line_simple05_a"
+                android:layout_height="match_parent" />
+            <EditText
+                android:id="@+id/editText"
+                android:layout_width="wrap_content"
+                android:hint="川, 神社, 動物園 など"
+                android:textSize="19dp"
+                android:layout_height="wrap_content"
+                android:elevation="1dp"
+                android:layout_gravity="left|center" />
+        </LinearLayout>
+
+    </FrameLayout>
+
+        <ImageButton
+            android:id="@+id/startButton"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:background="@null"
+            android:layout_weight="0.3"
+            android:scaleType="centerCrop"
+            android:src="@mipmap/make_button" />
+
+    </LinearLayout>
+
+
+<FrameLayout
+    android:layout_width="match_parent"
+    android:layout_height="0dp"
+    android:layout_weight="1.5"
+    android:layout_weightSum="1">
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="horizontal"
+        android:weightSum="1">
+        <View
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_weight="0.45"></View>
+
+        <ImageView
+            android:src="@mipmap/white"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:scaleType="fitCenter"
+            android:layout_weight="0.1"
+            android:rotation="45"
+            android:layout_gravity="center" />
+        <View
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_weight="0.45"></View>
+
+    </LinearLayout>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        >
+        <jp.ncf.app.shiorichan.FontFitTextView
+            android:id="@+id/textView21"
+            android:layout_height="match_parent"
+            android:layout_width="0dp"
             android:layout_weight="1"
-             android:orientation="vertical">
-
-            <ImageButton
-                android:id="@+id/startButton"
-                android:layout_width="match_parent"
-                android:layout_height="0dp"
-                android:layout_above="@+id/frameLayout2"
-                android:layout_toLeftOf="@+id/imageView10"
-                android:layout_toStartOf="@+id/imageView10"
-                android:background="@null"
-                android:layout_weight="1"
-                android:scaleType="fitCenter"
-                android:src="@mipmap/navigation_go_2" />
-
-
-            </LinearLayout>
+            android:text="気になるジャンルを\n教えてね！\n動物が見たいなら\n「動物園」,\n歴史に興味があるなら\n「神社」って\n入れてくれればOKよ！\n私が旅のしおりを\n作ってあげるわ！"
+            android:layout_gravity="center"
+            android:background="@drawable/bg_balloon"
+            android:lineSpacingExtra="4sp"
+            android:textSize="300dp"
+            android:layout_margin="8dp"
+            android:textAlignment="center" />
         <ImageView
             android:id="@+id/imageView10"
-            android:layout_width="match_parent"
-
+            android:layout_width="0dp"
             android:adjustViewBounds="false"
             android:layout_gravity="center"
             android:layout_weight="1"
             android:scaleType="fitCenter"
             android:src="@mipmap/guide_shiori"
             android:layout_height="match_parent" />
-
     </LinearLayout>
 
-<FrameLayout
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content">
-                <ImageView
-                    android:id="@+id/imageView18"
-                    android:layout_width="match_parent"
-                    android:scaleType="fitXY"
-                    app:srcCompat="@mipmap/line_simple05_"
-                    android:layout_height="match_parent" />
 
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent">
-                    <ImageView
-                        android:id="@+id/imageView"
-                        android:layout_width="wrap_content"
-                        android:scaleType="fitXY"
-                        app:srcCompat="@mipmap/line_simple05_a"
-                        android:layout_height="match_parent" />
-
-
-                    <EditText
-                        android:id="@+id/editText"
-                        android:layout_width="match_parent"
-                        android:hint="川, 神社, 動物園 など　　 "
-                        android:textSize="19dp"
-                        android:layout_gravity="center"
-                        android:textAlignment="center"
-                        android:layout_height="wrap_content"
-                        android:elevation="1dp"
-                        />
-                    </LinearLayout>
-                    </FrameLayout>
-
+</FrameLayout>
     <!-- 吹き出し 中部 -->
     <!-- セリフが確定したら、ここも吹き出しと一緒に画像として書き出した方が簡単かも -->
 

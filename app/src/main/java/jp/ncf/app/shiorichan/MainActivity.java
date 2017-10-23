@@ -6,9 +6,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
-import android.content.res.Resources;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
+import android.graphics.Paint;
 import android.location.Address;
 import android.location.Geocoder;
 import android.location.Location;
@@ -22,11 +21,13 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.util.TypedValue;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.appindexing.Action;
@@ -52,7 +53,8 @@ import java.util.Date;
 import java.util.List;
 import java.util.ListIterator;
 import java.util.Locale;
-import java.util.Random;
+
+import static java.security.AccessController.getContext;
 
 // ogawa test comment
 //値渡し用、静的変数
@@ -156,7 +158,7 @@ public class MainActivity extends AppCompatActivity implements
 
 
 //        Button shioriButton = (Button) findViewById(R.id.shioriButton);
-        ImageButton startButton = (ImageButton) findViewById(R.id.startButton);
+        final ImageButton startButton = (ImageButton) findViewById(R.id.startButton);
         ImageButton customButton=(ImageButton)findViewById(R.id.imageButton);
 //        final Button departureTimeButton=(Button)findViewById(R.id.departureTimeButton);
 //        departureTimeButton.setText(String.format("%02d:%02d",Value.departureTime.getHours(),Value.departureTime.getMinutes()));
@@ -165,9 +167,87 @@ public class MainActivity extends AppCompatActivity implements
         final EditText editText = (EditText)findViewById(R.id.editText);        // EditTextオブジェクトを取得
 //        final RadioGroup prefRadioGroup=(RadioGroup) findViewById(R.id.PrefRadioGroup);
 //        prefRadioGroup.check(R.id.neighborRadio);//ラジオボタンを予めチェック
-//        ResizeTextView fukidashiText=(ResizeTextView)findViewById(R.id.textView21);
-//        fukidashiText.setModelText("気になるジャンルを教えてね！");
-//        fukidashiText.setText("気になるジャンルを教えてね！\\n動物が見たいなら「動物園」, 歴史に興味があるなら「神社」って入れてくれればOKよ！\\n私が旅のしおりを作ってあげるわ！");
+
+        /*
+        ResizeTextView fukidashiText=(ResizeTextView) findViewById(R.id.textView21);
+        fukidashiText.setModelText("気になるジャンルを教えてね！");
+        fukidashiText.resize();
+        */
+//        気になるジャンルを教えてね！\n動物が見たいなら「動物園」, 歴史に興味があるなら「神社」って入れてくれればOKよ！\n私が旅のしおりを作ってあげるわ！
+        final FontFitTextView fukidashiText=(FontFitTextView) findViewById(R.id.textView21);
+//        fukidashiText.setText("気になるジャンルを教えてね");
+
+/*
+
+        String modelText="気になるね！";
+        int numberLine = 5;
+
+        final float MIN_TEXT_SIZE = 15f;
+
+        int viewHeight = fukidashiText.getHeight(); // Viewの縦幅
+        int viewWidth = fukidashiText.getWidth(); // Viewの横幅
+
+        Log.d("start main height",String.valueOf(viewHeight));
+        // テキストサイズ
+        float textSize = fukidashiText.getTextSize();
+
+        // Paintにテキストサイズ設定
+        Paint paint = new Paint();
+        paint.setTextSize(textSize);
+
+        // テキスト取得
+        if (modelText == null){
+            modelText = fukidashiText.getText().toString();
+        }
+
+        // テキストの縦幅取得
+        Paint.FontMetrics fm = paint.getFontMetrics();
+        float textHeight = (float) (Math.abs(fm.top)) + (Math.abs(fm.descent));
+
+        // テキストの横幅取得
+        float textWidth = paint.measureText(modelText);
+
+        // 縦幅と、横幅が収まるまでループ
+        while (viewHeight < textHeight | viewWidth < textWidth)
+        {
+            Log.d("test","loop"+String.valueOf(textWidth)+" "+String .valueOf(viewHeight));
+            // 調整しているテキストサイズが、定義している最小サイズ以下か。
+            if (MIN_TEXT_SIZE >= textSize)
+            {
+                // 最小サイズ以下になる場合は最小サイズ
+                textSize = MIN_TEXT_SIZE;
+                break;
+            }
+
+            // テキストサイズをデクリメント
+            textSize--;
+
+            // Paintにテキストサイズ設定
+            paint.setTextSize(textSize);
+
+            // テキストの縦幅を再取得
+            // 改行を考慮する
+            fm = paint.getFontMetrics();
+            textHeight = (float) (Math.abs(fm.top)) + (Math.abs(fm.descent)*numberLine);
+
+            // テキストの横幅を再取得
+            textWidth = paint.measureText(modelText);
+        }
+
+        Log.d("textSize",String .valueOf(textSize));
+        // テキストサイズ設定
+        fukidashiText.setTextSize(TypedValue.COMPLEX_UNIT_PX, textSize);
+
+
+
+
+        fukidashiText.setTextSize(TypedValue.COMPLEX_UNIT_PX,100);
+        */
+
+
+
+
+
 
         //キーボード表示を制御するためのオブジェクト
         inputMethodManager =  (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
@@ -180,6 +260,7 @@ public class MainActivity extends AppCompatActivity implements
                 if((event.getAction() == KeyEvent.ACTION_DOWN) && (keyCode == KeyEvent.KEYCODE_ENTER)){
                     //キーボードを閉じる
                     inputMethodManager.hideSoftInputFromWindow(editText.getWindowToken(), InputMethodManager.RESULT_UNCHANGED_SHOWN);
+                    startButton.performClick();
                     return true;
                 }
                 return false;
