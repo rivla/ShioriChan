@@ -168,11 +168,6 @@ public class MainActivity extends AppCompatActivity implements
 //        final RadioGroup prefRadioGroup=(RadioGroup) findViewById(R.id.PrefRadioGroup);
 //        prefRadioGroup.check(R.id.neighborRadio);//ラジオボタンを予めチェック
 
-        /*
-        ResizeTextView fukidashiText=(ResizeTextView) findViewById(R.id.textView21);
-        fukidashiText.setModelText("気になるジャンルを教えてね！");
-        fukidashiText.resize();
-        */
 //        気になるジャンルを教えてね！\n動物が見たいなら「動物園」, 歴史に興味があるなら「神社」って入れてくれればOKよ！\n私が旅のしおりを作ってあげるわ！
         final FontFitTextView fukidashiText=(FontFitTextView) findViewById(R.id.textView21);
 //        fukidashiText.setText("気になるジャンルを教えてね");
@@ -473,12 +468,12 @@ public class MainActivity extends AppCompatActivity implements
                                 } catch (JSONException e) {
                                     // 入力テキストが辞書に登録されていなかった場合
                                     e.printStackTrace();
-                                    Log.d("input error message", Value.input_list.get(i) + " は辞書に登録されていません");
+                                    Log.d("input error message", Value.input_list.get(i) + " はアプリに登録されていません");
                                     final String error_word = Value.input_list.get(i);
                                     handler.post(new Runnable() {
                                         @Override
                                         public void run() {
-                                            editText.setError(error_word + " は辞書に登録されていません");
+                                            editText.setError(error_word + " はアプリに登録されていません");
                                         }
                                     });
                                     Value.error_flag = true;

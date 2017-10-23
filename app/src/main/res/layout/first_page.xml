@@ -90,6 +90,14 @@
                         android:layout_gravity="center_vertical|bottom"
                         android:layout_weight="1"
                         android:background="@mipmap/waku2">
+                        <EditText
+                            android:hint="名前："
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:text="名前："
+                            android:textSize="40dp"
+                            android:gravity="center_vertical"
+                            android:layout_marginLeft="15dp" />
 
                         <!-- 枠の中に記述する文字列 -->
 

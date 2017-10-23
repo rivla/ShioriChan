@@ -47,33 +47,25 @@
     <FrameLayout
         android:layout_width="0dp"
         android:layout_weight="0.7"
-        android:layout_height="match_parent">
-        <ImageView
-            android:id="@+id/imageView18"
-            android:layout_width="match_parent"
-            android:scaleType="fitXY"
-            app:srcCompat="@mipmap/line_simple05_"
-            android:layout_height="match_parent" />
+        android:layout_height="match_parent"
+        android:background="@drawable/bg_balloon">
 
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent">
             <ImageView
                 android:id="@+id/imageView"
                 android:layout_width="wrap_content"
-                android:scaleType="fitXY"
+                android:scaleType="center"
+                android:layout_gravity="center_vertical|left"
                 app:srcCompat="@mipmap/line_simple05_a"
                 android:layout_height="match_parent" />
             <EditText
                 android:id="@+id/editText"
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:hint="川, 神社, 動物園 など"
                 android:textSize="19dp"
                 android:layout_height="match_parent"
-                android:elevation="0dp"
                 android:layout_gravity="left|center"
-                android:gravity="center" />
-        </LinearLayout>
+                android:gravity="left|center_vertical"
+                android:textAlignment="center" />
 
     </FrameLayout>
 

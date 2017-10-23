@@ -182,7 +182,7 @@ public class DebugActivity extends Activity
 
                 // 公共クラウドシステム（jsonファイル読み込み用） //
                 // jsonファイルを読み込む
-                JSONObject spots_json = json.ReadJson(getApplicationContext(), "kanko_all.json");
+                JSONObject spots_json = json.ReadJson(getApplicationContext(), "kanko_all_limit.json");
                 try {
                     // 観光地の総数を取得
                     int spotsLength = spots_json.getJSONArray("spots").length();
