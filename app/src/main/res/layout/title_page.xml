@@ -45,16 +45,14 @@
             android:scaleType="fitXY"
             app:srcCompat="@mipmap/fukidashiv2" />
 
-        <TextView
+        <jp.ncf.app.shiorichan.FontFitTextView
             android:id="@+id/textView21"
             android:layout_height="match_parent"
             android:layout_width="match_parent"
-            android:padding="12dp"
-            android:textSize="19dp"
-            android:text="気になるジャンルを教えてね！\n動物が見たいなら「動物園」, 歴史に興味があるなら「神社」って入れてくれればOKよ！\n私が旅のしおりを作ってあげるわ！"
+            android:layout_margin="10dp"
+            android:text="気になるジャンルを教えてね！\n動物が見たいなら「動物園」,\n 歴史に興味があるなら「神社」\nって入れてくれればOKよ！\n私が旅のしおりを作ってあげるわ！"
             android:layout_gravity="center"
-            android:paddingLeft="10dp"
-            android:paddingRight="10dp" />
+            android:textSize="300dp" />
     </FrameLayout>
 
     <LinearLayout
@@ -117,14 +115,12 @@
 
                     <EditText
                         android:id="@+id/editText"
-                        android:layout_width="match_parent"
+                        android:layout_width="wrap_content"
                         android:hint="川, 神社, 動物園 など　　 "
                         android:textSize="19dp"
-                        android:layout_gravity="center"
-                        android:textAlignment="center"
                         android:layout_height="wrap_content"
                         android:elevation="1dp"
-                        />
+                        android:layout_gravity="left|center" />
                     </LinearLayout>
                     </FrameLayout>
 
