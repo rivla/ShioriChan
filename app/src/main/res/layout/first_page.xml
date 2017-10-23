@@ -17,56 +17,98 @@
 
     <FrameLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:padding="60dp">
+        android:layout_height="match_parent">
 
         <!-- 縦方向のレイアウト -->
-        <FrameLayout
+        <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_gravity="top|center_vertical"
-            android:layout_margin="20dp"
-            android:background="@mipmap/waku2">
+            android:layout_height="match_parent"
+            android:orientation="vertical">
 
-            <!-- 枠の中に記述する文字列 -->
-
-            <jp.ncf.app.shiorichan.FontFitTextView
-                android:id="@+id/textView18"
+            <Space
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:gravity="center_horizontal|center"
-                android:text="textView18"
-                android:textSize="145dp" />
+                android:layout_height="0dp"
+                android:layout_weight="1" />
 
-        </FrameLayout>
-
-        <FrameLayout
-            android:layout_width="400dp"
-            android:layout_height="400dp"
-            android:layout_gravity="center"
-            android:scaleType="centerCrop">
-
-            <ImageView
-                android:id="@+id/imageView5"
+            <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:adjustViewBounds="true"
-                android:cropToPadding="true"
-                android:scaleType="fitXY"
-                android:src="@mipmap/guide_shiori" />
-        </FrameLayout>
+                android:layout_height="0dp"
+                android:layout_weight="10"
+                android:orientation="horizontal">
 
-        <FrameLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_vertical|bottom"
-            android:layout_margin="20dp"
-            android:background="@mipmap/waku2">
+                <Space
+                    android:layout_width="0dp"
+                    android:layout_height="0dp"
+                    android:layout_weight="1" />
 
-            <!-- 枠の中に記述する文字列 -->
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="10"
+                    android:orientation="vertical">
 
-        </FrameLayout>
+                    <FrameLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="0dp"
+                        android:layout_gravity="top|center_vertical"
+                        android:layout_weight="1"
+                        android:background="@mipmap/waku2">
+
+                        <!-- 枠の中に記述する文字列 -->
+
+                        <TextView
+                            android:id="@+id/textView18"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center"
+                            android:gravity="center_horizontal|center"
+                            android:text="textView18"
+                            android:textSize="45dp" />
+
+                    </FrameLayout>
+
+                    <FrameLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="0dp"
+                        android:layout_gravity="center"
+                        android:layout_weight="3"
+                        android:scaleType="centerCrop">
+
+                        <ImageView
+                            android:id="@+id/imageView5"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:adjustViewBounds="true"
+                            android:cropToPadding="true"
+                            android:scaleType="fitCenter"
+                            android:src="@mipmap/guide_shiori" />
+                    </FrameLayout>
+
+                    <FrameLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="0dp"
+                        android:layout_gravity="center_vertical|bottom"
+                        android:layout_weight="1"
+                        android:background="@mipmap/waku2">
+
+                        <!-- 枠の中に記述する文字列 -->
+
+                    </FrameLayout>
+
+                </LinearLayout>
+
+                <Space
+                    android:layout_width="0dp"
+                    android:layout_height="0dp"
+                    android:layout_weight="1" />
+
+            </LinearLayout>
+
+            <Space
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="1" />
+        </LinearLayout>
 
     </FrameLayout>
 
