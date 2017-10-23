@@ -158,7 +158,7 @@ public class MainActivity extends AppCompatActivity implements
 
 
 //        Button shioriButton = (Button) findViewById(R.id.shioriButton);
-        ImageButton startButton = (ImageButton) findViewById(R.id.startButton);
+        final ImageButton startButton = (ImageButton) findViewById(R.id.startButton);
         ImageButton customButton=(ImageButton)findViewById(R.id.imageButton);
 //        final Button departureTimeButton=(Button)findViewById(R.id.departureTimeButton);
 //        departureTimeButton.setText(String.format("%02d:%02d",Value.departureTime.getHours(),Value.departureTime.getMinutes()));
@@ -260,6 +260,7 @@ public class MainActivity extends AppCompatActivity implements
                 if((event.getAction() == KeyEvent.ACTION_DOWN) && (keyCode == KeyEvent.KEYCODE_ENTER)){
                     //キーボードを閉じる
                     inputMethodManager.hideSoftInputFromWindow(editText.getWindowToken(), InputMethodManager.RESULT_UNCHANGED_SHOWN);
+                    startButton.performClick();
                     return true;
                 }
                 return false;
