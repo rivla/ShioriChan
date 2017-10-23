@@ -33,7 +33,7 @@
                 android:layout_gravity="center"
                 android:layout_margin="5dp"
                 android:text="協力 :\nGoogleAPI\n公共クラウドシステム\nしおりちゃん"
-                android:textSize="25dp" />
+                android:textSize="20sp" />
         </FrameLayout>
 
     </FrameLayout>

@@ -47,8 +47,6 @@ public class ShioriView extends Activity {
         View v1 = this.getLayoutInflater().inflate(R.layout.first_page, null);
         TextView textView18 = (TextView)v1.findViewById(R.id.textView18);
         textView18.setText("テーマ:"+Value.input_text); // もし変更するならココで
-        TextView textView19 = (TextView)v1.findViewById(R.id.textView19);
-        textView19.setText("名前 : しおり"); //
         if (Value.itineraryPlaceList.size() > 1) { // もし受け取ったルートの長さが2以上なら...
             ImageView imageView5 = (ImageView)v1.findViewById(R.id.imageView5); // 表紙の中央の画像
 
