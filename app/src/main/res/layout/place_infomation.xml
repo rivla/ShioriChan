@@ -76,7 +76,7 @@
                                 android:layout_weight="1.5"
                                 android:orientation="vertical">
 
-                                <TextView
+                                <jp.ncf.app.shiorichan.FontFitTextView
                                     android:id="@+id/textView14"
                                     android:layout_width="match_parent"
                                     android:layout_height="0dp"
@@ -99,14 +99,14 @@
                                 <Space
                                     android:layout_width="match_parent"
                                     android:layout_height="wrap_content"
-                                    android:layout_weight="1.5" />
+                                    android:layout_weight="0" />
 
                             </LinearLayout>
                         </LinearLayout>
 
                     </FrameLayout>
 
-                    <TextView
+                    <jp.ncf.app.shiorichan.FontFitTextView
                         android:id="@+id/textView15"
                         android:layout_width="match_parent"
                         android:layout_height="0dp"
@@ -120,7 +120,7 @@
                         android:layout_height="0dp"
                         android:layout_weight="1">
 
-                        <TextView
+                        <jp.ncf.app.shiorichan.FontFitTextView
                             android:id="@+id/textView16"
                             android:layout_width="match_parent"
                             android:layout_height="0dp"

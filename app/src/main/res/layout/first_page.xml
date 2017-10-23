@@ -30,14 +30,14 @@
 
             <!-- 枠の中に記述する文字列 -->
 
-            <TextView
+            <jp.ncf.app.shiorichan.FontFitTextView
                 android:id="@+id/textView18"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 android:gravity="center_horizontal|center"
                 android:text="textView18"
-                android:textSize="45dp" />
+                android:textSize="145dp" />
 
         </FrameLayout>
 
