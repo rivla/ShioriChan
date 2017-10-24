@@ -374,8 +374,8 @@ public class MainActivity extends AppCompatActivity implements
                             if(location==null) {
                                 Log.d("test","GPSが取れませんでした");
                                 location = new Location("a");//文字列はprovider（適当に入れました)
-                                location.setLatitude(35.4650334);
-                                location.setLongitude(136.73929506);
+                                location.setLatitude(35.170964);
+                                location.setLongitude(136.881794);
                             }else {
                                 Log.d("test", "GPSの値を使用します");
                             }
