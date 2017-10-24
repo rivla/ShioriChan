@@ -349,6 +349,9 @@ public class MainActivity extends AppCompatActivity implements
                 final String edittext_preference = sharedPreferences.getString("departurePlace", "");
                 Log.d("edit",edittext_preference);
 
+             //   final boolean randomFlg=sharedPreferences.getBoolean("randomFlg",false);
+
+
 
                 progressDialog.setTitle("しおり作成中…。");
                 progressDialog.show();
@@ -412,6 +415,7 @@ public class MainActivity extends AppCompatActivity implements
 
                         // ====== 自由テキスト入力受け取り ======
 
+                        boolean outOfDictionary=false;
                         // 入力された文字を取得
                         final String input_text = editText.getText().toString();
                         Value.input_text = input_text;
@@ -468,6 +472,8 @@ public class MainActivity extends AppCompatActivity implements
                                 } catch (JSONException e) {
                                     // 入力テキストが辞書に登録されていなかった場合
                                     e.printStackTrace();
+                                    outOfDictionary=true;
+                                    /*
                                     Log.d("input error message", Value.input_list.get(i) + " はアプリに登録されていません");
                                     final String error_word = Value.input_list.get(i);
                                     handler.post(new Runnable() {
@@ -476,7 +482,8 @@ public class MainActivity extends AppCompatActivity implements
                                             editText.setError(error_word + " はアプリに登録されていません");
                                         }
                                     });
-                                    Value.error_flag = true;
+                                    */
+//                                    Value.error_flag = true;
                                 }
                             }
                         }
@@ -547,12 +554,13 @@ public class MainActivity extends AppCompatActivity implements
 
                                         // ====== ジャンルとの類似度を用いた評価値 ======
                                         double match_genre_double = 0.0;
-                                        for (int j = 0; j < Value.genre_list.size(); j++) {
-                                            if (genre_str.equals(Value.genre_list.get(j))) {
-                                                match_genre_double += (double) Value.genre_sim_list.get(j);
+                                        if(!outOfDictionary) {
+                                            for (int j = 0; j < Value.genre_list.size(); j++) {
+                                                if (genre_str.equals(Value.genre_list.get(j))) {
+                                                    match_genre_double += (double) Value.genre_sim_list.get(j);
+                                                }
                                             }
                                         }
-
                                         double match_name_double = 0.0;
                                         double match_explain_double = 0.0;
                                         for (int j = 0; j < Value.input_list.size(); j++) {
