@@ -355,6 +355,7 @@ public class MainActivity extends AppCompatActivity implements
 
 
                 progressDialog.setTitle("しおり作成中…。");
+                progressDialog.setMessage("");
                 progressDialog.show();
                 //◆スレッド処理開始
                 new Thread(new Runnable() {
@@ -614,12 +615,62 @@ public class MainActivity extends AppCompatActivity implements
                                 handler.post(new Runnable() {
                                     @Override
                                     public void run() {
-                                        if(firstCandsList.get(0).rate<1.5){
-                                            progressDialog.setTitle("期待できないかも…。");
-                                        }else if(firstCandsList.get(0).rate<2.5){
-                                            progressDialog.setTitle("もうちょっとまってね！");
-                                        }else{
-                                            progressDialog.setTitle("期待しててね！");
+                                        Random rnd=new Random();
+                                        int rand=rnd.nextInt(3);
+                                        Date messageEarlyDep = new Date();
+                                        messageEarlyDep.setMinutes(0);
+                                        messageEarlyDep.setHours(12);
+                                        Date messageLateDep = new Date();
+                                        messageLateDep.setMinutes(0);
+                                        messageLateDep.setHours(5);
+                                        Date messageEarlyArr = new Date();
+                                        messageEarlyArr.setMinutes(0);
+                                        messageEarlyArr.setHours(17);
+                                        Date messageLateArr = new Date();
+                                        messageLateArr.setMinutes(0);
+                                        messageLateArr.setHours(23);
+                                        if(Value.departureTime.compareTo(messageEarlyDep)>0){
+                                            progressDialog.setMessage(String.format("%02d:%02dかあ、ちょっと出発が遅いかも。",Value.departureTime.getHours(),Value.departureTime.getMinutes()));
+                                        }else if(Value.departureTime.compareTo(messageLateDep)<0) {
+                                            progressDialog.setMessage(String.format("%02d:%02dかあ、ちょっと出発が早いかも。",Value.departureTime.getHours(),Value.departureTime.getMinutes()));
+                                        }else if(Value.arriveTime.compareTo(messageEarlyArr)<0) {
+                                            progressDialog.setMessage(String.format("%02d:%02dかあ、ちょっと到着が早いかも。",Value.arriveTime.getHours(),Value.arriveTime.getMinutes()));
+                                        }else if(Value.arriveTime.compareTo(messageLateArr)>0) {
+                                            progressDialog.setMessage(String.format("%02d:%02dかあ、ちょっと到着が遅いかも。", Value.arriveTime.getHours(), Value.arriveTime.getMinutes()));
+                                        }else if (rand == 0) {
+                                            if (firstCandsList.get(0).rate < 1.5) {
+                                                progressDialog.setMessage("期待できないかも…。");
+                                            } else if (firstCandsList.get(0).rate < 2.5) {
+                                                progressDialog.setMessage("もうちょっとまってね！");
+                                            } else if (firstCandsList.get(0).rate < 3.5) {
+                                                progressDialog.setMessage("うまくいきそうだよ！");
+                                            } else {
+                                                progressDialog.setMessage("期待しててね！");
+                                            }
+                                        } else if (rand == 1) {
+                                            if (firstCandsList.get(0).rate < 1.5) {
+                                                progressDialog.setMessage("うーん、難しいかも…。");
+                                            } else if (firstCandsList.get(0).rate < 2.5) {
+                                                progressDialog.setMessage("しおり作成中…");
+                                            } else if (firstCandsList.get(0).rate < 3.5) {
+                                                progressDialog.setMessage("ここがよそそうかな？");
+                                            } else {
+                                                progressDialog.setMessage("いいかんじ！");
+                                            }
+                                        } else {
+                                            if (firstCandsList.get(0).rate < 1.5) {
+                                                progressDialog.setMessage("うーん、" + Value.input_text + "か、難しいなあ…。");
+                                            } else if (firstCandsList.get(0).rate < 2.5) {
+                                                if (lunchFlg) {
+                                                    progressDialog.setMessage("お昼はどこにしようかなー");
+                                                } else {
+                                                    progressDialog.setMessage("私ここ行った事あるよ！");
+                                                }
+                                            } else if (firstCandsList.get(0).rate < 3.5) {
+                                                progressDialog.setMessage(firstCandsList.get(1).name + "はどうかな？");
+                                            } else {
+                                                progressDialog.setMessage("これはうまくいきそうだよ！");
+                                            }
                                         }
                                     }
                                 });
