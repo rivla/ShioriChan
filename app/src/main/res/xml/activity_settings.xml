@@ -12,7 +12,7 @@
     <CheckBoxPreference
         android:key="JapanOrNeighborFlg"
         android:title="行き先の範囲を広げる"
-        android:summary="（入力したジャンル通りの場所が出ない時に試して下さい）"
+        android:summary="より遠くの観光地が出るようになります"
         android:defaultValue="false"
         android:checked="false"
         />
@@ -29,7 +29,8 @@
         />
     <CheckBoxPreference
         android:key="randomFlg"
-        android:title="一つ目の観光地をランダムで選択する"
+        android:title="ランダム機能"
+        android:summary="同じジャンルでも異なる観光地が出やすくなります"
         android:defaultValue="false"
         />
 </PreferenceScreen>
