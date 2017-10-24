@@ -27,11 +27,9 @@
         android:title="食事の場所を提案する"
         android:defaultValue="true"
         />
-    <!--
     <CheckBoxPreference
         android:key="randomFlg"
         android:title="一つ目の観光地をランダムで選択する"
         android:defaultValue="false"
         />
-        -->
 </PreferenceScreen>

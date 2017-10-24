@@ -2,17 +2,11 @@ package jp.ncf.app.shiorichan;
 
 import android.annotation.TargetApi;
 import android.app.TimePickerDialog;
-import android.app.TimePickerDialog;
 import android.os.Build;
 import android.os.Bundle;
-import android.preference.CheckBoxPreference;
-import android.preference.EditTextPreference;
 import android.preference.Preference;
 import android.preference.PreferenceActivity;
-import android.widget.EditText;
 import android.widget.TimePicker;
-
-import java.util.Calendar;
 
 /**
  * Created by ideally on 2017/10/19.
@@ -47,8 +41,6 @@ public class MyPreferenceActivity extends PreferenceActivity implements TimePick
                 return false;
             }
         });
-
-
     }
     //DatePickerを表示する関数
     private void showDateDialog(){
@@ -64,10 +56,10 @@ public class MyPreferenceActivity extends PreferenceActivity implements TimePick
     public void onTimeSet(TimePicker timePicker, int i, int i1) {
         if(departureFlg) {
             Value.departureTime.setHours(i);
-            Value.departureTime.setMinutes(i);
+            Value.departureTime.setMinutes(i1);
         }else{
             Value.arriveTime.setHours(i);
-            Value.arriveTime.setMinutes(i);
+            Value.arriveTime.setMinutes(i1);
         }
     }
 }

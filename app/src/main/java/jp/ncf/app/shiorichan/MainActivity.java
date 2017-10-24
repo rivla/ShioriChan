@@ -52,6 +52,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.ListIterator;
 import java.util.Locale;
+import java.util.Random;
 
 // ogawa test comment
 //値渡し用、静的変数
@@ -349,7 +350,7 @@ public class MainActivity extends AppCompatActivity implements
                 final String edittext_preference = sharedPreferences.getString("departurePlace", "");
                 Log.d("edit",edittext_preference);
 
-             //   final boolean randomFlg=sharedPreferences.getBoolean("randomFlg",false);
+                final boolean randomFlg=sharedPreferences.getBoolean("randomFlg",false);
 
 
 
@@ -634,6 +635,26 @@ public class MainActivity extends AppCompatActivity implements
 
                                 // 完全一致する観光地が存在しない場合，レビューが高い順にソートして決定する
                                 else {
+                                    if(randomFlg){
+                                        Random rnd=new Random();
+                                        int ran=rnd.nextInt(10);
+                                        for(int k=0;k<ran;k++){
+                                            //レビュー4.5以上の候補地から一番近い場所を選ぶ
+                                            minDistanceNumber = 0;
+                                            double minDistance = Double.MAX_VALUE;
+                                            double center_val = (firstCandsList.get(0).rate + rate_double_mean) / 2;
+                                            for (int i = 0; firstCandsList.get(i).rate> firstCandsList.get(0).rate - 0.05 ; i++) {
+                                                if (firstCandsList.get(i).distance < minDistance) {
+                                                    minDistance = firstCandsList.get(i).distance;
+                                                    minDistanceNumber = i;
+                                                }
+                                            }
+                                            Log.d("rand", "delete"+ String.valueOf(firstCandsList.get(minDistanceNumber).name));
+                                            firstCandsList.remove(minDistanceNumber);
+                                        }
+                                    }
+
+
                                     //レビュー4.5以上の候補地から一番近い場所を選ぶ
                                     minDistanceNumber = 0;
                                     double minDistance = Double.MAX_VALUE;
