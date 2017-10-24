@@ -2,19 +2,18 @@ package jp.ncf.app.shiorichan;
 
 import android.app.Activity;
 import android.content.Context;
+import android.os.Build;
 import android.os.Bundle;
 import android.text.util.Linkify;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.ViewGroup;
+import android.view.ViewTreeObserver;
 import android.view.animation.AnimationUtils;
 import android.widget.ImageView;
-import android.widget.RatingBar;
-import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.ViewFlipper;
-
-import org.w3c.dom.Text;
 
 /**
  * Created by ideally on 2017/10/10.
@@ -194,8 +193,29 @@ public class ShioriView extends Activity {
             Linkify.addLinks(textView16,Linkify.ALL);
 
             // 評価値の☆をつける
-            RatingBar ratingBar = (RatingBar) v3.findViewById(R.id.ratingBar);
-            ratingBar.setRating((float) Value.itineraryPlaceList.get(i).getRate());
+
+//            RatingBar ratingBar = (RatingBar) v3.findViewById(R.id.ratingBar);
+//            ratingBar.setRating((float) Value.itineraryPlaceList.get(i).getRate());
+            final ImageView rateWhiteImage=(ImageView)v3.findViewById(R.id.starWhiteImage);
+            final ImageView rate5Image=(ImageView)v3.findViewById(R.id.star5Image);
+            ViewTreeObserver vto = rate5Image.getViewTreeObserver();
+            final int finalI = i;
+            vto.addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+                @Override
+                public void onGlobalLayout() {
+                    ViewGroup.LayoutParams params=rateWhiteImage.getLayoutParams();
+                    Log.d("test",String.valueOf((int)(rate5Image.getWidth()*(1-(Value.itineraryPlaceList.get(finalI).rate/5)))));
+                    Log.d("test",String.valueOf(rate5Image.getWidth()));
+                    params.width=(int)(rate5Image.getWidth()*(1-(Value.itineraryPlaceList.get(finalI).rate/5)));
+                    rateWhiteImage.setLayoutParams(params);
+                }
+            });
+
+
+
+
+
+
 
             // viewFlipperに追加
             viewFlipper.addView(v3);

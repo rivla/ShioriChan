@@ -115,14 +115,14 @@ public class FontFitTextView extends TextView {
         Paint.FontMetrics fm = paint.getFontMetrics();
         float textHeight = (float) ((Math.abs(fm.top)) + (Math.abs(fm.descent)))*splitString.length;
 
-        Log.d("splitString",splitString[tempMaxStringLength]);
-        Log.d("test","viewHeight"+String.valueOf(viewHeight)+"textHeight"+String .valueOf(textHeight)+"viewWidth"+String.valueOf(viewWidth)+"textWidth"+String.valueOf(textWidth));
+//        Log.d("splitString",splitString[tempMaxStringLength]);
+//        Log.d("test","viewHeight"+String.valueOf(viewHeight)+"textHeight"+String .valueOf(textHeight)+"viewWidth"+String.valueOf(viewWidth)+"textWidth"+String.valueOf(textWidth));
 
 
         // 縦幅と、横幅が収まるまでループ
         while (viewHeight < textHeight | viewWidth < textWidth)
         {
-            Log.d("test","viewHeight"+String.valueOf(viewHeight)+"textHeight"+String .valueOf(textHeight)+"viewWidth"+String.valueOf(viewWidth)+"textWidth"+String.valueOf(textWidth));
+  //          Log.d("test","viewHeight"+String.valueOf(viewHeight)+"textHeight"+String .valueOf(textHeight)+"viewWidth"+String.valueOf(viewWidth)+"textWidth"+String.valueOf(textWidth));
             // 調整しているテキストサイズが、定義している最小サイズ以下か。
             if (MIN_TEXT_SIZE >= textSize)
             {

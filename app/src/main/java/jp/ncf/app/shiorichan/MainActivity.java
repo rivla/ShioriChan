@@ -7,7 +7,6 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
-import android.graphics.Paint;
 import android.location.Address;
 import android.location.Geocoder;
 import android.location.Location;
@@ -21,13 +20,11 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
-import android.util.TypedValue;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.ImageButton;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.appindexing.Action;
@@ -35,6 +32,8 @@ import com.google.android.gms.appindexing.AppIndex;
 import com.google.android.gms.appindexing.Thing;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.location.LocationListener;
+import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
 
 import org.json.JSONArray;
@@ -53,8 +52,6 @@ import java.util.Date;
 import java.util.List;
 import java.util.ListIterator;
 import java.util.Locale;
-
-import static java.security.AccessController.getContext;
 
 // ogawa test comment
 //値渡し用、静的変数
@@ -85,10 +82,13 @@ class Value {
 
 public class MainActivity extends AppCompatActivity implements
         GoogleApiClient.ConnectionCallbacks,
+        android.location.LocationListener,
         GoogleApiClient.OnConnectionFailedListener{
+    LocationRequest mLocationRequest;
     GoogleApiClient mGoogleApiClient;//開始時に自己位置を取得するため、googleapiを利用
     private Location location;//開始時、現在地の座標を保存する変数
     private JsonReader json;
+    final int REQUEST_PERMISSION=1000;
     private HttpGetter httpGet;
     private HttpBitmapGetter httpBitmapGet;
     final Handler handler = new Handler(Looper.getMainLooper());
@@ -1441,17 +1441,91 @@ public class MainActivity extends AppCompatActivity implements
     public void onConnected(@Nullable Bundle bundle) {
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             //パーミッションチェック
+//            Toast.makeText(MainActivity.getInstance(), "位置情報を取得する権限がありません。設定→アプリ→Shiorichanより設定を変更して下さい", Toast.LENGTH_LONG).show();
             Log.d("test","perm out");
+            if (ActivityCompat.shouldShowRequestPermissionRationale(this,
+                    Manifest.permission.ACCESS_FINE_LOCATION)) {
+                ActivityCompat.requestPermissions(MainActivity.this,
+                        new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, REQUEST_PERMISSION);
+
+            } else {
+                Toast toast = Toast.makeText(this, "許可されないとアプリが実行できません", Toast.LENGTH_SHORT);
+                toast.show();
+
+                ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION,}, REQUEST_PERMISSION);
+
+            }
             return;
         }
+
+        Log.d("test","onconnected!");
         location = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);//端末より、最後にGPSで取得された座標を取得
+        if(location!=null){
+            Log.d("test","location is not null,"+location.toString());
+        }else{
+            mLocationRequest = new LocationRequest();
+            mLocationRequest.setInterval(3000);//位置更新を受け取る間隔(msec)　3秒おき
+            mLocationRequest.setFastestInterval(1000);//速くて１秒おき
+            mLocationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);//正確さ優先
+            LocationServices.FusedLocationApi.requestLocationUpdates(mGoogleApiClient, mLocationRequest, new LocationListener() {
+                @Override
+                public void onLocationChanged(Location location) {
+                    Log.d("test","locationChanged!!!");
+                    mGoogleApiClient.disconnect();
+                }
+            });
+            Log.d("test","location is null...");
+
+        }
+    }
+    // パーミッションの許可要請ダイアログ、結果の受け取り
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+        if (requestCode == REQUEST_PERMISSION) {
+            // 使用が許可された
+            if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+
+                Log.d("test","accept permission!");
+                location = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);//端末より、最後にGPSで取得された座標を取得
+                if(location!=null){
+                    Log.d("test","location is not null,"+location.toString());
+                }else{
+                    mLocationRequest = new LocationRequest();
+                    mLocationRequest.setInterval(3000);//位置更新を受け取る間隔(msec)　3秒おき
+                    mLocationRequest.setFastestInterval(1000);//速くて１秒おき
+                    mLocationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);//正確さ優先
+                    LocationServices.FusedLocationApi.requestLocationUpdates(mGoogleApiClient, mLocationRequest, new LocationListener() {
+                        @Override
+                        public void onLocationChanged(Location location) {
+                            Log.d("test","locationChanged!!!");
+                            mGoogleApiClient.disconnect();
+                        }
+                    });
+                    Log.d("test","location is null...");
+
+                }
+
+                return;
+
+            } else {
+                // それでも拒否された時の対応
+                Toast toast = Toast.makeText(this, "これ以上なにもできません", Toast.LENGTH_SHORT);
+                toast.show();
+            }
+        }
     }
     //gps取得用クラスの子メソッド、消せない
     @Override
     public void onConnectionSuspended(int i) {
+        Log.d("test","onconnectSuspended");
     }
     @Override
     public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
+        Log.d("test","connectFail"+connectionResult.toString());
+        if(-1!=connectionResult.toString().indexOf("SERVICE_VERSION_UPDATE_REQUIRED")){
+            Toast.makeText(MainActivity.getInstance(), "GooglePlayServiceのバージョンが古いためGPSの値が取得できません。", Toast.LENGTH_LONG).show();
+        }
+
     }
     //開始時位置取得のために必要なメソッド、onStartとonStopで呼ばれる
     public Action getIndexApiAction() {
@@ -1952,6 +2026,26 @@ public class MainActivity extends AppCompatActivity implements
             
         }
     return mapsStaticsResult;
+    }
+
+    @Override
+    public void onLocationChanged(Location location) {
+        Log.d("test","location changed");
+    }
+
+    @Override
+    public void onStatusChanged(String s, int i, Bundle bundle) {
+
+    }
+
+    @Override
+    public void onProviderEnabled(String s) {
+
+    }
+
+    @Override
+    public void onProviderDisabled(String s) {
+
     }
 }
 
