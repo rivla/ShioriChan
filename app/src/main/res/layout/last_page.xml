@@ -67,7 +67,7 @@
                     android:layout_gravity="center"
                     android:layout_margin="5dp"
                     android:layout_weight="1"
-                    android:text="協力 :\nGoogleAPI\n公共クラウドシステム\nしおりちゃん"
+                    android:text="協力 :\nGoogleAPI\n公共クラウド（総務省）\nしおりちゃん"
                     android:textSize="20dp" />
             </FrameLayout>
         </LinearLayout>
