@@ -553,7 +553,7 @@ public class MainActivity extends AppCompatActivity implements
 
                                         // ====== レビューの平均点を用いた評価値 ======
                                         rate_double = rate_double / 5.0; // 最大で1.0になるように正規化する
-
+                                        
                                         // ====== ジャンルとの類似度を用いた評価値 ======
                                         double match_genre_double = 0.0;
                                         if(!outOfDictionary) {
