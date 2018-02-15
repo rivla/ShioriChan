@@ -73,6 +73,7 @@ class Value {
     public static JSONObject spots_json;
     public static JSONObject neighborDicObject;
     public static JSONObject pair_json;
+    public static JSONObject vec_json; // 観光地説明文のベクトル
     public static int perfect_match_num = -1; // 完全一致する観光地名の場所を保存するための変数（リストの要素番号）
     public static boolean neighborOrJapanFlg=false;
     public static Date departureTime=new Date();
@@ -527,21 +528,28 @@ public class MainActivity extends AppCompatActivity implements
                             ArrayList<SpotStructure> firstCandsList_org = new ArrayList<SpotStructure>();//ソートしない用リスト初期化
                             double rate_double_mean = 0.0; // ratingの和（平均を取るための変数）
                             double match_spot_count = 0.0; // 隣接県でマッチしたスポット数（平均を取るための変数）
+                            double likelihood = 0.0; // クエリ尤度モデルのスコア
                             try {
                                 int counter = 0; // 隣接県もしくは完全一致した場合のカウンタ
+
+                                // 全ての観光地でループ
                                 for (int i = 0; i < Value.spots_json.getJSONArray("spots").length(); i++) {
+                                    // 観光地の情報を取得する
+                                    // 観光地の県，ジャンル，名前を取得する
                                     String pref_str = Value.spots_json.getJSONArray("spots").getJSONObject(i).getString("prefectures");
                                     String genre_str = Value.spots_json.getJSONArray("spots").getJSONObject(i).getString("genreS");
                                     String name_str = Value.spots_json.getJSONArray("spots").getJSONObject(i).getString("name");
-                                    //隣接県である，もしくは，入力テキストと観光地名が完全一致した場合，リストに格納する
+
+                                    //隣接県である，もしくは，入力テキストと観光地名が完全一致した場合のみ，スコアを算出してリストに格納する
                                     if (CheckNeighborPrefecture(pref_str, Value.neighborDicObject) || (Value.input_list.contains(name_str))) {
 
                                         // 入力テキストと観光地名が完全一致した場合
                                         if (Value.input_list.contains(name_str)) {
                                             Log.d("perfect match", name_str);
-                                            Value.perfect_match_num = counter; // リストの要素番号を保存する
+                                            Value.perfect_match_num = counter; // リストの要素番号を保存する→後で参照するため
                                         }
 
+                                        // 観光地の情報を取得する
                                         // String name_str = Value.spots_json.getJSONArray("spots").getJSONObject(i).getString("name");
                                         String placeID_str = Value.spots_json.getJSONArray("spots").getJSONObject(i).getString("place_id");
                                         String explainText = Value.spots_json.getJSONArray("spots").getJSONObject(i).getString("explain");
@@ -563,6 +571,59 @@ public class MainActivity extends AppCompatActivity implements
                                                 }
                                             }
                                         }
+
+                                        // ====== クエリ尤度モデルを用いたスコアリング ======
+                                        likelihood = 0.0; // 尤度を初期化する
+
+                                        // 現在の観光地における，文書ベクトル（正規化TF）の計算結果を取得する
+                                        JSONObject doc_tf_vec = Value.vec_json.getJSONObject("doc_tf_vecs").getJSONObject(name_str);
+
+                                        // 観光地全体を用いた，文書コレクションの文書ベクトル（正規化TF）の計算結果を取得する
+                                        JSONObject corpus_tf_vec = Value.vec_json.getJSONObject("corpus_tf_vec");
+
+                                        // 各種パラメータを設定する
+                                        double doc_length = doc_tf_vec.length(); // 観光地説明文の文書長
+                                        double mu = 100; // スムージングパラメータ
+                                        double frac = 1.0 / (doc_length + mu);
+                                        double not_word_val = 1e-250; // 極小値
+                                        double doc = 0.0;
+                                        double corpus = 0.0;
+
+                                        // 入力クエリのテキストのループ
+                                        for (int j = 0; j < Value.input_list.size(); j++){
+                                            // 入力テキストの単語を取得する
+                                            String word = Value.input_list.get(j);
+
+                                            // 対象の観光地説明文の文書モデルから尤度を得る
+                                            if (doc_tf_vec.isNull(word) == false) {
+                                                // 対象の観光地説明文の文書モデル
+                                                doc = doc_length * frac * Double.parseDouble(doc_tf_vec.getString(word));
+                                            } else {
+                                                // 対象の観光地説明文の文書モデル
+                                                doc = doc_length * frac * not_word_val; // 未知語の場合は極小値
+                                            }
+
+                                            // 観光地全体の文書コレクションモデルから尤度を得る
+                                            if (corpus_tf_vec.isNull(word) == false) {
+                                                // 観光地全体の文書コレクションモデル
+                                                corpus = mu * frac * Double.parseDouble((corpus_tf_vec.getString(word)));
+                                            } else {
+                                                // 対象の観光地説明文の文書モデル
+                                                corpus = mu * frac * not_word_val; // 未知語の場合は極小値
+                                            }
+
+                                            // ディリクレスムージングを適用したクエリ尤度モデル
+                                            likelihood += Math.log(doc + corpus);
+
+                                            // Log.d(name_str, String.valueOf(doc_tf_vec.getString(word).getClass()));
+                                        }
+                                        // 尤度の結果を出力する
+                                        Log.d(name_str + ":likelihood", String.valueOf(likelihood));
+
+                                        // クエリ尤度モデルのスコアをratingに加算する
+                                        // 現時点では，暫定的にそのまま加算している
+                                        rate_double += likelihood + 5.0; // 対数尤度はマイナスを取るため値を加算している
+
                                         double match_name_double = 0.0;
                                         double match_explain_double = 0.0;
                                         for (int j = 0; j < Value.input_list.size(); j++) {
@@ -576,11 +637,9 @@ public class MainActivity extends AppCompatActivity implements
                                             match_explain_count = match_explain_count / explain_length;
                                             match_explain_double += match_explain_count;
                                         }
-//                                        Log.d("genreDouble",name_str+String.valueOf(match_genre_double));
-//                                        Log.d("nameDouble",name_str+String.valueOf(match_name_double));
-//                                        Log.d("explainDouble",name_str+String.valueOf(match_explain_double));
+//
                                         // ratingの値を更新する
-                                        rate_double += match_genre_double + match_name_double + match_explain_double;
+                                        // rate_double += match_genre_double + match_name_double + match_explain_double;
                                         rate_double = rate_double * 10000;  // 10000倍する
                                         rate_double = Math.round(rate_double); // 小数点以下を切り捨てる
                                         rate_double = rate_double / 10000.0; // 10000で割る
@@ -2141,5 +2200,6 @@ class LoadJsonInThread extends Thread {
         Value.pair_json = json.ReadJson(MainActivity.getInstance(), "pair_limit.json");
         Value.spots_json = json.ReadJson(MainActivity.getInstance(), "kanko_all_add_limit.json");
         Value.neighborDicObject = json.ReadJson(MainActivity.getInstance(), "neighbor_pref.json");//隣接県情報の入ったjson読み出し
+        Value.vec_json = json.ReadJson(MainActivity.getInstance(), "kanko_vec.json"); // 観光地説明文のベクトル
     }
 }
