@@ -48,11 +48,14 @@ import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.ListIterator;
 import java.util.Locale;
 import java.util.Random;
+import java.util.Map;
 
 // ogawa test comment
 //値渡し用、静的変数
@@ -529,6 +532,11 @@ public class MainActivity extends AppCompatActivity implements
                             double rate_double_mean = 0.0; // ratingの和（平均を取るための変数）
                             double match_spot_count = 0.0; // 隣接県でマッチしたスポット数（平均を取るための変数）
                             double likelihood = 0.0; // クエリ尤度モデルのスコア
+                            double max_likelihood = 0.0;
+                            double min_likelihood = 0.0;
+
+                            // キー：観光地名，要素：対数尤度のハッシュマップ
+                            HashMap<String, Double> qlm_score = new HashMap<String, Double>();
                             try {
                                 int counter = 0; // 隣接県もしくは完全一致した場合のカウンタ
 
@@ -620,9 +628,22 @@ public class MainActivity extends AppCompatActivity implements
                                         // 尤度の結果を出力する
                                         Log.d(name_str + ":likelihood", String.valueOf(likelihood));
 
+                                        // 尤度の最大値を更新する
+                                        if (likelihood > max_likelihood) {
+                                            max_likelihood = likelihood;
+                                        }
+
+                                        // 尤度の最小値を更新する
+                                        if (likelihood < min_likelihood) {
+                                            min_likelihood = likelihood;
+                                        }
+
+                                        // 尤度の結果を保存する
+                                        // qlm_score.put(name_str, likelihood);
+
                                         // クエリ尤度モデルのスコアをratingに加算する
                                         // 現時点では，暫定的にそのまま加算している
-                                        rate_double += likelihood + 5.0; // 対数尤度はマイナスを取るため値を加算している
+                                        // rate_double += likelihood + 5.0; // 対数尤度はマイナスを取るため値を加算している
 
                                         double match_name_double = 0.0;
                                         double match_explain_double = 0.0;
@@ -639,7 +660,7 @@ public class MainActivity extends AppCompatActivity implements
                                         }
 //
                                         // ratingの値を更新する
-                                        // rate_double += match_genre_double + match_name_double + match_explain_double;
+                                        rate_double = 0.1 * rate_double + 0.1 * match_genre_double + 0.1* match_name_double + 0.1 * match_explain_double;
                                         rate_double = rate_double * 10000;  // 10000倍する
                                         rate_double = Math.round(rate_double); // 小数点以下を切り捨てる
                                         rate_double = rate_double / 10000.0; // 10000で割る
@@ -655,7 +676,11 @@ public class MainActivity extends AppCompatActivity implements
                                         float[] distance = new float[3];//二点間の距離算出結果を格納する変数
                                         Location.distanceBetween(location.getLatitude(), location.getLongitude(), lat_double, lng_double, distance);//入力された場所と候補地との距離算出
                                         firstCandsList.add(new SpotStructure(placeID_str, name_str, genre_str, pref_str, rate_double, lat_double, lng_double, distance[0], explainText, null, null, null, null,null));
-                                        firstCandsList_org.add(new SpotStructure(placeID_str, name_str, genre_str, pref_str, rate_double, lat_double, lng_double, distance[0], explainText, null, null, null, null,null));
+                                        firstCandsList_org.add(new SpotStructure(placeID_str, name_str, genre_str, pref_str, rate_double, lat_double, lng_double, distance[0], explainText, null, null, null, null, null));
+
+                                        // 尤度の結果を保存する
+                                        qlm_score.put(String.valueOf(counter), likelihood);
+
                                         counter ++;
                                     }
                                 }
@@ -664,6 +689,47 @@ public class MainActivity extends AppCompatActivity implements
                                 Log.e("test", e.toString());
                             }
                             Log.d("test", "first candidate size is" + firstCandsList.size());
+
+                            // 尤度を含めたratingに更新する
+                            for (int i=0; i < firstCandsList_org.size(); i++) {
+                                // 尤度を正規化する
+                                double likelihood_norm = (qlm_score.get(String.valueOf(i)) - min_likelihood) / (max_likelihood - min_likelihood);
+
+                                // ratingに尤度を追加する
+                                double new_rate = 0.6 * likelihood_norm + firstCandsList_org.get(i).rate;
+
+                                // 出力確認
+                                Log.d("likelihood_norm", firstCandsList_org.get(i).name + String.valueOf(likelihood_norm));
+                                Log.d("new_rate", firstCandsList_org.get(i).name + String.valueOf(new_rate));
+
+                                // ratingの値を更新する
+                                firstCandsList_org.get(i).rate = new_rate;
+                                qlm_score.put(String.valueOf(i), likelihood_norm);
+                            }
+
+                            // 尤度の降順ソート
+                            // List 生成 (ソート用)
+                            List<Map.Entry<String,Double>> entries =
+                                    new ArrayList<Map.Entry<String,Double>>(qlm_score.entrySet());
+                            Collections.sort(entries, new Comparator<Map.Entry<String, Double>>() {
+
+                                @Override
+                                public int compare(
+                                        Map.Entry<String, Double> entry1, Map.Entry<String, Double> entry2) {
+                                    return ((Double) entry2.getValue()).compareTo((Double) entry1.getValue());
+                                }
+                            });
+
+                            // 内容を表示
+                            for (Map.Entry<String,Double> s : entries) {
+                                // レビューの評価値を取得する
+                                double rate = firstCandsList_org.get(Integer.parseInt(s.getKey())).rate;
+
+                                if (rate > 0.0) {
+                                    Log.d("s.getKey() : ", firstCandsList_org.get(Integer.parseInt(s.getKey())).name);
+                                    Log.d("s.getValue() : ", String.valueOf(s.getValue()));
+                                }
+                            }
 
                             //Comparatorを用いレビューが高い順にソートする
                             Collections.sort(firstCandsList, new SpotStructureRateComparator());
