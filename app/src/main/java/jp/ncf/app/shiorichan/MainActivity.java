@@ -96,6 +96,7 @@ public class MainActivity extends AppCompatActivity implements
     final int REQUEST_PERMISSION=1000;
     private HttpGetter httpGet;
     private HttpBitmapGetter httpBitmapGet;
+    private QLM qlm; // クエリ尤度モデルのインスタンス
     final Handler handler = new Handler(Looper.getMainLooper());
     ProgressDialog progressDialog;//読み込み中表示クラス
     private InputMethodManager inputMethodManager;//エンターを押したらキーボードが閉じるように、キーボード取得オブジェクト
@@ -154,6 +155,7 @@ public class MainActivity extends AppCompatActivity implements
         */
         json=new JsonReader();//Json読み込み用クラスのインスタンス
         httpGet=new HttpGetter();//Httpリクエスト送信用クラスのインスタンス
+        qlm = new QLM();         // クエリ尤度モデルのインスタンス生成
         progressDialog = new ProgressDialog(this);//読み込み中表示,// 初期設定
         progressDialog.setTitle("初期値");
         progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
@@ -541,6 +543,17 @@ public class MainActivity extends AppCompatActivity implements
                                 int counter = 0; // 隣接県もしくは完全一致した場合のカウンタ
 
                                 // 全ての観光地でループ
+                                // 文書コレクション用のテキスト作成
+//                                String corpus_text = "";
+//                                String name = "";
+//                                String explain = "";
+//                                for (int i = 0; i < Value.spots_json.getJSONArray("spots").length(); i++) {
+//                                    name = Value.spots_json.getJSONArray("spots").getJSONObject(i).getString("name");
+//                                    explain = Value.spots_json.getJSONArray("spots").getJSONObject(i).getString("explain");
+//                                    corpus_text += name + explain;
+//                                }
+
+                                // 全ての観光地でループ
                                 for (int i = 0; i < Value.spots_json.getJSONArray("spots").length(); i++) {
                                     // 観光地の情報を取得する
                                     // 観光地の県，ジャンル，名前を取得する
@@ -581,50 +594,55 @@ public class MainActivity extends AppCompatActivity implements
                                         }
 
                                         // ====== クエリ尤度モデルを用いたスコアリング ======
-                                        likelihood = 0.0; // 尤度を初期化する
+//                                        likelihood = 0.0; // 尤度を初期化する
+//
+//                                        // 現在の観光地における，文書ベクトル（正規化TF）の計算結果を取得する
+//                                        JSONObject doc_tf_vec = Value.vec_json.getJSONObject("doc_tf_vecs").getJSONObject(name_str);
+//
+//                                        // 観光地全体を用いた，文書コレクションの文書ベクトル（正規化TF）の計算結果を取得する
+//                                        JSONObject corpus_tf_vec = Value.vec_json.getJSONObject("corpus_tf_vec");
+//
+//                                        // 各種パラメータを設定する
+//                                        double doc_length = doc_tf_vec.length(); // 観光地説明文の文書長
+//                                        double mu = 100; // スムージングパラメータ
+//                                        double frac = 1.0 / (doc_length + mu);
+//                                        double not_word_val = 1e-250; // 極小値
+//                                        double doc = 0.0;
+//                                        double corpus = 0.0;
+//
+//                                        // 入力クエリのテキストのループ
+//                                        for (int j = 0; j < Value.input_list.size(); j++){
+//                                            // 入力テキストの単語を取得する
+//                                            String word = Value.input_list.get(j);
+//
+//                                            // 対象の観光地説明文の文書モデルから尤度を得る
+//                                            if (doc_tf_vec.isNull(word) == false) {
+//                                                // 対象の観光地説明文の文書モデル
+//                                                doc = doc_length * frac * Double.parseDouble(doc_tf_vec.getString(word));
+//                                            } else {
+//                                                // 対象の観光地説明文の文書モデル
+//                                                doc = doc_length * frac * not_word_val; // 未知語の場合は極小値
+//                                            }
+//
+//                                            // 観光地全体の文書コレクションモデルから尤度を得る
+//                                            if (corpus_tf_vec.isNull(word) == false) {
+//                                                // 観光地全体の文書コレクションモデル
+//                                                corpus = mu * frac * Double.parseDouble((corpus_tf_vec.getString(word)));
+//                                            } else {
+//                                                // 対象の観光地説明文の文書モデル
+//                                                corpus = mu * frac * not_word_val; // 未知語の場合は極小値
+//                                            }
+//
+//                                            // ディリクレスムージングを適用したクエリ尤度モデル
+//                                            likelihood += Math.log(doc + corpus);
+//
+//                                            // Log.d(name_str, String.valueOf(doc_tf_vec.getString(word).getClass()));
+//                                        }
 
-                                        // 現在の観光地における，文書ベクトル（正規化TF）の計算結果を取得する
-                                        JSONObject doc_tf_vec = Value.vec_json.getJSONObject("doc_tf_vecs").getJSONObject(name_str);
+                                        // クエリ尤度モデルでスコアを算出する
+                                        likelihood = qlm.calcQLM(MainActivity.getInstance(), Value.vec_json, name_str);
+                                        // likelihood = qlm.calcQLM2(MainActivity.getInstance(), Value.vec_json, Value.spots_json.getJSONArray("spots").getJSONObject(i));
 
-                                        // 観光地全体を用いた，文書コレクションの文書ベクトル（正規化TF）の計算結果を取得する
-                                        JSONObject corpus_tf_vec = Value.vec_json.getJSONObject("corpus_tf_vec");
-
-                                        // 各種パラメータを設定する
-                                        double doc_length = doc_tf_vec.length(); // 観光地説明文の文書長
-                                        double mu = 100; // スムージングパラメータ
-                                        double frac = 1.0 / (doc_length + mu);
-                                        double not_word_val = 1e-250; // 極小値
-                                        double doc = 0.0;
-                                        double corpus = 0.0;
-
-                                        // 入力クエリのテキストのループ
-                                        for (int j = 0; j < Value.input_list.size(); j++){
-                                            // 入力テキストの単語を取得する
-                                            String word = Value.input_list.get(j);
-
-                                            // 対象の観光地説明文の文書モデルから尤度を得る
-                                            if (doc_tf_vec.isNull(word) == false) {
-                                                // 対象の観光地説明文の文書モデル
-                                                doc = doc_length * frac * Double.parseDouble(doc_tf_vec.getString(word));
-                                            } else {
-                                                // 対象の観光地説明文の文書モデル
-                                                doc = doc_length * frac * not_word_val; // 未知語の場合は極小値
-                                            }
-
-                                            // 観光地全体の文書コレクションモデルから尤度を得る
-                                            if (corpus_tf_vec.isNull(word) == false) {
-                                                // 観光地全体の文書コレクションモデル
-                                                corpus = mu * frac * Double.parseDouble((corpus_tf_vec.getString(word)));
-                                            } else {
-                                                // 対象の観光地説明文の文書モデル
-                                                corpus = mu * frac * not_word_val; // 未知語の場合は極小値
-                                            }
-
-                                            // ディリクレスムージングを適用したクエリ尤度モデル
-                                            likelihood += Math.log(doc + corpus);
-
-                                            // Log.d(name_str, String.valueOf(doc_tf_vec.getString(word).getClass()));
-                                        }
                                         // 尤度の結果を出力する
                                         Log.d(name_str + ":likelihood", String.valueOf(likelihood));
 
@@ -691,12 +709,17 @@ public class MainActivity extends AppCompatActivity implements
                             Log.d("test", "first candidate size is" + firstCandsList.size());
 
                             // 尤度を含めたratingに更新する
+                            rate_double_mean = 0.0; // 平均値を初期化
                             for (int i=0; i < firstCandsList_org.size(); i++) {
                                 // 尤度を正規化する
                                 double likelihood_norm = (qlm_score.get(String.valueOf(i)) - min_likelihood) / (max_likelihood - min_likelihood);
 
                                 // ratingに尤度を追加する
                                 double new_rate = 0.6 * likelihood_norm + firstCandsList_org.get(i).rate;
+
+                                new_rate = new_rate * 10000;  // 10000倍する
+                                new_rate = Math.round(new_rate); // 小数点以下を切り捨てる
+                                new_rate = new_rate / 10000.0; // 10000で割る
 
                                 // 出力確認
                                 Log.d("likelihood_norm", firstCandsList_org.get(i).name + String.valueOf(likelihood_norm));
@@ -705,9 +728,14 @@ public class MainActivity extends AppCompatActivity implements
                                 // ratingの値を更新する
                                 firstCandsList_org.get(i).rate = new_rate;
                                 qlm_score.put(String.valueOf(i), likelihood_norm);
-                            }
 
-                            // 尤度の降順ソート
+                                // 更新したratingを加算する（平均を計算するため）
+                                rate_double_mean += new_rate;
+                            }
+                            // ratingの平均値を算出する
+                            rate_double_mean = rate_double_mean / firstCandsList_org.size();
+
+                            // === 尤度の降順ソート ===
                             // List 生成 (ソート用)
                             List<Map.Entry<String,Double>> entries =
                                     new ArrayList<Map.Entry<String,Double>>(qlm_score.entrySet());
@@ -730,6 +758,7 @@ public class MainActivity extends AppCompatActivity implements
                                     Log.d("s.getValue() : ", String.valueOf(s.getValue()));
                                 }
                             }
+                            // =====================
 
                             //Comparatorを用いレビューが高い順にソートする
                             Collections.sort(firstCandsList, new SpotStructureRateComparator());
