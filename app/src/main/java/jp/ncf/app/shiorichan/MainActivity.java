@@ -46,6 +46,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLEncoder;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.Comparator;
@@ -534,11 +535,18 @@ public class MainActivity extends AppCompatActivity implements
                             double rate_double_mean = 0.0; // ratingの和（平均を取るための変数）
                             double match_spot_count = 0.0; // 隣接県でマッチしたスポット数（平均を取るための変数）
                             double likelihood = 0.0; // クエリ尤度モデルのスコア
+                            double likelihood2 = 0.0;
                             double max_likelihood = 0.0;
                             double min_likelihood = 0.0;
+                            double max_likelihood2 = 0.0;
+                            double min_likelihood2 = 0.0;
+                            List<Double> likelihood_list = Arrays.asList(0.0, 0.0);
+                            List<Double> max_likelihood_list = Arrays.asList(0.0, 0.0);
+                            List<Double> min_likelihood_list = Arrays.asList(0.0, 0.0);
+
 
                             // キー：観光地名，要素：対数尤度のハッシュマップ
-                            HashMap<String, Double> qlm_score = new HashMap<String, Double>();
+                            HashMap<String, List<Double>> qlm_score = new HashMap<String, List<Double>>();
                             try {
                                 int counter = 0; // 隣接県もしくは完全一致した場合のカウンタ
 
@@ -594,74 +602,25 @@ public class MainActivity extends AppCompatActivity implements
                                         }
 
                                         // ====== クエリ尤度モデルを用いたスコアリング ======
-//                                        likelihood = 0.0; // 尤度を初期化する
-//
-//                                        // 現在の観光地における，文書ベクトル（正規化TF）の計算結果を取得する
-//                                        JSONObject doc_tf_vec = Value.vec_json.getJSONObject("doc_tf_vecs").getJSONObject(name_str);
-//
-//                                        // 観光地全体を用いた，文書コレクションの文書ベクトル（正規化TF）の計算結果を取得する
-//                                        JSONObject corpus_tf_vec = Value.vec_json.getJSONObject("corpus_tf_vec");
-//
-//                                        // 各種パラメータを設定する
-//                                        double doc_length = doc_tf_vec.length(); // 観光地説明文の文書長
-//                                        double mu = 100; // スムージングパラメータ
-//                                        double frac = 1.0 / (doc_length + mu);
-//                                        double not_word_val = 1e-250; // 極小値
-//                                        double doc = 0.0;
-//                                        double corpus = 0.0;
-//
-//                                        // 入力クエリのテキストのループ
-//                                        for (int j = 0; j < Value.input_list.size(); j++){
-//                                            // 入力テキストの単語を取得する
-//                                            String word = Value.input_list.get(j);
-//
-//                                            // 対象の観光地説明文の文書モデルから尤度を得る
-//                                            if (doc_tf_vec.isNull(word) == false) {
-//                                                // 対象の観光地説明文の文書モデル
-//                                                doc = doc_length * frac * Double.parseDouble(doc_tf_vec.getString(word));
-//                                            } else {
-//                                                // 対象の観光地説明文の文書モデル
-//                                                doc = doc_length * frac * not_word_val; // 未知語の場合は極小値
-//                                            }
-//
-//                                            // 観光地全体の文書コレクションモデルから尤度を得る
-//                                            if (corpus_tf_vec.isNull(word) == false) {
-//                                                // 観光地全体の文書コレクションモデル
-//                                                corpus = mu * frac * Double.parseDouble((corpus_tf_vec.getString(word)));
-//                                            } else {
-//                                                // 対象の観光地説明文の文書モデル
-//                                                corpus = mu * frac * not_word_val; // 未知語の場合は極小値
-//                                            }
-//
-//                                            // ディリクレスムージングを適用したクエリ尤度モデル
-//                                            likelihood += Math.log(doc + corpus);
-//
-//                                            // Log.d(name_str, String.valueOf(doc_tf_vec.getString(word).getClass()));
-//                                        }
-
                                         // クエリ尤度モデルでスコアを算出する
-                                        likelihood = qlm.calcQLM(MainActivity.getInstance(), Value.vec_json, name_str);
-                                        // likelihood = qlm.calcQLM2(MainActivity.getInstance(), Value.vec_json, Value.spots_json.getJSONArray("spots").getJSONObject(i));
+                                        likelihood_list.set(0, qlm.calcQLM(MainActivity.getInstance(), Value.vec_json, name_str));
+                                        likelihood_list.set(1, qlm.calcQLM2(MainActivity.getInstance(), Value.vec_json, Value.spots_json.getJSONArray("spots").getJSONObject(i)));
 
                                         // 尤度の結果を出力する
-                                        Log.d(name_str + ":likelihood", String.valueOf(likelihood));
+                                        Log.d(name_str + ":likelihood", String.valueOf(likelihood_list.get(0)) + " " + String.valueOf(likelihood_list.get(1)));
 
                                         // 尤度の最大値を更新する
-                                        if (likelihood > max_likelihood) {
-                                            max_likelihood = likelihood;
+                                        for (int j=0; j<max_likelihood_list.size(); j++) {
+                                            if (likelihood_list.get(j) > max_likelihood_list.get(j)) {
+                                                max_likelihood_list.set(j, likelihood_list.get(j));
+                                            }
+
+                                            // 尤度の最小値を更新する
+                                            if (likelihood_list.get(j) < min_likelihood_list.get(j)) {
+                                                min_likelihood_list.set(j, likelihood_list.get(j));
+                                            }
                                         }
 
-                                        // 尤度の最小値を更新する
-                                        if (likelihood < min_likelihood) {
-                                            min_likelihood = likelihood;
-                                        }
-
-                                        // 尤度の結果を保存する
-                                        // qlm_score.put(name_str, likelihood);
-
-                                        // クエリ尤度モデルのスコアをratingに加算する
-                                        // 現時点では，暫定的にそのまま加算している
-                                        // rate_double += likelihood + 5.0; // 対数尤度はマイナスを取るため値を加算している
 
                                         double match_name_double = 0.0;
                                         double match_explain_double = 0.0;
@@ -678,7 +637,7 @@ public class MainActivity extends AppCompatActivity implements
                                         }
 //
                                         // ratingの値を更新する
-                                        rate_double = 0.1 * rate_double + 0.1 * match_genre_double + 0.1* match_name_double + 0.1 * match_explain_double;
+                                        rate_double = 0.1 * rate_double + 0.1 * match_genre_double + 0.0* match_name_double + 0.0 * match_explain_double;
                                         rate_double = rate_double * 10000;  // 10000倍する
                                         rate_double = Math.round(rate_double); // 小数点以下を切り捨てる
                                         rate_double = rate_double / 10000.0; // 10000で割る
@@ -697,7 +656,8 @@ public class MainActivity extends AppCompatActivity implements
                                         firstCandsList_org.add(new SpotStructure(placeID_str, name_str, genre_str, pref_str, rate_double, lat_double, lng_double, distance[0], explainText, null, null, null, null, null));
 
                                         // 尤度の結果を保存する
-                                        qlm_score.put(String.valueOf(counter), likelihood);
+                                        List<Double> qlm_score_list = Arrays.asList(likelihood_list.get(0), likelihood_list.get(1));
+                                        qlm_score.put(String.valueOf(counter), qlm_score_list);
 
                                         counter ++;
                                     }
@@ -710,24 +670,38 @@ public class MainActivity extends AppCompatActivity implements
 
                             // 尤度を含めたratingに更新する
                             rate_double_mean = 0.0; // 平均値を初期化
+                            List<Double> qlm_weight = Arrays.asList(0.4, 0.4); // 重みのリスト
+                            // キー：観光地名，要素：対数尤度のハッシュマップ
+                            HashMap<String, Double> qlm_score1 = new HashMap<String, Double>();
+                            HashMap<String, Double> qlm_score2 = new HashMap<String, Double>();
                             for (int i=0; i < firstCandsList_org.size(); i++) {
-                                // 尤度を正規化する
-                                double likelihood_norm = (qlm_score.get(String.valueOf(i)) - min_likelihood) / (max_likelihood - min_likelihood);
 
-                                // ratingに尤度を追加する
-                                double new_rate = 0.6 * likelihood_norm + firstCandsList_org.get(i).rate;
+                                // 更新後のratingを宣言
+                                double new_rate = firstCandsList_org.get(i).rate; // 更新前のratingを設定
 
+                                for (int j=0; j<qlm_weight.size(); j++) {
+                                    // 尤度を正規化する
+                                    double likelihood_norm = (qlm_score.get(String.valueOf(i)).get(j) - min_likelihood_list.get(j)) / (max_likelihood_list.get(j) - min_likelihood_list.get(j));
+
+                                    // 正規化尤度を保存する
+                                    likelihood_list.set(j, likelihood_norm);
+
+                                    // ratingに尤度を追加する
+                                    new_rate += qlm_weight.get(j) * likelihood_norm;
+                                }
+                                // 小数点の処理
                                 new_rate = new_rate * 10000;  // 10000倍する
                                 new_rate = Math.round(new_rate); // 小数点以下を切り捨てる
                                 new_rate = new_rate / 10000.0; // 10000で割る
 
                                 // 出力確認
-                                Log.d("likelihood_norm", firstCandsList_org.get(i).name + String.valueOf(likelihood_norm));
                                 Log.d("new_rate", firstCandsList_org.get(i).name + String.valueOf(new_rate));
 
                                 // ratingの値を更新する
                                 firstCandsList_org.get(i).rate = new_rate;
-                                qlm_score.put(String.valueOf(i), likelihood_norm);
+                                qlm_score.put(String.valueOf(i), likelihood_list);
+                                qlm_score1.put(String.valueOf(i), likelihood_list.get(0));
+                                qlm_score2.put(String.valueOf(i), likelihood_list.get(1));
 
                                 // 更新したratingを加算する（平均を計算するため）
                                 rate_double_mean += new_rate;
@@ -738,7 +712,7 @@ public class MainActivity extends AppCompatActivity implements
                             // === 尤度の降順ソート ===
                             // List 生成 (ソート用)
                             List<Map.Entry<String,Double>> entries =
-                                    new ArrayList<Map.Entry<String,Double>>(qlm_score.entrySet());
+                                    new ArrayList<Map.Entry<String,Double>>(qlm_score2.entrySet());
                             Collections.sort(entries, new Comparator<Map.Entry<String, Double>>() {
 
                                 @Override
