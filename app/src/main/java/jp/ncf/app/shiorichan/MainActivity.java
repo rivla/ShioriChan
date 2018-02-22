@@ -657,7 +657,7 @@ public class MainActivity extends AppCompatActivity implements
 //
                                         // ratingの値を更新する
                                         // 式： α * (正規化レビュー点数) + β * (クエリとジャンルのコサイン類似度)
-                                        rate_double = 0.1 * rate_double + 0.1 * match_genre_double;
+                                        rate_double = 0.2 * rate_double + 0.2 * match_genre_double;
 //                                        rate_double = 0.1 * rate_double + 0.1 * match_genre_double + 0.0* match_name_double + 0.0 * match_explain_double;
                                         rate_double = rate_double * 10000;  // 10000倍する
                                         rate_double = Math.round(rate_double); // 小数点以下を切り捨てる
@@ -688,7 +688,7 @@ public class MainActivity extends AppCompatActivity implements
 
                             // ====== ratingにクエリ尤度モデルのスコアを追加して更新する ======
                             rate_double_mean = 0.0; // ratingの平均値を初期化
-                            List<Double> qlm_weight = Arrays.asList(0.4, 0.4); // クエリ尤度モデルの重みのリスト
+                            List<Double> qlm_weight = Arrays.asList(0.3, 0.3); // クエリ尤度モデルの重みのリスト
                             // キー：観光地名，要素：対数尤度のハッシュマップ
                             // ソートして結果を出力するための変数
                             HashMap<String, Double> qlm_score1 = new HashMap<String, Double>();
@@ -2296,6 +2296,6 @@ class LoadJsonInThread extends Thread {
         Value.pair_json = json.ReadJson(MainActivity.getInstance(), "pair_limit.json");
         Value.spots_json = json.ReadJson(MainActivity.getInstance(), "kanko_all_add_limit.json");
         Value.neighborDicObject = json.ReadJson(MainActivity.getInstance(), "neighbor_pref.json");//隣接県情報の入ったjson読み出し
-        Value.vec_json = json.ReadJson(MainActivity.getInstance(), "kanko_vec.json"); // 観光地説明文のベクトル
+        Value.vec_json = json.ReadJson(MainActivity.getInstance(), "kanko_vec_neologd.json"); // 観光地説明文のベクトル
     }
 }
