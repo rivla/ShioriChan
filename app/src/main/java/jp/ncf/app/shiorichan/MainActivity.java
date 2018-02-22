@@ -849,7 +849,7 @@ public class MainActivity extends AppCompatActivity implements
                                             minDistanceNumber = 0;
                                             double minDistance = Double.MAX_VALUE;
                                             double center_val = (firstCandsList.get(0).rate + rate_double_mean) / 2;
-                                            for (int i = 0; firstCandsList.get(i).rate> firstCandsList.get(0).rate - 0.20 ; i++) {
+                                            for (int i = 0; firstCandsList.get(i).rate> firstCandsList.get(0).rate - 0.10 ; i++) {
                                                 if (firstCandsList.get(i).distance < minDistance) {
                                                     minDistance = firstCandsList.get(i).distance;
                                                     minDistanceNumber = i;
@@ -865,7 +865,7 @@ public class MainActivity extends AppCompatActivity implements
                                     minDistanceNumber = 0;
                                     double minDistance = Double.MAX_VALUE;
                                     double center_val = (firstCandsList.get(0).rate + rate_double_mean) / 2;
-                                    for (int i = 0; firstCandsList.get(i).rate> firstCandsList.get(0).rate - 0.20 ; i++) {
+                                    for (int i = 0; firstCandsList.get(i).rate> firstCandsList.get(0).rate - 0.10 ; i++) {
                                         Log.d("result", firstCandsList.get(i).rate + String.valueOf(firstCandsList.get(i).name));
                                         if (firstCandsList.get(i).distance < minDistance) {
                                             minDistance = firstCandsList.get(i).distance;
