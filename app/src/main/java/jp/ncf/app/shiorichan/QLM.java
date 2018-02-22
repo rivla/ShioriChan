@@ -100,7 +100,7 @@ public class QLM {
             String word = Value.input_list.get(j);
 
             // 現在の観光地における，正規化TFを計算する
-            double doc_tf_value = (double) isCount(text, word) / explain_length;
+            double doc_tf_value = (double) isCount(text, word) / doc_length;
 
             // 対象の観光地説明文の文書モデルから尤度を得る
             if (doc_tf_value != 0.0) {
