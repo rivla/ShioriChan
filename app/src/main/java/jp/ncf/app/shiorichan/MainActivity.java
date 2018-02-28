@@ -413,7 +413,6 @@ public class MainActivity extends AppCompatActivity implements
                         }
 
 
-
                         Log.d("test", "startButton pusshed");
 
                         // 初期化処理
@@ -537,6 +536,7 @@ public class MainActivity extends AppCompatActivity implements
 
                             // クエリ尤度モデルのスコア
                             // （2種類のクエリ尤度モデルを使用するため，リストで2つのスコアを管理する）
+                            // [pythonの形態素解析を用いたクエリ尤度スコア, 文字列マッチングを用いたクエリ尤度スコア]
                             List<Double> likelihood_list = Arrays.asList(0.0, 0.0);     // クエリ尤度モデルのスコア
 
                             // クエリ尤度の最大値と最小値
@@ -793,9 +793,9 @@ public class MainActivity extends AppCompatActivity implements
                                         }else if(Value.arriveTime.compareTo(messageLateArr)>0) {
                                             progressDialog.setMessage(String.format("%02d:%02dかあ、ちょっと到着が遅いかも。", Value.arriveTime.getHours(), Value.arriveTime.getMinutes()));
                                         }else if (rand == 0) {
-                                            if (firstCandsList.get(0).rate < 0.2) {
+                                            if (firstCandsList.get(0).rate < 0.4) {
                                                 progressDialog.setMessage("期待できないかも…。");
-                                            } else if (firstCandsList.get(0).rate < 0.4) {
+                                            } else if (firstCandsList.get(0).rate < 0.5) {
                                                 progressDialog.setMessage("もうちょっとまってね！");
                                             } else if (firstCandsList.get(0).rate < 0.6) {
                                                 progressDialog.setMessage("うまくいきそうだよ！");
@@ -803,9 +803,9 @@ public class MainActivity extends AppCompatActivity implements
                                                 progressDialog.setMessage("期待しててね！");
                                             }
                                         } else if (rand == 1) {
-                                            if (firstCandsList.get(0).rate < 0.2) {
+                                            if (firstCandsList.get(0).rate < 0.4) {
                                                 progressDialog.setMessage("うーん、難しいかも…。");
-                                            } else if (firstCandsList.get(0).rate < 0.4) {
+                                            } else if (firstCandsList.get(0).rate < 0.5) {
                                                 progressDialog.setMessage("しおり作成中…");
                                             } else if (firstCandsList.get(0).rate < 0.6) {
                                                 progressDialog.setMessage("ここがよさそうかな？");
@@ -813,9 +813,9 @@ public class MainActivity extends AppCompatActivity implements
                                                 progressDialog.setMessage("いいかんじ！");
                                             }
                                         } else {
-                                            if (firstCandsList.get(0).rate < 0.2) {
+                                            if (firstCandsList.get(0).rate < 0.4) {
                                                 progressDialog.setMessage("うーん、" + Value.input_text + "か、難しいなあ…。");
-                                            } else if (firstCandsList.get(0).rate < 0.4) {
+                                            } else if (firstCandsList.get(0).rate < 0.5) {
                                                 if (lunchFlg) {
                                                     progressDialog.setMessage("お昼はどこにしようかなー");
                                                 } else {
@@ -864,7 +864,7 @@ public class MainActivity extends AppCompatActivity implements
                                     //レビュー4.5以上の候補地から一番近い場所を選ぶ
                                     minDistanceNumber = 0;
                                     double minDistance = Double.MAX_VALUE;
-                                    double center_val = (firstCandsList.get(0).rate + rate_double_mean) / 2;
+                                    double center_val = (firstCandsList.get(0).rate + rate_double_mean) / 2.0;
                                     for (int i = 0; firstCandsList.get(i).rate> firstCandsList.get(0).rate - 0.10 ; i++) {
                                         Log.d("result", firstCandsList.get(i).rate + String.valueOf(firstCandsList.get(i).name));
                                         if (firstCandsList.get(i).distance < minDistance) {
