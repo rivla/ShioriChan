@@ -96,6 +96,7 @@ public class MainActivity extends AppCompatActivity implements
     private JsonReader json;
     final int REQUEST_PERMISSION=1000;
     private HttpGetter httpGet;
+    private HttpSendJSON httpSendJSON;
     private HttpBitmapGetter httpBitmapGet;
     private QLM qlm; // クエリ尤度モデルのインスタンス
     final Handler handler = new Handler(Looper.getMainLooper());
@@ -156,11 +157,13 @@ public class MainActivity extends AppCompatActivity implements
         */
         json=new JsonReader();//Json読み込み用クラスのインスタンス
         httpGet=new HttpGetter();//Httpリクエスト送信用クラスのインスタンス
+        httpSendJSON=new HttpSendJSON();//JSONをPOST送信しHTMLリクエストを送るクラスのインスタンス
         qlm = new QLM();         // クエリ尤度モデルのインスタンス生成
         progressDialog = new ProgressDialog(this);//読み込み中表示,// 初期設定
         progressDialog.setTitle("初期値");
         progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
         progressDialog.setCancelable(false);
+
 
 
 
@@ -246,7 +249,6 @@ public class MainActivity extends AppCompatActivity implements
 
         fukidashiText.setTextSize(TypedValue.COMPLEX_UNIT_PX,100);
         */
-
 
 
 
@@ -345,6 +347,8 @@ public class MainActivity extends AppCompatActivity implements
         startButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+
+
                 //preferenceで設定されたデータを受け取る
                 SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
 
@@ -428,6 +432,34 @@ public class MainActivity extends AppCompatActivity implements
                         final String input_text = editText.getText().toString();
                         Value.input_text = input_text;
                         Log.d("inputtext", Value.input_text);
+
+
+                        //*********************java内で構文解析部分********************
+                        //リクエストするURL
+                        String strPostUrl = "https://language.googleapis.com/v1/documents:analyzeEntities?key=AIzaSyCke0pASXyPnnJR-GAAvN3Bz7GltgomfEk";
+                        // 送信するJSONファイル
+                        String JSON="{\"encodingType\": \"UTF8\", \"document\": {\"type\": \"PLAIN_TEXT\",\"content\": \""+ Value.input_text +"\"}}";
+                        //結果格納用変数
+                        JSONObject result = null;
+                        try {
+                            //リクエストを送信
+                            result = new JSONObject(httpSendJSON.callPost(strPostUrl, JSON));
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                        //取得結果の使用例
+                        try {
+                            for(int k=0;k<result.getJSONArray("entities").length();k++){
+                                Log.d("test","エンティティ解析の結果…"+String.valueOf(k)+"番目の単語:"+result.getJSONArray("entities").getJSONObject(k).getString("name"));
+                            }
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                        //切り取った単語につけられたタグなど、Googleの返す他の付加情報が知りたければこちら
+                        //https://cloud.google.com/natural-language/docs/analyzing-entities?hl=ja
+                        //助動詞などが必要であれば構文解析も可能
+                        //https://cloud.google.com/natural-language/docs/analyzing-syntax?hl=ja
+                        //*********************java内で構文解析部分********************
 
 
 
@@ -1230,7 +1262,7 @@ public class MainActivity extends AppCompatActivity implements
                                         if (!detailSearchResult.getJSONObject("result").isNull("rating")) {
                                             rate_double = detailSearchResult.getJSONObject("result").getDouble("rating");
                                         }
-                                        if (!detailSearchResult.getJSONObject("result").isNull("formatted_address")) {
+                                        if (!detailSearchResult.getJSONObject("result").isNull("formatted_address") && detailSearchResult.getJSONObject("result").getString("formatted_address").length() > 13) {
                                             tempExplainMessage = tempExplainMessage + "\n\n住所：" + detailSearchResult.getJSONObject("result").getString("formatted_address").substring(3+9,detailSearchResult.getJSONObject("result").getString("formatted_address").length()) + "\n";
                                         }
                                         if (!detailSearchResult.getJSONObject("result").isNull("formatted_phone_number")) {

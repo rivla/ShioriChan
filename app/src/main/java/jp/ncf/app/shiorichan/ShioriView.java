@@ -204,8 +204,8 @@ public class ShioriView extends Activity {
                 @Override
                 public void onGlobalLayout() {
                     ViewGroup.LayoutParams params=rateWhiteImage.getLayoutParams();
-                    Log.d("test",String.valueOf((int)(rate5Image.getWidth()*(1-(Value.itineraryPlaceList.get(finalI).rate/5)))));
-                    Log.d("test",String.valueOf(rate5Image.getWidth()));
+//                    Log.d("test",String.valueOf((int)(rate5Image.getWidth()*(1-(Value.itineraryPlaceList.get(finalI).rate/5)))));
+//                    Log.d("test",String.valueOf(rate5Image.getWidth()));
                     params.width=(int)(rate5Image.getWidth()*(1-(Value.itineraryPlaceList.get(finalI).rate/5)));
                     rateWhiteImage.setLayoutParams(params);
                 }

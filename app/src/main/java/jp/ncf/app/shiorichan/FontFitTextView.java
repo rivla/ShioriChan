@@ -33,7 +33,7 @@ public class FontFitTextView extends TextView {
 
     @Override
     protected void onLayout(boolean changed, int left, int top, int right, int bottom) {
-        Log.d("tesT","onlayout");
+//        Log.d("tesT","onlayout");
         super.onLayout(changed, left, top, right, bottom);
 
         resize();
