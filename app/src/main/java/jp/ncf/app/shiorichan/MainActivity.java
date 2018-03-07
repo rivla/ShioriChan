@@ -435,30 +435,46 @@ public class MainActivity extends AppCompatActivity implements
 
 
                         //*********************java内で構文解析部分********************
-                        //リクエストするURL
-                        String strPostUrl = "https://language.googleapis.com/v1/documents:analyzeEntities?key=AIzaSyCke0pASXyPnnJR-GAAvN3Bz7GltgomfEk";
-                        // 送信するJSONファイル
-                        String JSON="{\"encodingType\": \"UTF8\", \"document\": {\"type\": \"PLAIN_TEXT\",\"content\": \""+ Value.input_text +"\"}}";
-                        //結果格納用変数
-                        JSONObject result = null;
-                        try {
-                            //リクエストを送信
-                            result = new JSONObject(httpSendJSON.callPost(strPostUrl, JSON));
-                        } catch (JSONException e) {
-                            e.printStackTrace();
-                        }
-                        //取得結果の使用例
-                        try {
-                            for(int k=0;k<result.getJSONArray("entities").length();k++){
-                                Log.d("test","エンティティ解析の結果…"+String.valueOf(k)+"番目の単語:"+result.getJSONArray("entities").getJSONObject(k).getString("name"));
+                        // 入力テキストを空白でパースした結果を格納するリスト
+                        ArrayList<String> parsed_input_list = new ArrayList();
+
+                        // 入力テキストを空白でパースする
+                        parsed_input_list = parseText(Value.input_text);
+
+                        // 入力テキストを空白でパースした後，
+                        // 分割された各文字列に対して形態素解析を実行する
+                        // →形態素解析された全ての結果を入力単語リストとして，input_listに格納する
+
+                        // 入力テキストを空白でパースした文字列のループ
+                        for (int i=0; i<parsed_input_list.size();i++) {
+                            //リクエストするURL
+                            String strPostUrl = "https://language.googleapis.com/v1/documents:analyzeEntities?key=AIzaSyCke0pASXyPnnJR-GAAvN3Bz7GltgomfEk";
+                            // 送信するJSONファイル
+                            String JSON = "{\"encodingType\": \"UTF8\", \"document\": {\"type\": \"PLAIN_TEXT\",\"content\": \"" + parsed_input_list.get(i) + "\"}}";
+                            //結果格納用変数
+                            JSONObject result = null;
+                            try {
+                                //リクエストを送信
+                                result = new JSONObject(httpSendJSON.callPost(strPostUrl, JSON));
+                            } catch (JSONException e) {
+                                e.printStackTrace();
                             }
-                        } catch (JSONException e) {
-                            e.printStackTrace();
+                            //取得結果の使用例
+                            try {
+                                // 文字列を形態素解析した結果のループ
+                                for (int k = 0; k < result.getJSONArray("entities").length(); k++) {
+                                    // 形態素解析された単語を入力テキストリストに追加する
+                                    Value.input_list.add(result.getJSONArray("entities").getJSONObject(k).getString("name"));
+                                    Log.d("test", "エンティティ解析の結果…" + String.valueOf(k) + "番目の単語:" + result.getJSONArray("entities").getJSONObject(k).getString("name"));
+                                }
+                            } catch (JSONException e) {
+                                e.printStackTrace();
+                            }
+                            //切り取った単語につけられたタグなど、Googleの返す他の付加情報が知りたければこちら
+                            //https://cloud.google.com/natural-language/docs/analyzing-entities?hl=ja
+                            //助動詞などが必要であれば構文解析も可能
+                            //https://cloud.google.com/natural-language/docs/analyzing-syntax?hl=ja
                         }
-                        //切り取った単語につけられたタグなど、Googleの返す他の付加情報が知りたければこちら
-                        //https://cloud.google.com/natural-language/docs/analyzing-entities?hl=ja
-                        //助動詞などが必要であれば構文解析も可能
-                        //https://cloud.google.com/natural-language/docs/analyzing-syntax?hl=ja
                         //*********************java内で構文解析部分********************
 
 
@@ -478,9 +494,11 @@ public class MainActivity extends AppCompatActivity implements
                         // 入力テキストが存在する場合，ジャンルとのマッチングを行う
                         else {
                             // 入力テキストを空白でパースする
-                            Value.input_list = parseText(Value.input_text);
+                            // Value.input_list = parseText(Value.input_text);
                             // ジャンルリストを作成する
                             for (int i = 0; i < Value.input_list.size(); i++) {
+
+                                Log.d("input_list word", Value.input_list.get(i));
 
                                 // ====== 自由テキストをジャンルに変換 ======
                                 // 自由テキストが辞書に登録されている場合の処理
@@ -743,7 +761,11 @@ public class MainActivity extends AppCompatActivity implements
                                     //     + β * (クエリとジャンルのコサイン類似度)
                                     //     + γ * (pythonの形態素解析を用いたクエリ尤度モデル)
                                     //     + δ * (文字列マッチングを用いたクエリ尤度モデル)
-                                    new_rate += qlm_weight.get(j) * likelihood_norm;
+                                    // 形態素解析を実装したため，
+                                    // クエリ尤度モデルのスコアはpythonの結果を用いたものだけにできるようにした(現在は両方使用)
+                                    if (j == 0 || j == 1) {
+                                        new_rate += qlm_weight.get(j) * likelihood_norm;
+                                    }
                                 }
                                 // 小数点の処理
                                 new_rate = new_rate * 10000;  // 10000倍する
