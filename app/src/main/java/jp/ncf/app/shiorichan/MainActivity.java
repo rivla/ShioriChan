@@ -488,7 +488,6 @@ public class MainActivity extends AppCompatActivity implements
                         //*********************java内で構文解析部分********************
 
 
-
                         // 入力テキストが未入力であった場合
                         if (Value.input_text.length() == 0) {
                             Log.d("input error message", "何も入力されていません");
