@@ -431,6 +431,8 @@ public class MainActivity extends AppCompatActivity implements
                         // 入力された文字を取得
                         final String input_text = editText.getText().toString();
                         Value.input_text = input_text;
+                        Value.input_list = new ArrayList();
+
                         Log.d("inputtext", Value.input_text);
 
 
@@ -446,7 +448,11 @@ public class MainActivity extends AppCompatActivity implements
                         // →形態素解析された全ての結果を入力単語リストとして，input_listに格納する
 
                         // 入力テキストを空白でパースした文字列のループ
+                        Log.d("parsed_input_list",String.valueOf(parsed_input_list.size()));
+
                         for (int i=0; i<parsed_input_list.size();i++) {
+                            Log.d("parsed_input_list_for","test");
+
                             //リクエストするURL
                             String strPostUrl = "https://language.googleapis.com/v1/documents:analyzeEntities?key=AIzaSyCke0pASXyPnnJR-GAAvN3Bz7GltgomfEk";
                             // 送信するJSONファイル
@@ -462,10 +468,14 @@ public class MainActivity extends AppCompatActivity implements
                             //取得結果の使用例
                             try {
                                 // 文字列を形態素解析した結果のループ
-                                for (int k = 0; k < result.getJSONArray("entities").length(); k++) {
-                                    // 形態素解析された単語を入力テキストリストに追加する
-                                    Value.input_list.add(result.getJSONArray("entities").getJSONObject(k).getString("name"));
-                                    Log.d("test", "エンティティ解析の結果…" + String.valueOf(k) + "番目の単語:" + result.getJSONArray("entities").getJSONObject(k).getString("name"));
+                                if(result.getJSONArray("entities").length()==0){
+                                    Value.input_list.add(parsed_input_list.get(i));
+                                }else {
+                                    for (int k = 0; k < result.getJSONArray("entities").length(); k++) {
+                                        // 形態素解析された単語を入力テキストリストに追加する
+                                        Value.input_list.add(result.getJSONArray("entities").getJSONObject(k).getString("name"));
+                                        Log.d("test", "エンティティ解析の結果…" + String.valueOf(k) + "番目の単語:" + result.getJSONArray("entities").getJSONObject(k).getString("name"));
+                                    }
                                 }
                             } catch (JSONException e) {
                                 e.printStackTrace();
